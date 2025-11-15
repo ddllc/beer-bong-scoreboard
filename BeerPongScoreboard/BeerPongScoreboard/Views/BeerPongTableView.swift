@@ -73,9 +73,12 @@ struct BeerPongTableView: View {
                 }
                 Spacer()
                 Button("Complete Turn") {
-                    let next = (currentTurnIndex % players.count) + 1 // wraps 1..players.count
-                    if next == 1 { roundNumber += 1 }
-                    currentTurnIndex = next
+                    if currentTurnIndex == players.count {
+                        currentTurnIndex = 1
+                        roundNumber += 1
+                    } else {
+                        currentTurnIndex += 1
+                    }
                 }
                 .buttonStyle(.glassProminent)
                 .buttonBorderShape(.roundedRectangle)
@@ -114,3 +117,4 @@ struct BeerPongTableView: View {
         BeerPongTableView()
     }
 }
+
