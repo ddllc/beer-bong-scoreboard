@@ -1,183 +1,95 @@
 import SwiftUI
+import SafariServices
 
 struct BeerPongTableView: View {
-    @State private var playerOneSunk: [Bool] = Array(repeating: false, count: 10)
-    @State private var playerTwoSunk: [Bool] = Array(repeating: false, count: 10)
-
-    @State private var players: [String] = ["Player 1", "Player 2"]
-    @State private var playerOneName: String? = nil
-    @State private var playerTwoName: String? = nil
-
-    private enum Player: String, CaseIterable { case one = "Player 1", two = "Player 2" }
-    @State private var currentPlayer: Player = .one
-    @State private var showResetAlert = false
-    
-    @State private var totalTurns = 0
-    @State private var playerOneTurns = 0
-    @State private var playerTwoTurns = 0
-
-    private func bindingForCup(_ number: Int) -> Binding<Bool> {
-        let index = max(1, min(10, number)) - 1
-        switch currentPlayer {
-        case .one:
-            return Binding(
-                get: { playerOneSunk[index] },
-                set: { playerOneSunk[index] = $0 }
-            )
-        case .two:
-            return Binding(
-                get: { playerTwoSunk[index] },
-                set: { playerTwoSunk[index] = $0 }
-            )
-        }
-    }
-
-    private var sunkCount: Int {
-        switch currentPlayer {
-        case .one: return playerOneSunk.filter { $0 }.count
-        case .two: return playerTwoSunk.filter { $0 }.count
-        }
-    }
-    
-    private var currentPlayerDisplayName: String {
-        switch currentPlayer {
-        case .one: return playerOneName ?? "Player 1"
-        case .two: return playerTwoName ?? "Player 2"
-        }
-    }
-
-    private func resetGame() {
-        playerOneSunk = Array(repeating: false, count: 10)
-        playerTwoSunk = Array(repeating: false, count: 10)
-        currentPlayer = .one
-        totalTurns = 0
-        playerOneTurns = 0
-        playerTwoTurns = 0
-    }
-
-    private func completeTurn() {
-        switch currentPlayer {
-        case .one:
-            playerOneTurns += 1
-            currentPlayer = .two
-        case .two:
-            playerTwoTurns += 1
-            currentPlayer = .one
-        }
-        totalTurns += 1
-    }
-
-    private var currentRound: Int {
-        max(1, (totalTurns / 2) + 1)
-    }
-    
-    private var winnerText: String? {
-        if playerOneSunk.allSatisfy({ $0 }) {
-            return "Player 1 Wins! 🎉"
-        } else if playerTwoSunk.allSatisfy({ $0 }) {
-            return "Player 2 Wins! 🎉"
-        } else {
-            return nil
-        }
-    }
+    @State private var currentTurnIndex = 0 // 0: Player 1, 1: Player 2 (expandable to 4 for 2v2)
+    @State private var roundNumber = 1
+    @State private var team1AmountOfSunkCups = 0
+    @State private var team2AmountOfSunkCups = 0
+    @State private var showingWebSheet = false
+    @State private var players = ["Player 1", "Player 2", "Player 3", "Player 4"]
     
     var body: some View {
         NavigationStack {
             VStack {
-                VStack(spacing: 12) {
-                    Text("Beer Pong")
-                        .font(.title2)
-                        .foregroundStyle(.secondary)
-                    Text(winnerText ?? "Player X Wins! 🎉")
-                        .font(.title2)
-                        .bold()
-                        .foregroundStyle(.green)
-                        .opacity(winnerText == nil ? 0 : 1)
-                    Text("\(sunkCount)/10 Cups Sunk")
-                        .font(.system(size: 36, weight: .bold))
-                    ProgressView(value: Double(sunkCount), total: 10)
-                        .tint(.red)
-                        .padding(.horizontal)
-                    
-                    Text("Turn: \(currentPlayerDisplayName)")
-                        .font(.headline)
-                    
-                    Text("Round \(currentRound)  ·  Turns — P1: \(playerOneTurns) · P2: \(playerTwoTurns)")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                    
-                    Button {
-                        completeTurn()
-                    } label: {
-                        Label("Complete Turn", systemImage: "arrow.right.circle.fill")
-                            .font(.headline)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.blue)
-                    .disabled(winnerText != nil)
-                    
-                    Text("P1: \((playerOneSunk.filter { $0 }.count))/10  ·  P2: \((playerTwoSunk.filter { $0 }.count))/10")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                VStack {
+                    Text("\(players[currentTurnIndex])'s Turn")
+                    Text("Round \(String(roundNumber))")
                 }
-                .padding(16)
-                .background(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(.ultraThinMaterial)
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .strokeBorder(Color.secondary.opacity(0.15))
-                )
+                .font(.title)
+                .bold()
+                Divider()
+                HStack {
+                    
+                    Text(
+                        """
+                        **Player 1**
+                        \(String(team1AmountOfSunkCups)) / 10 Cups
+                        """
+                        )
+                    .multilineTextAlignment(.center)
+                    Spacer()
+                    Text(
+                        """
+                        **Player 2**
+                        \(String(team2AmountOfSunkCups)) / 10 Cups
+                        """
+                        )
+                    .multilineTextAlignment(.center)
+                }
+                .font(.title3)
+                .bold()
                 .padding(.horizontal)
-                .padding(.bottom)
                 
-                HStack {
-                    CupButton(soloCupNumber: 7, isSunk: bindingForCup(7))
-                    CupButton(soloCupNumber: 8, isSunk: bindingForCup(8))
-                    CupButton(soloCupNumber: 9, isSunk: bindingForCup(9))
-                    CupButton(soloCupNumber: 10, isSunk: bindingForCup(10))
+                Divider()
+                Spacer()
+                HStack(spacing: 20) {
+                    SoloCupView(soloCupNumber: 7, soloCupColor: currentTurnIndex == 0 ? .red : .blue)
+                    SoloCupView(soloCupNumber: 8, soloCupColor: currentTurnIndex == 0 ? .red : .blue)
+                    SoloCupView(soloCupNumber: 9, soloCupColor: currentTurnIndex == 0 ? .red : .blue)
+                    SoloCupView(soloCupNumber: 10, soloCupColor: currentTurnIndex == 0 ? .red : .blue)
                 }
                 
-                HStack {
-                    CupButton(soloCupNumber: 4, isSunk: bindingForCup(4))
-                    CupButton(soloCupNumber: 5, isSunk: bindingForCup(5))
-                    CupButton(soloCupNumber: 6, isSunk: bindingForCup(6))
+                HStack(spacing: 20) {
+                    SoloCupView(soloCupNumber: 4, soloCupColor: currentTurnIndex == 0 ? .red : .blue)
+                    SoloCupView(soloCupNumber: 5, soloCupColor: currentTurnIndex == 0 ? .red : .blue)
+                    SoloCupView(soloCupNumber: 6, soloCupColor: currentTurnIndex == 0 ? .red : .blue)
                 }
                 
-                HStack {
-                    CupButton(soloCupNumber: 2, isSunk: bindingForCup(2))
-                    CupButton(soloCupNumber: 3, isSunk: bindingForCup(3))
+                HStack(spacing: 20) {
+                    SoloCupView(soloCupNumber: 2, soloCupColor: currentTurnIndex == 0 ? .red : .blue)
+                    SoloCupView(soloCupNumber: 3, soloCupColor: currentTurnIndex == 0 ? .red : .blue)
                 }
                 
-                HStack {
-                    CupButton(soloCupNumber: 1, isSunk: bindingForCup(1))
+                HStack(spacing: 20) {
+                    SoloCupView(soloCupNumber: 1, soloCupColor: currentTurnIndex == 0 ? .red : .blue)
                 }
+                Spacer()
+                Button("Complete Turn") {
+                    if currentTurnIndex > 4 {
+                        currentTurnIndex = 0
+                    }
+                    currentTurnIndex += 1
+                }
+                .buttonStyle(.glassProminent)
+                .buttonBorderShape(.roundedRectangle)
+                .buttonSizing(.flexible)
+                .padding(.horizontal, 32)
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button(role: .destructive) {
-                        showResetAlert = true
+                    Button {
+                        showingWebSheet = true
                     } label: {
-                        Label("Restart Game", systemImage: "trash")
-                    }
-                }
-                ToolbarItem(placement: .topBarLeading) {
-                    NavigationLink {
-                        PlayerListView(players: $players, selectedPlayerOne: $playerOneName, selectedPlayerTwo: $playerTwoName)
-                    } label: {
-                        Label("Players", systemImage: "person.2")
+                        Text("Rules")
+                        Image(systemName: "book.closed")
                     }
                 }
             }
-        }
-        .alert("Restart Game?", isPresented: $showResetAlert) {
-            Button("Restart", role: .destructive) {
-                resetGame()
+            .sheet(isPresented: $showingWebSheet) {
+                SafariView(url: URL(string: "https://www.probeersports.com/beer-pong")!)
+                    .ignoresSafeArea()
             }
-            Button("Cancel", role: .cancel) { }
-        } message: {
-            Text("This will clear all sunk cups for both players and reset the game.")
         }
     }
 }

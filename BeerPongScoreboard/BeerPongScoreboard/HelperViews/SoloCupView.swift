@@ -2,14 +2,34 @@ import SwiftUI
 
 struct SoloCupView: View {
     let soloCupNumber: Int
+    let soloCupColor: SoloCupColor
+    @State private var isSunk = false
+    
     var body: some View {
-        Image("SoloCup")
-            .resizable()
-            .scaledToFit()
-            .frame(width: 75)
+        Button {
+            isSunk.toggle()
+        } label: {
+            Image(soloCupColor == .red ? "SoloCupRed" : "SoloCupBlue")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 75)
+                .rotationEffect(isSunk ? Angle(degrees: -90) : .zero)
+
+        }
+                   
     }
 }
 
-#Preview {
-    SoloCupView(soloCupNumber: 1)
+#Preview("SoloCupRed") {
+    SoloCupView(soloCupNumber: 1, soloCupColor: .red)
+}
+
+#Preview("SoloCupBlue") {
+    SoloCupView(soloCupNumber: 1, soloCupColor: .blue)
+}
+
+
+enum SoloCupColor: String {
+    case red
+    case blue
 }
