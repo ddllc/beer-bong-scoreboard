@@ -4,7 +4,7 @@ import SwiftUI
 struct BeerPongScoreboardApp: App {
     var body: some Scene {
         WindowGroup {
-            MainTabView()
+            BeerPongTableView()
         }
     }
 }

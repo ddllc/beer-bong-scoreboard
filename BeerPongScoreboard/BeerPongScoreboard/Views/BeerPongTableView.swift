@@ -4,6 +4,10 @@ struct BeerPongTableView: View {
     @State private var playerOneSunk: [Bool] = Array(repeating: false, count: 10)
     @State private var playerTwoSunk: [Bool] = Array(repeating: false, count: 10)
 
+    @State private var players: [String] = ["Player 1", "Player 2"]
+    @State private var playerOneName: String? = nil
+    @State private var playerTwoName: String? = nil
+
     private enum Player: String, CaseIterable { case one = "Player 1", two = "Player 2" }
     @State private var currentPlayer: Player = .one
     @State private var showResetAlert = false
@@ -32,6 +36,13 @@ struct BeerPongTableView: View {
         switch currentPlayer {
         case .one: return playerOneSunk.filter { $0 }.count
         case .two: return playerTwoSunk.filter { $0 }.count
+        }
+    }
+    
+    private var currentPlayerDisplayName: String {
+        switch currentPlayer {
+        case .one: return playerOneName ?? "Player 1"
+        case .two: return playerTwoName ?? "Player 2"
         }
     }
 
@@ -71,83 +82,92 @@ struct BeerPongTableView: View {
     }
     
     var body: some View {
-        VStack {
-            VStack(spacing: 12) {
-                Text("Beer Pong")
-                    .font(.title2)
-                    .foregroundStyle(.secondary)
-                Text(winnerText ?? "Player X Wins! 🎉")
-                    .font(.title2)
-                    .bold()
-                    .foregroundStyle(.green)
-                    .opacity(winnerText == nil ? 0 : 1)
-                Text("\(sunkCount)/10 Cups Sunk")
-                    .font(.system(size: 36, weight: .bold))
-                ProgressView(value: Double(sunkCount), total: 10)
-                    .tint(.red)
-                    .padding(.horizontal)
-                
-                Text("Turn: \(currentPlayer.rawValue)")
-                    .font(.headline)
-                
-                Text("Round \(currentRound)  ·  Turns — P1: \(playerOneTurns) · P2: \(playerTwoTurns)")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-
-                Button {
-                    completeTurn()
-                } label: {
-                    Label("Complete Turn", systemImage: "arrow.right.circle.fill")
+        NavigationStack {
+            VStack {
+                VStack(spacing: 12) {
+                    Text("Beer Pong")
+                        .font(.title2)
+                        .foregroundStyle(.secondary)
+                    Text(winnerText ?? "Player X Wins! 🎉")
+                        .font(.title2)
+                        .bold()
+                        .foregroundStyle(.green)
+                        .opacity(winnerText == nil ? 0 : 1)
+                    Text("\(sunkCount)/10 Cups Sunk")
+                        .font(.system(size: 36, weight: .bold))
+                    ProgressView(value: Double(sunkCount), total: 10)
+                        .tint(.red)
+                        .padding(.horizontal)
+                    
+                    Text("Turn: \(currentPlayerDisplayName)")
                         .font(.headline)
+                    
+                    Text("Round \(currentRound)  ·  Turns — P1: \(playerOneTurns) · P2: \(playerTwoTurns)")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    
+                    Button {
+                        completeTurn()
+                    } label: {
+                        Label("Complete Turn", systemImage: "arrow.right.circle.fill")
+                            .font(.headline)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(.blue)
+                    .disabled(winnerText != nil)
+                    
+                    Text("P1: \((playerOneSunk.filter { $0 }.count))/10  ·  P2: \((playerTwoSunk.filter { $0 }.count))/10")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(.blue)
-                .disabled(winnerText != nil)
+                .padding(16)
+                .background(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .fill(.ultraThinMaterial)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .strokeBorder(Color.secondary.opacity(0.15))
+                )
+                .padding(.horizontal)
+                .padding(.bottom)
                 
-                Text("P1: \((playerOneSunk.filter { $0 }.count))/10  ·  P2: \((playerTwoSunk.filter { $0 }.count))/10")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                HStack {
+                    CupButton(soloCupNumber: 7, isSunk: bindingForCup(7))
+                    CupButton(soloCupNumber: 8, isSunk: bindingForCup(8))
+                    CupButton(soloCupNumber: 9, isSunk: bindingForCup(9))
+                    CupButton(soloCupNumber: 10, isSunk: bindingForCup(10))
+                }
+                
+                HStack {
+                    CupButton(soloCupNumber: 4, isSunk: bindingForCup(4))
+                    CupButton(soloCupNumber: 5, isSunk: bindingForCup(5))
+                    CupButton(soloCupNumber: 6, isSunk: bindingForCup(6))
+                }
+                
+                HStack {
+                    CupButton(soloCupNumber: 2, isSunk: bindingForCup(2))
+                    CupButton(soloCupNumber: 3, isSunk: bindingForCup(3))
+                }
+                
+                HStack {
+                    CupButton(soloCupNumber: 1, isSunk: bindingForCup(1))
+                }
             }
-            .padding(16)
-            .background(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(.ultraThinMaterial)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .strokeBorder(Color.secondary.opacity(0.15))
-            )
-            .padding(.horizontal)
-            .padding(.bottom)
-            
-            HStack {
-                CupButton(soloCupNumber: 7, isSunk: bindingForCup(7))
-                CupButton(soloCupNumber: 8, isSunk: bindingForCup(8))
-                CupButton(soloCupNumber: 9, isSunk: bindingForCup(9))
-                CupButton(soloCupNumber: 10, isSunk: bindingForCup(10))
-            }
-            
-            HStack {
-                CupButton(soloCupNumber: 4, isSunk: bindingForCup(4))
-                CupButton(soloCupNumber: 5, isSunk: bindingForCup(5))
-                CupButton(soloCupNumber: 6, isSunk: bindingForCup(6))
-            }
-            
-            HStack {
-                CupButton(soloCupNumber: 2, isSunk: bindingForCup(2))
-                CupButton(soloCupNumber: 3, isSunk: bindingForCup(3))
-            }
-            
-            HStack {
-                CupButton(soloCupNumber: 1, isSunk: bindingForCup(1))
-            }
-        }
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button(role: .destructive) {
-                    showResetAlert = true
-                } label: {
-                    Label("Restart Game", systemImage: "trash")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(role: .destructive) {
+                        showResetAlert = true
+                    } label: {
+                        Label("Restart Game", systemImage: "trash")
+                    }
+                }
+                ToolbarItem(placement: .topBarLeading) {
+                    NavigationLink {
+                        PlayerListView(players: $players, selectedPlayerOne: $playerOneName, selectedPlayerTwo: $playerTwoName)
+                    } label: {
+                        Label("Players", systemImage: "person.2")
+                    }
                 }
             }
         }
