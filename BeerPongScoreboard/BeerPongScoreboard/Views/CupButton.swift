@@ -10,10 +10,16 @@ struct CupButton: View {
         } label: {
             ZStack {
                 SoloCupView(soloCupNumber: soloCupNumber)
+                    .rotationEffect(isSunk ? Angle(degrees: -35) : .zero, anchor: .center)
+                    .offset(x: isSunk ? -8 : 0, y: isSunk ? 10 : 0)
+                    .animation(.spring(response: 0.35, dampingFraction: 0.7), value: isSunk)
                 Image(systemName: "xmark")
                     .font(.system(size: 40, weight: .bold))
                     .foregroundStyle(.red)
                     .opacity(isSunk ? 1 : 0)
+                    .rotationEffect(isSunk ? Angle(degrees: -35) : .zero, anchor: .center)
+                    .offset(x: isSunk ? -8 : 0, y: isSunk ? 10 : 0)
+                    .animation(.spring(response: 0.35, dampingFraction: 0.7), value: isSunk)
             }
         }
     }

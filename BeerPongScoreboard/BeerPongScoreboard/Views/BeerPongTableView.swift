@@ -76,12 +76,11 @@ struct BeerPongTableView: View {
                 Text("Beer Pong")
                     .font(.title2)
                     .foregroundStyle(.secondary)
-                if let winnerText {
-                    Text(winnerText)
-                        .font(.title2)
-                        .bold()
-                        .foregroundStyle(.green)
-                }
+                Text(winnerText ?? "Player X Wins! 🎉")
+                    .font(.title2)
+                    .bold()
+                    .foregroundStyle(.green)
+                    .opacity(winnerText == nil ? 0 : 1)
                 Text("\(sunkCount)/10 Cups Sunk")
                     .font(.system(size: 36, weight: .bold))
                 ProgressView(value: Double(sunkCount), total: 10)
