@@ -2,18 +2,25 @@ import SwiftUI
 import SafariServices
 
 struct BeerPongTableView: View {
-    @State private var currentTurnIndex = 0 // 0: Player 1, 1: Player 2 (expandable to 4 for 2v2)
+    @State private var currentTurnIndex = 1
     @State private var roundNumber = 1
     @State private var team1AmountOfSunkCups = 0
     @State private var team2AmountOfSunkCups = 0
     @State private var showingWebSheet = false
     @State private var players = ["Player 1", "Player 2", "Player 3", "Player 4"]
     
+    private var isTeam1Turn: Bool {
+        if currentTurnIndex > 4 {
+            currentTurnIndex = 1
+        }
+        return currentTurnIndex == 1 || currentTurnIndex == 2
+    }
+    
     var body: some View {
         NavigationStack {
             VStack {
                 VStack {
-                    Text("\(players[currentTurnIndex])'s Turn")
+                    Text("\(players[currentTurnIndex - 1])'s Turn")
                     Text("Round \(String(roundNumber))")
                 }
                 .font(.title)
@@ -44,37 +51,39 @@ struct BeerPongTableView: View {
                 Divider()
                 Spacer()
                 HStack(spacing: 20) {
-                    SoloCupView(soloCupNumber: 7, soloCupColor: currentTurnIndex == 0 ? .red : .blue)
-                    SoloCupView(soloCupNumber: 8, soloCupColor: currentTurnIndex == 0 ? .red : .blue)
-                    SoloCupView(soloCupNumber: 9, soloCupColor: currentTurnIndex == 0 ? .red : .blue)
-                    SoloCupView(soloCupNumber: 10, soloCupColor: currentTurnIndex == 0 ? .red : .blue)
+                    SoloCupView(soloCupNumber: 7, soloCupColor: isTeam1Turn ? .red : .blue)
+                    SoloCupView(soloCupNumber: 8, soloCupColor: isTeam1Turn ? .red : .blue)
+                    SoloCupView(soloCupNumber: 9, soloCupColor: isTeam1Turn ? .red : .blue)
+                    SoloCupView(soloCupNumber: 10, soloCupColor: isTeam1Turn ? .red : .blue)
                 }
                 
                 HStack(spacing: 20) {
-                    SoloCupView(soloCupNumber: 4, soloCupColor: currentTurnIndex == 0 ? .red : .blue)
-                    SoloCupView(soloCupNumber: 5, soloCupColor: currentTurnIndex == 0 ? .red : .blue)
-                    SoloCupView(soloCupNumber: 6, soloCupColor: currentTurnIndex == 0 ? .red : .blue)
+                    SoloCupView(soloCupNumber: 4, soloCupColor: isTeam1Turn ? .red : .blue)
+                    SoloCupView(soloCupNumber: 5, soloCupColor: isTeam1Turn ? .red : .blue)
+                    SoloCupView(soloCupNumber: 6, soloCupColor: isTeam1Turn ? .red : .blue)
                 }
                 
                 HStack(spacing: 20) {
-                    SoloCupView(soloCupNumber: 2, soloCupColor: currentTurnIndex == 0 ? .red : .blue)
-                    SoloCupView(soloCupNumber: 3, soloCupColor: currentTurnIndex == 0 ? .red : .blue)
+                    SoloCupView(soloCupNumber: 2, soloCupColor: isTeam1Turn ? .red : .blue)
+                    SoloCupView(soloCupNumber: 3, soloCupColor: isTeam1Turn ? .red : .blue)
                 }
                 
                 HStack(spacing: 20) {
-                    SoloCupView(soloCupNumber: 1, soloCupColor: currentTurnIndex == 0 ? .red : .blue)
+                    SoloCupView(soloCupNumber: 1, soloCupColor: isTeam1Turn ? .red : .blue)
                 }
                 Spacer()
                 Button("Complete Turn") {
-                    if currentTurnIndex > 4 {
-                        currentTurnIndex = 0
-                    }
-                    currentTurnIndex += 1
+                    let next = (currentTurnIndex % players.count) + 1 // wraps 1..players.count
+                    if next == 1 { roundNumber += 1 }
+                    currentTurnIndex = next
                 }
                 .buttonStyle(.glassProminent)
                 .buttonBorderShape(.roundedRectangle)
                 .buttonSizing(.flexible)
                 .padding(.horizontal, 32)
+                
+                
+                
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -90,7 +99,13 @@ struct BeerPongTableView: View {
                 SafariView(url: URL(string: "https://www.probeersports.com/beer-pong")!)
                     .ignoresSafeArea()
             }
+            
+            
+            
+           
         }
+       
+        
     }
 }
 
