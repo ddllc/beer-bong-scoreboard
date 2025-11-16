@@ -1,16 +1,13 @@
 import SwiftUI
 
-struct SoloCupModel {
+struct SoloCupModel: Identifiable {
     let id: Int
     let soloCupNumber: Int
     let soloCupColor: SoloCupColor
     let isSunk: Bool
 
-    private func updateSoloCupModel(
-        id: Int, soloCupNumber: Int,
-        soloCupColor: SoloCupColor,
-        isSunk: Bool) -> SoloCupModel {
-            SoloCupModel(id: id, soloCupNumber: soloCupNumber, soloCupColor: soloCupColor, isSunk: isSunk)
+    private func update(id: Int, soloCupNumber: Int, soloCupColor: SoloCupColor, isSunk: Bool) -> SoloCupModel {
+        SoloCupModel(id: id, soloCupNumber: soloCupNumber, soloCupColor: soloCupColor, isSunk: isSunk)
     }
 }
 
