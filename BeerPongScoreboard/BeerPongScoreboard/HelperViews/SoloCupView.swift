@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SoloCupView: View {
+    @Binding var appData: AppData
     let soloCupNumber: Int
     let soloCupColor: SoloCupColor
     @State private var isSunk = false
@@ -14,20 +15,18 @@ struct SoloCupView: View {
                 .scaledToFit()
                 .frame(width: 75)
                 .rotationEffect(isSunk ? Angle(degrees: -90) : .zero)
-
         }
                    
     }
 }
 
 #Preview("SoloCupRed") {
-    SoloCupView(soloCupNumber: 1, soloCupColor: .red)
+    SoloCupView(appData: .constant(AppData()), soloCupNumber: 1, soloCupColor: .red)
 }
 
 #Preview("SoloCupBlue") {
-    SoloCupView(soloCupNumber: 1, soloCupColor: .blue)
+    SoloCupView(appData: .constant(AppData()), soloCupNumber: 1, soloCupColor: .blue)
 }
-
 
 enum SoloCupColor: String {
     case red

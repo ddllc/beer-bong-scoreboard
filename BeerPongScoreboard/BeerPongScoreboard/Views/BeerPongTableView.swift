@@ -2,10 +2,10 @@ import SwiftUI
 import SafariServices
 
 struct BeerPongTableView: View {
+    @Binding var appData: AppData
     @State private var currentTurnIndex = 1
     @State private var roundNumber = 1
-    @State private var team1AmountOfSunkCups = 0
-    @State private var team2AmountOfSunkCups = 0
+
     @State private var showingWebSheet = false
     @State private var players = ["Player 1", "Player 2", "Player 3", "Player 4"]
     
@@ -27,11 +27,10 @@ struct BeerPongTableView: View {
                 .bold()
                 Divider()
                 HStack {
-                    
                     Text(
                         """
                         **Player 1**
-                        \(String(team1AmountOfSunkCups)) / 10 Cups
+                        \(String(appData.team1AmountOfSunkCups)) / 10 Cups
                         """
                         )
                     .multilineTextAlignment(.center)
@@ -39,7 +38,7 @@ struct BeerPongTableView: View {
                     Text(
                         """
                         **Player 2**
-                        \(String(team2AmountOfSunkCups)) / 10 Cups
+                        \(String(appData.team2AmountOfSunkCups)) / 10 Cups
                         """
                         )
                     .multilineTextAlignment(.center)
