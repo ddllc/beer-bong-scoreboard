@@ -2,26 +2,30 @@ import SwiftUI
 import SafariServices
 
 struct BeerPongTableView: View {
-    @Binding var appData: AppData
-    @State private var currentTurnIndex = 1
-    @State private var roundNumber = 1
+    @Environment(AppData.self) private var appData: AppData
 
     @State private var showingWebSheet = false
-    @State private var players = ["Player 1", "Player 2", "Player 3", "Player 4"]
-    
+
     private var isTeam1Turn: Bool {
-        if currentTurnIndex > 4 {
-            currentTurnIndex = 1
+        if appData.currentTurnIndex > 4 {
+            appData.currentTurnIndex = 1
         }
-        return currentTurnIndex == 1 || currentTurnIndex == 2
+        return appData.currentTurnIndex == 1 || appData.currentTurnIndex == 2
+    }
+    
+    private var currentTeamNumber: Int {
+        isTeam1Turn ? 1 : 2
+    }
+    private var currentSoloCupColor: SoloCupColor {
+        isTeam1Turn ? .red : .blue
     }
     
     var body: some View {
         NavigationStack {
             VStack {
                 VStack {
-                    Text("\(players[currentTurnIndex - 1])'s Turn")
-                    Text("Round \(String(roundNumber))")
+                    Text("\(appData.players[appData.currentTurnIndex - 1])'s Turn")
+                    Text("Round \(String(appData.roundNumber))")
                 }
                 .font(.title)
                 .bold()
@@ -50,42 +54,39 @@ struct BeerPongTableView: View {
                 Divider()
                 Spacer()
                 HStack(spacing: 20) {
-                    SoloCupView(soloCupNumber: 7, soloCupColor: isTeam1Turn ? .red : .blue)
-                    SoloCupView(soloCupNumber: 8, soloCupColor: isTeam1Turn ? .red : .blue)
-                    SoloCupView(soloCupNumber: 9, soloCupColor: isTeam1Turn ? .red : .blue)
-                    SoloCupView(soloCupNumber: 10, soloCupColor: isTeam1Turn ? .red : .blue)
+                    SoloCupView(teamNumber: currentTeamNumber, cupID: 7, soloCupColor: currentSoloCupColor)
+                    SoloCupView(teamNumber: currentTeamNumber, cupID: 8, soloCupColor: currentSoloCupColor)
+                    SoloCupView(teamNumber: currentTeamNumber, cupID: 9, soloCupColor: currentSoloCupColor)
+                    SoloCupView(teamNumber: currentTeamNumber, cupID: 10, soloCupColor: currentSoloCupColor)
                 }
                 
                 HStack(spacing: 20) {
-                    SoloCupView(soloCupNumber: 4, soloCupColor: isTeam1Turn ? .red : .blue)
-                    SoloCupView(soloCupNumber: 5, soloCupColor: isTeam1Turn ? .red : .blue)
-                    SoloCupView(soloCupNumber: 6, soloCupColor: isTeam1Turn ? .red : .blue)
+                    SoloCupView(teamNumber: currentTeamNumber, cupID: 4, soloCupColor: currentSoloCupColor)
+                    SoloCupView(teamNumber: currentTeamNumber, cupID: 5, soloCupColor: currentSoloCupColor)
+                    SoloCupView(teamNumber: currentTeamNumber, cupID: 6, soloCupColor: currentSoloCupColor)
                 }
                 
                 HStack(spacing: 20) {
-                    SoloCupView(soloCupNumber: 2, soloCupColor: isTeam1Turn ? .red : .blue)
-                    SoloCupView(soloCupNumber: 3, soloCupColor: isTeam1Turn ? .red : .blue)
+                    SoloCupView(teamNumber: currentTeamNumber, cupID: 2, soloCupColor: currentSoloCupColor)
+                    SoloCupView(teamNumber: currentTeamNumber, cupID: 3, soloCupColor: currentSoloCupColor)
                 }
                 
                 HStack(spacing: 20) {
-                    SoloCupView(soloCupNumber: 1, soloCupColor: isTeam1Turn ? .red : .blue)
+                    SoloCupView(teamNumber: currentTeamNumber, cupID: 1, soloCupColor: currentSoloCupColor)
                 }
                 Spacer()
                 Button("Complete Turn") {
-                    if currentTurnIndex == players.count {
-                        currentTurnIndex = 1
-                        roundNumber += 1
+                    if appData.currentTurnIndex == appData.players.count {
+                        appData.currentTurnIndex = 1
+                        appData.roundNumber += 1
                     } else {
-                        currentTurnIndex += 1
+                        appData.currentTurnIndex += 1
                     }
                 }
                 .buttonStyle(.glassProminent)
                 .buttonBorderShape(.roundedRectangle)
                 .buttonSizing(.flexible)
                 .padding(.horizontal, 32)
-                
-                
-                
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -101,19 +102,13 @@ struct BeerPongTableView: View {
                 SafariView(url: URL(string: "https://www.probeersports.com/beer-pong")!)
                     .ignoresSafeArea()
             }
-            
-            
-            
-           
         }
-       
-        
     }
 }
 
 #Preview {
     NavigationStack {
         BeerPongTableView()
+            .environment(AppData())
     }
 }
-
