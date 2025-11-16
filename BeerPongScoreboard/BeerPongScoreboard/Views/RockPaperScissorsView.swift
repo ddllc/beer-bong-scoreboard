@@ -8,6 +8,7 @@ struct RockPaperScissorsView: View {
     private let cadence: TimeInterval = 1.5
     @State private var timer: Timer?
     @State private var isAnimating = false
+    @State private var isWhoWonAlertPresented = false
 
     var body: some View {
         VStack {
@@ -17,7 +18,6 @@ struct RockPaperScissorsView: View {
                 .frame(height: 60)
                 .animation(.easeInOut, value: currentStep)
 
-            // Show the correct image for the current step
             Image(images[currentStep])
                 .resizable()
                 .scaledToFit()
@@ -41,6 +41,20 @@ struct RockPaperScissorsView: View {
             timer?.invalidate()
             timer = nil
         }
+        .alert("Who Won?", isPresented: $isWhoWonAlertPresented) {
+            Button("Team 1") {
+                // TODO: handle Team 1 winning (e.g., update AppData or navigate)
+            }
+            Button("Team 2") {
+                // TODO: handle Team 2 winning (e.g., update AppData or navigate)
+            }
+            Button("Redo", role: .cancel) {
+                // Restart the sequence
+                startSequence()
+            }
+        } message: {
+            Text("Select the winner or redo the round.")
+        }
     }
 
     private func startSequence() {
@@ -57,6 +71,8 @@ struct RockPaperScissorsView: View {
                 currentTimer.invalidate()
                 timer = nil
                 isAnimating = false
+                // Present the winner alert when the sequence finishes
+                isWhoWonAlertPresented = true
             }
         }
     }

@@ -6,7 +6,9 @@ struct BeerPongScoreboardApp: App {
 
     var body: some Scene {
         WindowGroup {
-            BeerPongTableView()
+            NavigationStack {
+                AddTeam1View()
+            }
                 .environment(appData)
         }
     }

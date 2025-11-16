@@ -9,7 +9,7 @@ struct BeerPongTableView: View {
         NavigationStack {
             VStack {
                 VStack {
-                    Text("\(appData.players[appData.currentTurnIndex - 1])'s Turn")
+//                    Text("\(appData.players[appData.currentTurnIndex - 1])'s Turn")
                     Text("Round \(String(appData.roundNumber))")
                 }
                 .font(.title)
@@ -67,12 +67,12 @@ struct BeerPongTableView: View {
                 }
                 Spacer()
                 Button("Complete Turn") {
-                    if appData.currentTurnIndex == appData.players.count {
-                        appData.currentTurnIndex = 1
-                        appData.roundNumber += 1
-                    } else {
-                        appData.currentTurnIndex += 1
-                    }
+//                    if appData.currentTurnIndex == appData.players.count {
+//                        appData.currentTurnIndex = 1
+//                        appData.roundNumber += 1
+//                    } else {
+//                        appData.currentTurnIndex += 1
+//                    }
                 }
                 .buttonStyle(.glassProminent)
                 .buttonBorderShape(.roundedRectangle)
