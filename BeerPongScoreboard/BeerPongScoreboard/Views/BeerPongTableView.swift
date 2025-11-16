@@ -3,23 +3,8 @@ import SafariServices
 
 struct BeerPongTableView: View {
     @Environment(AppData.self) private var appData: AppData
-
     @State private var showingWebSheet = false
 
-    private var isTeam1Turn: Bool {
-        if appData.currentTurnIndex > 4 {
-            appData.currentTurnIndex = 1
-        }
-        return appData.currentTurnIndex == 1 || appData.currentTurnIndex == 2
-    }
-    
-    private var currentTeamNumber: Int {
-        isTeam1Turn ? 1 : 2
-    }
-    private var currentSoloCupColor: SoloCupColor {
-        isTeam1Turn ? .red : .blue
-    }
-    
     var body: some View {
         NavigationStack {
             VStack {
@@ -36,7 +21,7 @@ struct BeerPongTableView: View {
                         **Player 1**
                         \(String(appData.team1AmountOfSunkCups)) / 10 Cups
                         """
-                        )
+                    )
                     .multilineTextAlignment(.center)
                     Spacer()
                     Text(
@@ -44,35 +29,41 @@ struct BeerPongTableView: View {
                         **Player 2**
                         \(String(appData.team2AmountOfSunkCups)) / 10 Cups
                         """
-                        )
+                    )
                     .multilineTextAlignment(.center)
                 }
                 .font(.title3)
                 .bold()
                 .padding(.horizontal)
-                
+
                 Divider()
                 Spacer()
-                HStack(spacing: 20) {
-                    SoloCupView(teamNumber: currentTeamNumber, cupID: 7, soloCupColor: currentSoloCupColor)
-                    SoloCupView(teamNumber: currentTeamNumber, cupID: 8, soloCupColor: currentSoloCupColor)
-                    SoloCupView(teamNumber: currentTeamNumber, cupID: 9, soloCupColor: currentSoloCupColor)
-                    SoloCupView(teamNumber: currentTeamNumber, cupID: 10, soloCupColor: currentSoloCupColor)
-                }
                 
+                // Use let to derive team/turn UI
+                let isTeam1Turn = appData.currentTurnIndex == 1 || appData.currentTurnIndex == 2
+                let teamNumber = isTeam1Turn ? 1 : 2
+                let soloCupColor: SoloCupColor = isTeam1Turn ? .red : .blue
+
                 HStack(spacing: 20) {
-                    SoloCupView(teamNumber: currentTeamNumber, cupID: 4, soloCupColor: currentSoloCupColor)
-                    SoloCupView(teamNumber: currentTeamNumber, cupID: 5, soloCupColor: currentSoloCupColor)
-                    SoloCupView(teamNumber: currentTeamNumber, cupID: 6, soloCupColor: currentSoloCupColor)
+                    SoloCupView(teamNumber: teamNumber, cupID: 7, soloCupColor: soloCupColor)
+                    SoloCupView(teamNumber: teamNumber, cupID: 8, soloCupColor: soloCupColor)
+                    SoloCupView(teamNumber: teamNumber, cupID: 9, soloCupColor: soloCupColor)
+                    SoloCupView(teamNumber: teamNumber, cupID: 10, soloCupColor: soloCupColor)
                 }
-                
+
                 HStack(spacing: 20) {
-                    SoloCupView(teamNumber: currentTeamNumber, cupID: 2, soloCupColor: currentSoloCupColor)
-                    SoloCupView(teamNumber: currentTeamNumber, cupID: 3, soloCupColor: currentSoloCupColor)
+                    SoloCupView(teamNumber: teamNumber, cupID: 4, soloCupColor: soloCupColor)
+                    SoloCupView(teamNumber: teamNumber, cupID: 5, soloCupColor: soloCupColor)
+                    SoloCupView(teamNumber: teamNumber, cupID: 6, soloCupColor: soloCupColor)
                 }
-                
+
                 HStack(spacing: 20) {
-                    SoloCupView(teamNumber: currentTeamNumber, cupID: 1, soloCupColor: currentSoloCupColor)
+                    SoloCupView(teamNumber: teamNumber, cupID: 2, soloCupColor: soloCupColor)
+                    SoloCupView(teamNumber: teamNumber, cupID: 3, soloCupColor: soloCupColor)
+                }
+
+                HStack(spacing: 20) {
+                    SoloCupView(teamNumber: teamNumber, cupID: 1, soloCupColor: soloCupColor)
                 }
                 Spacer()
                 Button("Complete Turn") {
