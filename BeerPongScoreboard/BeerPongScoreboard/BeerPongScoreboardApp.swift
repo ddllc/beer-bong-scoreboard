@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 @main
 struct BeerPongScoreboardApp: App {
@@ -7,9 +8,20 @@ struct BeerPongScoreboardApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationStack {
-                AddTeam1View()
+                StartingView()
             }
-                .environment(appData)
+            .environment(appData)
+            .modelContainer(for: [
+                TeamEntity.self,
+                PlayerEntity.self
+            ])
         }
     }
 }
+
+
+
+// to use
+// @Environment(\.modelContext) private var modelContext
+// @Query(sort: \TeamEntity.name) private var teams: [TeamEntity]
+

@@ -2,8 +2,6 @@ import SwiftUI
 
 @Observable
 class AppData {
-    var tempTeam = TeamModel(id: UUID(), name: "", players: [])
-    var teams: [TeamModel] = []
 
     
     var team1Cups: [SoloCupModel] = (1...10).map {
