@@ -2,7 +2,10 @@ import SwiftUI
 import SwiftData
 
 struct StartingView: View {
+    @State private var isShowRulesSheetPresented = false
     @State private var isAddTeamSheetPresented = false
+    @State private var isEditTeamSheetPresented = false
+
 
     // Pull teams from SwiftData (auto-updates)
     @Query(sort: \TeamEntity.name) private var teams: [TeamEntity]
@@ -12,9 +15,10 @@ struct StartingView: View {
     @State private var selectedTeam2: TeamEntity?
 
     private let avatarSize: CGFloat = 72
+    private let playerAvatarSize: CGFloat = 36
 
     var body: some View {
-        VStack(spacing: 24) {
+        VStack {
             HStack {
                 Text("Beer Pong Scoreboard")
                     .font(.title)
@@ -24,7 +28,7 @@ struct StartingView: View {
             HStack {
                 // MARK: - Team 1 Picker
                 Picker("Select Team 1", selection: $selectedTeam1) {
-                    Text("Select Team").tag(TeamEntity?.none)
+                    Text("Team").tag(TeamEntity?.none)
 
                     ForEach(teams.filter { team in
                         team.id != selectedTeam2?.id
@@ -34,11 +38,11 @@ struct StartingView: View {
                 }
                 .pickerStyle(.menu)
 
-                Spacer()
+                    Spacer()
 
                 // MARK: - Team 2 Picker
                 Picker("Pick Team 2", selection: $selectedTeam2) {
-                    Text("Select Team").tag(TeamEntity?.none)
+                    Text("Team").tag(TeamEntity?.none)
 
                     ForEach(teams.filter { team in
                         team.id != selectedTeam1?.id
@@ -49,51 +53,54 @@ struct StartingView: View {
                 .pickerStyle(.menu)
             }
 
-            // MARK: - Matchup Summary (Vertical Stack)
-            VStack(spacing: 12) {
-                if let team1 = selectedTeam1 {
-                    teamSummaryView(team: team1)
-                } else {
-                    emptyTeamSummary(label: "Team 1")
+            ScrollView(showsIndicators: false) {
+                // MARK: - Matchup Summary (Vertical Stack)
+                VStack(spacing: 8) {
+                    if let team1 = selectedTeam1 {
+                        teamSummaryView(team: team1)
+                    } else {
+                        emptyTeamSummary(label: "Team 1")
+                    }
+
+                    Text("VS.")
+                        .font(.largeTitle)
+                        .bold()
+                        .padding(.vertical, 4)
+
+                    if let team2 = selectedTeam2 {
+                        teamSummaryView(team: team2)
+                    } else {
+                        emptyTeamSummary(label: "Team 2")
+                    }
                 }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(.thinMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
 
-                Text("VS.")
-                    .font(.title2)
-                    .bold()
-                    .padding(.vertical, 4)
 
-                if let team2 = selectedTeam2 {
-                    teamSummaryView(team: team2)
-                } else {
-                    emptyTeamSummary(label: "Team 2")
+
+                // MARK: - Start Game Button (No Action Yet)
+                Button("Start Game") {
+                    // TODO: add action later
                 }
+                .buttonStyle(.glassProminent)
+                .buttonSizing(.flexible)
+                .buttonBorderShape(.roundedRectangle(radius: 8))
+                .padding()
+                .disabled(
+                    selectedTeam1 == nil ||
+                    selectedTeam2 == nil ||
+                    selectedTeam1?.id == selectedTeam2?.id
+                )
             }
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(.thinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-
-            Spacer()
-
-            // MARK: - Start Game Button (No Action Yet)
-            Button("Start Game") {
-                // TODO: add action later
-            }
-            .buttonStyle(.glassProminent)
-            .buttonSizing(.flexible)
-            .buttonBorderShape(.roundedRectangle(radius: 8))
-            .padding()
-            .disabled(
-                selectedTeam1 == nil ||
-                selectedTeam2 == nil ||
-                selectedTeam1?.id == selectedTeam2?.id
-            )
         }
         .padding()
         .fullScreenCover(isPresented: $isAddTeamSheetPresented) {
-            NavigationStack {
-                AddTeamView()
-            }
+            AddTeamView()
+        }
+        .fullScreenCover(isPresented: $isEditTeamSheetPresented) {
+            EditTeamView()
         }
         .onAppear {
             if selectedTeam1 == nil { selectedTeam1 = teams.first }
@@ -117,56 +124,99 @@ struct StartingView: View {
                 selectedTeam1 = nil
             }
         }
+        .sheet(isPresented: $isShowRulesSheetPresented) {
+            SafariView(url: URL(string: "https://www.probeersports.com/beer-pong")!)
+                .ignoresSafeArea()
+        }
         .toolbar {
-            ToolbarItem {
-                Button("Add Team") {
-                    isAddTeamSheetPresented = true
+            ToolbarItem(placement: .topBarLeading) {
+                Button("Rules") {
+                    isShowRulesSheetPresented = true
                 }
-                .buttonStyle(.borderedProminent)
+            }
+            ToolbarItem {
+                NavigationLink(destination: EditTeamView()) {
+                    Text("Teams")
+                }
             }
         }
     }
 
-    // MARK: - Team Summary View
+    // MARK: - Team Summary View (STACKED + BIG TEAM PHOTO)
     @ViewBuilder
     private func teamSummaryView(team: TeamEntity) -> some View {
-        HStack(spacing: 12) {
-            // Team photo (if available)
-            if let data = team.photoData,  // <-- add photoData to TeamEntity later
+        VStack(alignment: .center, spacing: 12) {
+
+            // MARK: - Team photo (larger)
+            if let data = team.photoData,
                let uiImage = UIImage(data: data) {
                 Image(uiImage: uiImage)
                     .resizable()
                     .scaledToFill()
-                    .frame(width: avatarSize, height: avatarSize)
+                    .frame(width: avatarSize + 20, height: avatarSize + 20) // bigger
                     .clipShape(Circle())
-                    .clipped()
             } else {
                 Image(systemName: "photo.circle.fill")
                     .resizable()
                     .scaledToFill()
-                    .frame(width: avatarSize, height: avatarSize)
+                    .frame(width: avatarSize + 20, height: avatarSize + 20)
+                    .foregroundStyle(.secondary)
                     .clipShape(Circle())
             }
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(team.name)
-                    .font(.headline)
+            // MARK: - Team Name
+            Text(team.name)
+                .font(.title3)
+                .bold()
 
-                // Player names
-                if team.players.isEmpty {
-                    Text("No players")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                } else {
-                    Text(team.players.map { $0.name }.joined(separator: " & "))
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
+            HStack {
+                Text("Wins: \(team.wins)")
+                Text("Losses: \(team.losses)")
             }
 
-            Spacer()
+            // MARK: - Player Rows
+            if team.players.isEmpty {
+                Text("No players")
+                    .foregroundStyle(.secondary)
+                    .font(.subheadline)
+            } else {
+                HStack(spacing: 24) {
+                    ForEach(team.players) { player in
+                        VStack(spacing: 4) {
+
+                            // Player photo
+                            if let data = player.photoData,
+                               let uiImage = UIImage(data: data) {
+                                Image(uiImage: uiImage)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: playerAvatarSize + 6,
+                                           height: playerAvatarSize + 6)
+                                    .clipShape(Circle())
+                            } else {
+                                Image(systemName: "person.circle.fill")
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: playerAvatarSize + 6,
+                                           height: playerAvatarSize + 6)
+                                    .foregroundStyle(.secondary)
+                                    .clipShape(Circle())
+                            }
+
+                            // Player name
+                            Text(player.name)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                        }
+                    }
+                }
+            }
         }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 8)
     }
+
 
     // MARK: - Empty Summary Placeholder
     @ViewBuilder

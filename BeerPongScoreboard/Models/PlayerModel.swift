@@ -7,9 +7,10 @@ struct PlayerModel: Identifiable, Hashable {
     let id: UUID
     let name: String
     let team: String
+    let photoData: Data?   // ✅ added
 
-    func update(id: UUID, name: String, team: String) -> PlayerModel {
-        PlayerModel(id: id, name: name, team: team)
+    func update(id: UUID, name: String, team: String, photoData: Data?) -> PlayerModel {
+        PlayerModel(id: id, name: name, team: team, photoData: photoData)
     }
 
     static func == (lhs: PlayerModel, rhs: PlayerModel) -> Bool {
@@ -28,11 +29,13 @@ final class PlayerEntity {
     @Attribute(.unique) var id: UUID
     var name: String
     var team: String
+    var photoData: Data?   // ✅ added
 
-    init(id: UUID = UUID(), name: String, team: String) {
+    init(id: UUID = UUID(), name: String, team: String, photoData: Data? = nil) {
         self.id = id
         self.name = name
         self.team = team
+        self.photoData = photoData
     }
 }
 
@@ -44,7 +47,8 @@ extension PlayerEntity {
         PlayerModel(
             id: id,
             name: name,
-            team: team
+            team: team,
+            photoData: photoData   // ✅ added
         )
     }
 }
@@ -55,7 +59,8 @@ extension PlayerModel {
         PlayerEntity(
             id: id,
             name: name,
-            team: team
+            team: team,
+            photoData: photoData   // ✅ added
         )
     }
 }

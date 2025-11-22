@@ -18,7 +18,13 @@ struct AddTeamView: View {
     @State private var player2PhotoPickerItem: PhotosPickerItem?
     @State private var player2PhotoData: Data?
 
-    private let avatarSize: CGFloat = 80   // unified size for ALL photos
+    private let avatarSize: CGFloat = 80
+
+    private var isSaveDisabled: Bool {
+        teamName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+        player1Name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+        player2Name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -157,7 +163,7 @@ struct AddTeamView: View {
             .buttonBorderShape(.roundedRectangle(radius: 8))
             .buttonStyle(.glassProminent)
             .padding()
-            .disabled(teamName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            .disabled(isSaveDisabled)
 
             Spacer()
         }
@@ -174,27 +180,35 @@ struct AddTeamView: View {
 
         var playerEntities: [PlayerEntity] = []
 
+        // ✅ SAVE PLAYER 1 PHOTO
         if !trimmedP1.isEmpty {
-            let p1 = PlayerEntity(name: trimmedP1, team: trimmedTeamName)
-            // TODO: if you add photoData to PlayerEntity later, set it here
-            // p1.photoData = player1PhotoData
+            let p1 = PlayerEntity(
+                name: trimmedP1,
+                team: trimmedTeamName,
+                photoData: player1PhotoData
+            )
             playerEntities.append(p1)
         }
 
         if !trimmedP2.isEmpty {
-            let p2 = PlayerEntity(name: trimmedP2, team: trimmedTeamName)
-            // TODO: if you add photoData to PlayerEntity later, set it here
-            // p2.photoData = player2PhotoData
+            let p2 = PlayerEntity(
+                name: trimmedP2,
+                team: trimmedTeamName,
+                photoData: player2PhotoData
+            )
             playerEntities.append(p2)
         }
 
-        let teamEntity = TeamEntity(name: trimmedTeamName, players: playerEntities)
-        // TODO: if you add photoData to TeamEntity later, set it here
-        // teamEntity.photoData = teamPhotoData
+        let teamEntity = TeamEntity(
+            name: trimmedTeamName,
+            players: playerEntities,
+            photoData: teamPhotoData,
+            wins: 0,
+            losses: 0
+        )
 
         modelContext.insert(teamEntity)
 
-        // Optional: force a save immediately (SwiftData usually autosaves)
         do {
             try modelContext.save()
         } catch {
@@ -203,6 +217,9 @@ struct AddTeamView: View {
 
         dismiss()
     }
+
+
+
 }
 
 #Preview {

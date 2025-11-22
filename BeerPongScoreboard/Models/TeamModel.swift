@@ -7,10 +7,12 @@ struct TeamModel: Identifiable, Hashable {
     let id: UUID
     let name: String
     let players: [PlayerModel]
-    let photoData: Data?   // ✅ added
+    let photoData: Data?
+    let wins: Int
+    let losses: Int
 
     func update(id: UUID, name: String, players: [PlayerModel], photoData: Data?) -> TeamModel {
-        TeamModel(id: id, name: name, players: players, photoData: photoData)
+        TeamModel(id: id, name: name, players: players, photoData: photoData, wins: wins, losses: losses)
     }
 
     // For navigation by value
@@ -24,24 +26,30 @@ struct TeamModel: Identifiable, Hashable {
 }
 
 // MARK: - SwiftData Entity (Mutable, Persistence-only)
-
 @Model
 final class TeamEntity {
     @Attribute(.unique) var id: UUID
     var name: String
     var players: [PlayerEntity]
-    var photoData: Data?   // ✅ added
+
+    var photoData: Data?
+    var wins: Int
+    var losses: Int
 
     init(
         id: UUID = UUID(),
         name: String,
         players: [PlayerEntity] = [],
-        photoData: Data? = nil   // ✅ added
+        photoData: Data? = nil,
+        wins: Int = 0,
+        losses: Int = 0
     ) {
         self.id = id
         self.name = name
         self.players = players
         self.photoData = photoData
+        self.wins = wins
+        self.losses = losses
     }
 }
 
@@ -54,7 +62,9 @@ extension TeamEntity {
             id: id,
             name: name,
             players: players.map { $0.toModel() },
-            photoData: photoData   // ✅ added
+            photoData: photoData,
+            wins: wins,
+            losses: losses
         )
     }
 }
@@ -65,7 +75,9 @@ extension TeamModel {
         let entity = TeamEntity(
             id: id,
             name: name,
-            photoData: photoData   // ✅ added
+            photoData: photoData,
+            wins: wins,
+            losses: losses
         )
         entity.players = players.map { $0.toEntity(context: context) }
         return entity
