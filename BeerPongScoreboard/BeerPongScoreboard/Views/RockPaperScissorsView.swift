@@ -1,83 +1,120 @@
 import SwiftUI
-import ClockKit
+import SwiftData
 
 struct RockPaperScissorsView: View {
-    @State private var currentStep = 0
-    private let steps = ["Rock", "Paper", "Scissors", "Shoot!"]
-    private let images: [ImageResource] = [.rock, .paper, .scissors, .rockPaperScissors]
-    private let cadence: TimeInterval = 1.5
-    @State private var timer: Timer?
-    @State private var isAnimating = false
-    @State private var isWhoWonAlertPresented = false
+    let team1: TeamEntity
+    let team2: TeamEntity
+
+    @Environment(\.dismiss) private var dismiss
+
+    private enum RPSChoice: String, CaseIterable {
+        case rock = "Rock"
+        case paper = "Paper"
+        case scissors = "Scissors"
+    }
+
+    @State private var team1Choice: RPSChoice?
+    @State private var team2Choice: RPSChoice?
+    @State private var resultText: String = "Pick Rock, Paper, or Scissors for each team."
 
     var body: some View {
-        VStack {
-            Text(steps[currentStep])
-                .font(.largeTitle)
-                .bold()
-                .frame(height: 60)
-                .animation(.easeInOut, value: currentStep)
+        VStack(spacing: 24) {
+            Text("Rock • Paper • Scissors")
+                .font(.largeTitle.bold())
 
-            Image(images[currentStep])
-                .resizable()
-                .scaledToFit()
-                .frame(height: 150)
-                .animation(.easeInOut, value: currentStep)
+            // Team 1 section
+            VStack(spacing: 8) {
+                Text(team1.name)
+                    .font(.title3.bold())
 
-            Button {
-                startSequence()
-            } label: {
-                Text("Play Game")
-                    .font(.title)
-                    .bold()
+                HStack {
+                    ForEach(RPSChoice.allCases, id: \.self) { choice in
+                        Button(choice.rawValue) {
+                            team1Choice = choice
+                            updateResultIfReady()
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(
+                            team1Choice == choice
+                            ? Color.blue.opacity(0.3)
+                            : Color.gray.opacity(0.15)
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+                }
             }
-            .buttonSizing(.flexible)
-            .buttonBorderShape(.roundedRectangle(radius: 8))
-            .buttonStyle(.glassProminent)
-            .disabled(isAnimating)
+
+            // Team 2 section
+            VStack(spacing: 8) {
+                Text(team2.name)
+                    .font(.title3.bold())
+
+                HStack {
+                    ForEach(RPSChoice.allCases, id: \.self) { choice in
+                        Button(choice.rawValue) {
+                            team2Choice = choice
+                            updateResultIfReady()
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(
+                            team2Choice == choice
+                            ? Color.green.opacity(0.3)
+                            : Color.gray.opacity(0.15)
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+                }
+            }
+
+            Divider()
+
+            // Result
+            Text(resultText)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+
+            Spacer()
+
+            Button("Done") {
+                dismiss()
+            }
+            .buttonStyle(.borderedProminent)
         }
         .padding()
-        .onDisappear {
-            timer?.invalidate()
-            timer = nil
-        }
-        .alert("Who Won?", isPresented: $isWhoWonAlertPresented) {
-            Button("Team 1") {
-                // TODO: handle Team 1 winning (e.g., update AppData or navigate)
-            }
-            Button("Team 2") {
-                // TODO: handle Team 2 winning (e.g., update AppData or navigate)
-            }
-            Button("Redo", role: .cancel) {
-                // Restart the sequence
-                startSequence()
-            }
-        } message: {
-            Text("Select the winner or redo the round.")
-        }
     }
 
-    private func startSequence() {
-        guard !isAnimating else { return }
-        isAnimating = true
-        currentStep = 0
+    // MARK: - Logic
 
-        var step = 0
-        timer = Timer.scheduledTimer(withTimeInterval: cadence, repeats: true) { currentTimer in
-            step += 1
-            if step < steps.count {
-                currentStep = step
-            } else {
-                currentTimer.invalidate()
-                timer = nil
-                isAnimating = false
-                // Present the winner alert when the sequence finishes
-                isWhoWonAlertPresented = true
-            }
+    private func updateResultIfReady() {
+        guard let c1 = team1Choice, let c2 = team2Choice else {
+            resultText = "Both teams pick Rock, Paper, or Scissors."
+            return
         }
-    }
-}
 
-#Preview {
-    RockPaperScissorsView()
+        if c1 == c2 {
+            resultText = """
+            \(team1.name) chose \(c1.rawValue).
+            \(team2.name) chose \(c2.rawValue).
+
+            It's a tie! Change a choice to play again.
+            """
+            return
+        }
+
+        let team1Wins =
+            (c1 == .rock && c2 == .scissors) ||
+            (c1 == .paper && c2 == .rock) ||
+            (c1 == .scissors && c2 == .paper)
+
+        let winnerName = team1Wins ? team1.name : team2.name
+
+        resultText = """
+        \(team1.name) chose \(c1.rawValue).
+        \(team2.name) chose \(c2.rawValue).
+
+        \(winnerName) goes first!
+        """
+    }
 }

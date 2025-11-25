@@ -6,13 +6,20 @@ struct StartingView: View {
     @State private var isAddTeamSheetPresented = false
     @State private var isEditTeamSheetPresented = false
 
+    @State private var isShowingRPSGame = false
+
 
     // Pull teams from SwiftData (auto-updates)
     @Query(sort: \TeamEntity.name) private var teams: [TeamEntity]
 
+
     // Two selections
     @State private var selectedTeam1: TeamEntity?
     @State private var selectedTeam2: TeamEntity?
+
+    // see who goes first
+    @State private var isSelectedTeam1GoingFirst = false
+
 
     private let avatarSize: CGFloat = 72
     private let playerAvatarSize: CGFloat = 36
@@ -58,6 +65,11 @@ struct StartingView: View {
                 VStack(spacing: 8) {
                     if let team1 = selectedTeam1 {
                         teamSummaryView(team: team1)
+                            .overlay {
+                                    if isSelectedTeam1GoingFirst {
+                                        Text("⚔️ Goes First!").font(.system(size: 24))
+                                    }
+                                }
                     } else {
                         emptyTeamSummary(label: "Team 1")
                     }
@@ -82,7 +94,7 @@ struct StartingView: View {
 
                 // MARK: - Start Game Button (No Action Yet)
                 Button("Start Game") {
-                    // TODO: add action later
+                    isShowingRPSGame = true
                 }
                 .buttonStyle(.glassProminent)
                 .buttonSizing(.flexible)
@@ -102,6 +114,7 @@ struct StartingView: View {
         .fullScreenCover(isPresented: $isEditTeamSheetPresented) {
             EditTeamView()
         }
+        .ful
         .onAppear {
             if selectedTeam1 == nil { selectedTeam1 = teams.first }
             if selectedTeam2 == nil { selectedTeam2 = teams.dropFirst().first }
@@ -127,6 +140,16 @@ struct StartingView: View {
         .sheet(isPresented: $isShowRulesSheetPresented) {
             SafariView(url: URL(string: "https://www.probeersports.com/beer-pong")!)
                 .ignoresSafeArea()
+        }
+        .sheet(isPresented: $isShowingRPSGame) {
+            if let team1 = selectedTeam1,
+               let team2 = selectedTeam2 {
+                RockPaperScissorsView(team1: team1, team2: team2)
+            } else {
+                // Fallback (shouldn’t really happen because button is disabled otherwise)
+                Text("Please select two teams to play.")
+                    .padding()
+            }
         }
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
