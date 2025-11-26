@@ -55,12 +55,6 @@ struct EditTeamDetailView: View {
                 .padding(.vertical, 8)
             }
 
-            // MARK: Wins / Losses
-            Section("Record") {
-                Stepper("Wins: \(team.wins)", value: $team.wins, in: 0...10_000)
-                Stepper("Losses: \(team.losses)", value: $team.losses, in: 0...10_000)
-            }
-
             // MARK: Players
             Section {
                 if team.players.isEmpty {
@@ -109,7 +103,7 @@ struct EditTeamDetailView: View {
         .navigationBarBackButtonHidden(true)
 
         // ✅ disable swipe-back unless allowPop == true
-        .modifier(DisableSwipeBack(isEnabled: team.players.count == 2 || allowPop))
+        .modifier(DisableSwipeBackModifier(isEnabled: team.players.count == 2 || allowPop))
 
         // MARK: Toolbar (Back + Save)
         .toolbar {

@@ -11,16 +11,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		32905BEF2ECA1BAA00D089C3 /* AppData */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = AppData;
-			sourceTree = "<group>";
-		};
-		32905BF22ECA209D00D089C3 /* Models+Entities */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Models+Entities";
-			sourceTree = "<group>";
-		};
 		429A99F32EC8B70A0089029F /* BeerPongScoreboard */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = BeerPongScoreboard;
@@ -42,8 +32,6 @@
 		429A99E82EC8B70A0089029F = {
 			isa = PBXGroup;
 			children = (
-				32905BF22ECA209D00D089C3 /* Models+Entities */,
-				32905BEF2ECA1BAA00D089C3 /* AppData */,
 				429A99F32EC8B70A0089029F /* BeerPongScoreboard */,
 				429A99F22EC8B70A0089029F /* Products */,
 			);
@@ -73,8 +61,6 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				32905BEF2ECA1BAA00D089C3 /* AppData */,
-				32905BF22ECA209D00D089C3 /* Models+Entities */,
 				429A99F32EC8B70A0089029F /* BeerPongScoreboard */,
 			);
 			name = BeerPongScoreboard;
