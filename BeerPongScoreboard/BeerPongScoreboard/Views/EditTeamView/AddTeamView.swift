@@ -173,52 +173,114 @@ struct AddTeamView: View {
     // MARK: - Save Logic (SwiftData)
     private func saveTeam() {
         let trimmedTeamName = teamName.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedTeamName.isEmpty else { return }
+        guard !trimmedTeamName.isEmpty else {
+            print("⚠️ saveTeam aborted: team name is empty")
+            return
+        }
 
         let trimmedP1 = player1Name.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedP2 = player2Name.trimmingCharacters(in: .whitespacesAndNewlines)
 
+        print("ℹ️ saveTeam called with:")
+        print("   • Team: '\(trimmedTeamName)'")
+        print("   • Player 1: '\(trimmedP1)' (has photo: \(player1PhotoData != nil))")
+        print("   • Player 2: '\(trimmedP2)' (has photo: \(player2PhotoData != nil))")
+
         var playerEntities: [PlayerEntity] = []
 
-        // ✅ SAVE PLAYER 1 PHOTO
+        // Player 1
         if !trimmedP1.isEmpty {
             let p1 = PlayerEntity(
+                id: UUID(),
                 name: trimmedP1,
                 team: trimmedTeamName,
-                photoData: player1PhotoData
+                photoData: player1PhotoData,
+                rpsWins: 0,
+                rpsTies: 0,
+                rpsLosses: 0,
+                successfulThrows: 0,
+                missedThrows: 0,
+                currentHotStreak: 0,
+                longestHotStreak: 0,
+                currentColdStreak: 0,
+                longestColdStreak: 0,
+                lastCupSuccessfulThrows: 0,
+                lastCupMissedThrows: 0,
+                rebuttalCupSuccessfulThrows: 0,
+                rebuttalCupMissedThrows: 0
             )
             playerEntities.append(p1)
+        } else {
+            print("⚠️ Player 1 name empty, not creating entity")
         }
 
+        // Player 2
         if !trimmedP2.isEmpty {
             let p2 = PlayerEntity(
+                id: UUID(),
                 name: trimmedP2,
                 team: trimmedTeamName,
-                photoData: player2PhotoData
+                photoData: player2PhotoData,
+                rpsWins: 0,
+                rpsTies: 0,
+                rpsLosses: 0,
+                successfulThrows: 0,
+                missedThrows: 0,
+                currentHotStreak: 0,
+                longestHotStreak: 0,
+                currentColdStreak: 0,
+                longestColdStreak: 0,
+                lastCupSuccessfulThrows: 0,
+                lastCupMissedThrows: 0,
+                rebuttalCupSuccessfulThrows: 0,
+                rebuttalCupMissedThrows: 0
             )
             playerEntities.append(p2)
+        } else {
+            print("⚠️ Player 2 name empty, not creating entity")
         }
+
+        print("ℹ️ About to create TeamEntity with \(playerEntities.count) players")
 
         let teamEntity = TeamEntity(
             name: trimmedTeamName,
             players: playerEntities,
             photoData: teamPhotoData,
             wins: 0,
-            losses: 0
+            losses: 0,
+            overtimeWins: 0,
+            overtimeLosses: 0,
+            totalCupsHit: 0,
+            totalCupsHitAgainst: 0,
+            currentWinningStreak: 0,
+            currentLosingStreak: 0,
+            longestWinningStreak: 0,
+            longestLosingStreak: 0,
+            currentHotStreak: 0,
+            currentColdStreak: 0,
+            longestHotStreak: 0,
+            longestColdStreak: 0,
+            rebuttalAttempts: 0,
+            successfulRebuttals: 0,
+            bonusShotAttempts: 0,
+            bonusShotMakes: 0
         )
 
+        print("ℹ️ Inserting TeamEntity id=\(teamEntity.id) into modelContext")
         modelContext.insert(teamEntity)
 
         do {
             try modelContext.save()
+            print("✅ SwiftData save succeeded for team '\(trimmedTeamName)'")
+            print("   • Players saved: \(teamEntity.players.count)")
         } catch {
             print("❌ SwiftData save failed: \(error)")
+            let nsError = error as NSError
+            print("   ↪️ NSError: \(nsError), userInfo: \(nsError.userInfo)")
         }
 
         dismiss()
     }
-
-
 
 }
 

@@ -114,7 +114,7 @@ struct StartingView: View {
         .fullScreenCover(isPresented: $isEditTeamSheetPresented) {
             EditTeamView()
         }
-        .ful
+      
         .onAppear {
             if selectedTeam1 == nil { selectedTeam1 = teams.first }
             if selectedTeam2 == nil { selectedTeam2 = teams.dropFirst().first }
