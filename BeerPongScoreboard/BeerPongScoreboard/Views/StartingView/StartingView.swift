@@ -9,6 +9,8 @@ struct StartingView: View {
     @State private var isShowingRPSGame = false
 
 
+    @State private var isRPSDecided = false
+
     // Pull teams from SwiftData (auto-updates)
     @Query(sort: \TeamEntity.name) private var teams: [TeamEntity]
 
@@ -66,10 +68,10 @@ struct StartingView: View {
                     if let team1 = selectedTeam1 {
                         teamSummaryView(team: team1)
                             .overlay {
-                                    if isSelectedTeam1GoingFirst {
-                                        Text("⚔️ Goes First!").font(.system(size: 24))
-                                    }
+                                if isSelectedTeam1GoingFirst {
+                                    Text("⚔️ Goes First!").font(.system(size: 24))
                                 }
+                            }
                     } else {
                         emptyTeamSummary(label: "Team 1")
                     }
@@ -92,19 +94,29 @@ struct StartingView: View {
 
 
 
-                // MARK: - Start Game Button (No Action Yet)
-                Button("Start Game") {
-                    isShowingRPSGame = true
+                if isRPSDecided {
+                    NavigationLink(destination: GameView()) {
+                        Text("Start Game")
+                    }
+                    .buttonStyle(.glassProminent)
+                    .buttonSizing(.flexible)
+                    .buttonBorderShape(.roundedRectangle(radius: 8))
+                    .padding()
+                } else {
+                    // MARK: - Start Game Button (No Action Yet)
+                    Button("Start Rock, Paper, Scissors") {
+                        isShowingRPSGame = true
+                    }
+                    .buttonStyle(.glassProminent)
+                    .buttonSizing(.flexible)
+                    .buttonBorderShape(.roundedRectangle(radius: 8))
+                    .padding()
+                    .disabled(
+                        selectedTeam1 == nil ||
+                        selectedTeam2 == nil ||
+                        selectedTeam1?.id == selectedTeam2?.id
+                    )
                 }
-                .buttonStyle(.glassProminent)
-                .buttonSizing(.flexible)
-                .buttonBorderShape(.roundedRectangle(radius: 8))
-                .padding()
-                .disabled(
-                    selectedTeam1 == nil ||
-                    selectedTeam2 == nil ||
-                    selectedTeam1?.id == selectedTeam2?.id
-                )
             }
         }
         .padding()
@@ -114,7 +126,6 @@ struct StartingView: View {
         .fullScreenCover(isPresented: $isEditTeamSheetPresented) {
             EditTeamView()
         }
-      
         .onAppear {
             if selectedTeam1 == nil { selectedTeam1 = teams.first }
             if selectedTeam2 == nil { selectedTeam2 = teams.dropFirst().first }
@@ -144,7 +155,7 @@ struct StartingView: View {
         .sheet(isPresented: $isShowingRPSGame) {
             if let team1 = selectedTeam1,
                let team2 = selectedTeam2 {
-                RockPaperScissorsView(team1: team1, team2: team2)
+                RockPaperScissorsView(team1: team1, team2: team2, isRPSDecided: $isRPSDecided)
             } else {
                 // Fallback (shouldn’t really happen because button is disabled otherwise)
                 Text("Please select two teams to play.")

@@ -8,11 +8,7 @@ struct RockPaperScissorsView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
 
-    private enum RPSChoice: String, CaseIterable {
-        case rock = "Rock"
-        case paper = "Paper"
-        case scissors = "Scissors"
-    }
+    @Binding var isRPSDecided: Bool
 
     // MARK: - State
 
@@ -25,6 +21,13 @@ struct RockPaperScissorsView: View {
 
     var body: some View {
         VStack(spacing: 24) {
+            HStack {
+                Spacer()
+
+                Button("Cancel") {
+                    dismiss()
+                }
+            }
             Text("Rock • Paper • Scissors")
                 .font(.largeTitle.bold())
 
@@ -129,10 +132,15 @@ struct RockPaperScissorsView: View {
 
             Spacer()
 
-            Button("Done") {
+            Button("Start Game") {
+                isRPSDecided = true
                 dismiss()
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.glassProminent)
+            .buttonSizing(.flexible)
+            .buttonBorderShape(.roundedRectangle(radius: 8))
+            .disabled(team1SelectedPlayer == nil || team2SelectedPlayer == nil || team1Choice == nil || team2Choice == nil)
+
         }
         .padding()
     }
@@ -183,11 +191,6 @@ struct RockPaperScissorsView: View {
         )
     }
 
-    private enum RPSResult {
-        case team1Win
-        case team2Win
-        case tie
-    }
 
     private func applyRPSResult(
         result: RPSResult,
@@ -214,5 +217,17 @@ struct RockPaperScissorsView: View {
             // You can surface this as an alert later if you want
             print("⚠️ Failed to save RPS stats: \(error)")
         }
+    }
+
+    private enum RPSResult {
+        case team1Win
+        case team2Win
+        case tie
+    }
+
+    private enum RPSChoice: String, CaseIterable {
+        case rock = "Rock"
+        case paper = "Paper"
+        case scissors = "Scissors"
     }
 }

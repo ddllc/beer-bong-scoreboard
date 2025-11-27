@@ -1,12 +1,16 @@
 import SwiftUI
 
 struct LoadingView: View {
+    let loadingMessage: String
     var body: some View {
-        ProgressView()
-            .frame(width: 200, height: 200)
+        VStack {
+            Text(loadingMessage)
+            ProgressView()
+                .frame(width: 200, height: 200)
+        }
     }
 }
 
 #Preview {
-    LoadingView()
+    LoadingView(loadingMessage: "Setting up game...")
 }
