@@ -4,7 +4,7 @@ import PhotosUI
 
 // MARK: - EditTeamsView (List of teams)
 
-struct EditTeamView: View {
+struct EditTeamsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \TeamEntity.name) private var teams: [TeamEntity]
 
@@ -58,7 +58,7 @@ struct EditTeamView: View {
 
 #Preview {
     NavigationStack {
-        EditTeamView()
+        EditTeamsView()
             .modelContainer(for: [TeamEntity.self, PlayerEntity.self], inMemory: true)
     }
 }

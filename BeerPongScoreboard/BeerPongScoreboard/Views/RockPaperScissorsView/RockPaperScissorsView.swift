@@ -8,8 +8,6 @@ struct RockPaperScissorsView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
 
-    @Binding var isRPSDecided: Bool
-
     // MARK: - State
 
     @State private var team1Choice: RPSChoice?
@@ -20,125 +18,119 @@ struct RockPaperScissorsView: View {
     @State private var team2SelectedPlayer: PlayerEntity?
 
     var body: some View {
-        VStack(spacing: 24) {
-            HStack {
-                Spacer()
-
-                Button("Cancel") {
-                    dismiss()
-                }
-            }
+        VStack {
             Text("Rock • Paper • Scissors")
                 .font(.largeTitle.bold())
 
-            // MARK: Team 1 section
-            VStack(spacing: 8) {
-                Text(team1.name)
-                    .font(.title3.bold())
-
-                // Player picker
-                if !team1.players.isEmpty {
-                    Menu {
-                        ForEach(team1.players) { player in
-                            Button(player.name) {
-                                team1SelectedPlayer = player
-                                updateResultIfReady()
-                            }
-                        }
-                    } label: {
-                        HStack {
-                            Text(team1SelectedPlayer?.name ?? "Choose player")
-                            Spacer()
-                            Image(systemName: "chevron.down")
-                                .font(.caption)
-                        }
-                        .padding(8)
-                        .background(Color.gray.opacity(0.15))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                    }
-                }
-
-                // RPS choices
-                HStack {
-                    ForEach(RPSChoice.allCases, id: \.self) { choice in
-                        Button(choice.rawValue) {
-                            team1Choice = choice
-                            updateResultIfReady()
-                        }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(
-                            team1Choice == choice
-                            ? Color.blue.opacity(0.3)
-                            : Color.gray.opacity(0.15)
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                    }
-                }
-            }
-
-            // MARK: Team 2 section
-            VStack(spacing: 8) {
-                Text(team2.name)
-                    .font(.title3.bold())
-
-                // Player picker
-                if !team2.players.isEmpty {
-                    Menu {
-                        ForEach(team2.players) { player in
-                            Button(player.name) {
-                                team2SelectedPlayer = player
-                                updateResultIfReady()
-                            }
-                        }
-                    } label: {
-                        HStack {
-                            Text(team2SelectedPlayer?.name ?? "Choose player")
-                            Spacer()
-                            Image(systemName: "chevron.down")
-                                .font(.caption)
-                        }
-                        .padding(8)
-                        .background(Color.gray.opacity(0.15))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                    }
-                }
-
-                // RPS choices
-                HStack {
-                    ForEach(RPSChoice.allCases, id: \.self) { choice in
-                        Button(choice.rawValue) {
-                            team2Choice = choice
-                            updateResultIfReady()
-                        }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(
-                            team2Choice == choice
-                            ? Color.green.opacity(0.3)
-                            : Color.gray.opacity(0.15)
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                    }
-                }
-            }
-
-            Divider()
-
-            // MARK: Result
             Text(resultText)
                 .multilineTextAlignment(.center)
-                .padding(.horizontal)
+                .lineLimit(nil)
+               
 
             Spacer()
 
-            Button("Start Game") {
-                isRPSDecided = true
-                dismiss()
+            VStack(spacing: 20) {
+                // MARK: Team 1 section
+                HStack(spacing: 8) {
+                    Text(team1.name)
+                        .font(.title3.bold())
+
+                    // Player picker
+                    if !team1.players.isEmpty {
+                        Menu {
+                            ForEach(team1.players) { player in
+                                Button(player.name) {
+                                    team1SelectedPlayer = player
+                                    updateResultIfReady()
+                                }
+                            }
+                        } label: {
+                            HStack {
+                                Text(team1SelectedPlayer?.name ?? "Choose player")
+                                Spacer()
+                                Image(systemName: "chevron.down")
+                                    .font(.caption)
+                            }
+                            .padding(8)
+                            .background(Color.gray.opacity(0.15))
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                        }
+                    }
+
+                    // RPS choices
+                    HStack {
+                        ForEach(RPSChoice.allCases, id: \.self) { choice in
+                            Button(choice.rawValue) {
+                                team1Choice = choice
+                                updateResultIfReady()
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(
+                                team1Choice == choice
+                                ? Color.blue.opacity(0.3)
+                                : Color.gray.opacity(0.15)
+                            )
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                        }
+                    }
+                }
+
+                // MARK: Team 2 section
+                HStack(spacing: 8) {
+                    Text(team2.name)
+                        .font(.title3.bold())
+
+                    // Player picker
+                    if !team2.players.isEmpty {
+                        Menu {
+                            ForEach(team2.players) { player in
+                                Button(player.name) {
+                                    team2SelectedPlayer = player
+                                    updateResultIfReady()
+                                }
+                            }
+                        } label: {
+                            HStack {
+                                Text(team2SelectedPlayer?.name ?? "Choose player")
+                                Spacer()
+                                Image(systemName: "chevron.down")
+                                    .font(.caption)
+                            }
+                            .padding(8)
+                            .background(Color.gray.opacity(0.15))
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                        }
+                    }
+
+                    // RPS choices
+                    HStack {
+                        ForEach(RPSChoice.allCases, id: \.self) { choice in
+                            Button(choice.rawValue) {
+                                team2Choice = choice
+                                updateResultIfReady()
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(
+                                team2Choice == choice
+                                ? Color.green.opacity(0.3)
+                                : Color.gray.opacity(0.15)
+                            )
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                        }
+                    }
+                }
+            }
+            Spacer()
+
+            NavigationLink(destination: GameView()) {
+                Text("Start Game")
             }
             .buttonStyle(.glassProminent)
             .buttonSizing(.flexible)
             .buttonBorderShape(.roundedRectangle(radius: 8))
+            .padding()
             .disabled(team1SelectedPlayer == nil || team2SelectedPlayer == nil || team1Choice == nil || team2Choice == nil)
 
         }

@@ -24,7 +24,6 @@ struct EditTeamDetailView: View {
 
     var body: some View {
         Form {
-
             // MARK: Team Header
             Section {
                 VStack(spacing: 12) {

@@ -6,14 +6,8 @@ struct StartingView: View {
     @State private var isAddTeamSheetPresented = false
     @State private var isEditTeamSheetPresented = false
 
-    @State private var isShowingRPSGame = false
-
-
-    @State private var isRPSDecided = false
-
     // Pull teams from SwiftData (auto-updates)
     @Query(sort: \TeamEntity.name) private var teams: [TeamEntity]
-
 
     // Two selections
     @State private var selectedTeam1: TeamEntity?
@@ -22,109 +16,105 @@ struct StartingView: View {
     // see who goes first
     @State private var isSelectedTeam1GoingFirst = false
 
-
     private let avatarSize: CGFloat = 72
     private let playerAvatarSize: CGFloat = 36
 
     var body: some View {
         VStack {
-            HStack {
-                Text("Beer Pong Scoreboard")
-                    .font(.title)
-                    .bold()
-            }
-
-            HStack {
-                // MARK: - Team 1 Picker
-                Picker("Select Team 1", selection: $selectedTeam1) {
-                    Text("Team").tag(TeamEntity?.none)
-
-                    ForEach(teams.filter { team in
-                        team.id != selectedTeam2?.id
-                    }) { team in
-                        Text(team.name).tag(TeamEntity?.some(team))
-                    }
-                }
-                .pickerStyle(.menu)
-
-                    Spacer()
-
-                // MARK: - Team 2 Picker
-                Picker("Pick Team 2", selection: $selectedTeam2) {
-                    Text("Team").tag(TeamEntity?.none)
-
-                    ForEach(teams.filter { team in
-                        team.id != selectedTeam1?.id
-                    }) { team in
-                        Text(team.name).tag(TeamEntity?.some(team))
-                    }
-                }
-                .pickerStyle(.menu)
-            }
 
             ScrollView(showsIndicators: false) {
-                // MARK: - Matchup Summary (Vertical Stack)
-                VStack(spacing: 8) {
-                    if let team1 = selectedTeam1 {
-                        teamSummaryView(team: team1)
-                            .overlay {
-                                if isSelectedTeam1GoingFirst {
-                                    Text("⚔️ Goes First!").font(.system(size: 24))
-                                }
+                HStack {
+                    VStack(alignment: .leading) {
+                        Picker("Select Team 1", selection: $selectedTeam1) {
+                            Text("Select Team").tag(TeamEntity?.none)
+
+                            ForEach(teams.filter { team in
+                                team.id != selectedTeam2?.id
+                            }) { team in
+                                Text(team.name).tag(TeamEntity?.some(team))
                             }
-                    } else {
-                        emptyTeamSummary(label: "Team 1")
+                        }
+                        .pickerStyle(.menu)
+
+                        if let team1 = selectedTeam1 {
+                            leadingTeamSummaryView(team: team1)
+                        } else {
+                            HStack {
+                                Spacer()
+                                leadingEmptyTeamSummaryView(label: "Team 1")
+                                Spacer()
+                            }
+                        }
                     }
 
-                    Text("VS.")
-                        .font(.largeTitle)
-                        .bold()
-                        .padding(.vertical, 4)
-
-                    if let team2 = selectedTeam2 {
-                        teamSummaryView(team: team2)
-                    } else {
-                        emptyTeamSummary(label: "Team 2")
+                    VStack {
+                        Text("VS.")
+                            .font(.largeTitle)
+                            .bold()
+                            .padding(.vertical, 4)
                     }
-                }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(.thinMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
 
+                    VStack(alignment: .trailing) {
+                        Picker("Pick Team 2", selection: $selectedTeam2) {
+                            Text("Select Team").tag(TeamEntity?.none)
 
-
-                if isRPSDecided {
-                    NavigationLink(destination: GameView()) {
-                        Text("Start Game")
+                            ForEach(teams.filter { team in
+                                team.id != selectedTeam1?.id
+                            }) { team in
+                                Text(team.name).tag(TeamEntity?.some(team))
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        if let team2 = selectedTeam2 {
+                            leadingTeamSummaryView(team: team2)
+                        } else {
+                            HStack {
+                                Spacer()
+                                trailingEmptyTeamSummaryView(label: "Team 2")
+                                Spacer()
+                            }
+                        }
                     }
-                    .buttonStyle(.glassProminent)
-                    .buttonSizing(.flexible)
-                    .buttonBorderShape(.roundedRectangle(radius: 8))
-                    .padding()
-                } else {
-                    // MARK: - Start Game Button (No Action Yet)
-                    Button("Start Rock, Paper, Scissors") {
-                        isShowingRPSGame = true
-                    }
-                    .buttonStyle(.glassProminent)
-                    .buttonSizing(.flexible)
-                    .buttonBorderShape(.roundedRectangle(radius: 8))
-                    .padding()
-                    .disabled(
-                        selectedTeam1 == nil ||
-                        selectedTeam2 == nil ||
-                        selectedTeam1?.id == selectedTeam2?.id
-                    )
                 }
             }
+
+            VStack(alignment: .trailing) {
+                if let team1 = selectedTeam1,
+                   let team2 = selectedTeam2 {
+
+                    NavigationLink {
+                        RockPaperScissorsView(
+                            team1: team1,
+                            team2: team2
+                        )
+                    } label: {
+                        Text("Rock Paper Scissors")
+                    }
+                    .buttonStyle(.glassProminent)
+                    .buttonSizing(.flexible)
+                    .buttonBorderShape(.roundedRectangle(radius: 8))
+                    .padding()
+
+                } else {
+                    // Disabled-looking button when teams not ready
+                    Button("Rock Paper Scissors") {}
+                        .buttonStyle(.glassProminent)
+                        .buttonSizing(.flexible)
+                        .buttonBorderShape(.roundedRectangle(radius: 8))
+                        .padding()
+                        .disabled(true)
+                }
+            }
+
+            Spacer()
         }
-        .padding()
+        .navigationTitle("Beer Pong Scoreboard")
+        .navigationBarTitleDisplayMode(.inline)
         .fullScreenCover(isPresented: $isAddTeamSheetPresented) {
             AddTeamView()
         }
         .fullScreenCover(isPresented: $isEditTeamSheetPresented) {
-            EditTeamView()
+            EditTeamsView()
         }
         .onAppear {
             if selectedTeam1 == nil { selectedTeam1 = teams.first }
@@ -152,16 +142,6 @@ struct StartingView: View {
             SafariView(url: URL(string: "https://www.probeersports.com/beer-pong")!)
                 .ignoresSafeArea()
         }
-        .sheet(isPresented: $isShowingRPSGame) {
-            if let team1 = selectedTeam1,
-               let team2 = selectedTeam2 {
-                RockPaperScissorsView(team1: team1, team2: team2, isRPSDecided: $isRPSDecided)
-            } else {
-                // Fallback (shouldn’t really happen because button is disabled otherwise)
-                Text("Please select two teams to play.")
-                    .padding()
-            }
-        }
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button("Rules") {
@@ -169,16 +149,16 @@ struct StartingView: View {
                 }
             }
             ToolbarItem {
-                NavigationLink(destination: EditTeamView()) {
-                    Text("Teams")
+                NavigationLink(destination: EditTeamsView()) {
+                    Text("Edit Teams")
                 }
             }
         }
     }
 
-    // MARK: - Team Summary View (STACKED + BIG TEAM PHOTO)
+    // MARK: - Leading Team Summary View (STACKED + BIG TEAM PHOTO)
     @ViewBuilder
-    private func teamSummaryView(team: TeamEntity) -> some View {
+    private func leadingTeamSummaryView(team: TeamEntity) -> some View {
         VStack(alignment: .center, spacing: 12) {
 
             // MARK: - Team photo (larger)
@@ -251,10 +231,9 @@ struct StartingView: View {
         .padding(.vertical, 8)
     }
 
-
-    // MARK: - Empty Summary Placeholder
+    // MARK: - Leading Empty Summary Placeholder
     @ViewBuilder
-    private func emptyTeamSummary(label: String) -> some View {
+    private func leadingEmptyTeamSummaryView(label: String) -> some View {
         HStack(spacing: 12) {
             Image(systemName: "photo.circle.fill")
                 .resizable()
@@ -271,8 +250,30 @@ struct StartingView: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
+        }
+    }
 
-            Spacer()
+    // MARK: - Leading Empty Summary Placeholder
+    @ViewBuilder
+    private func trailingEmptyTeamSummaryView(label: String) -> some View {
+        HStack(spacing: 12) {
+
+            VStack(alignment: .trailing, spacing: 4) {
+                Text(label)
+                    .font(.headline)
+                    .foregroundStyle(.secondary)
+                Text("Select a team")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            Image(systemName: "photo.circle.fill")
+                .resizable()
+                .scaledToFill()
+                .frame(width: avatarSize, height: avatarSize)
+                .clipShape(Circle())
+                .foregroundStyle(.secondary)
+
         }
     }
 }

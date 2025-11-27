@@ -27,7 +27,8 @@ struct AddTeamView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack {
+            // MARK: - Cancel button
             HStack {
                 Spacer()
                 Button("Cancel") {
@@ -36,136 +37,139 @@ struct AddTeamView: View {
             }
 
             HStack {
-                Text("Add A Team")
-                    .font(.title)
-                    .bold()
-            }
+                // MARK: - Team Selection
+                VStack(alignment: .leading) {
+                    HStack {
+                        Text("Add A Team")
+                            .font(.largeTitle)
+                            .bold()
+                    }
+                    HStack {
+                        PhotosPicker(selection: $teamPhotoPickerItem) {
+                            Group {
+                                if let teamPhotoData,
+                                   let uiImage = UIImage(data: teamPhotoData) {
 
-            // MARK: - Team Row
-            HStack {
-                PhotosPicker(selection: $teamPhotoPickerItem) {
-                    Group {
-                        if let teamPhotoData,
-                           let uiImage = UIImage(data: teamPhotoData) {
+                                    Image(uiImage: uiImage)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: avatarSize, height: avatarSize)
+                                        .clipShape(Circle())
+                                        .clipped()
 
-                            Image(uiImage: uiImage)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: avatarSize, height: avatarSize)
-                                .clipShape(Circle())
-                                .clipped()
+                                } else {
+                                    Image(systemName: "photo.circle.fill")
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: avatarSize, height: avatarSize)
+                                        .clipShape(Circle())
+                                }
+                            }
+                        }
 
-                        } else {
-                            Image(systemName: "photo.circle.fill")
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: avatarSize, height: avatarSize)
-                                .clipShape(Circle())
+                        TextField("Team Name", text: $teamName)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .padding()
+                    }
+                    .padding()
+                    .onChange(of: teamPhotoPickerItem) {
+                        guard let teamPhotoPickerItem else { return }
+                        Task {
+                            teamPhotoData = try await teamPhotoPickerItem.loadTransferable(type: Data.self)
                         }
                     }
                 }
 
-                TextField("Team Name", text: $teamName)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
+
+
+                // MARK: - Player Selections
+                VStack {
+                    HStack {
+                        PhotosPicker(selection: $player1PhotoPickerItem) {
+                            Group {
+                                if let player1PhotoData,
+                                   let uiImage = UIImage(data: player1PhotoData) {
+
+                                    Image(uiImage: uiImage)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: avatarSize, height: avatarSize)
+                                        .clipShape(Circle())
+                                        .clipped()
+
+                                } else {
+                                    Image(systemName: "person.circle.fill")
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: avatarSize, height: avatarSize)
+                                        .clipShape(Circle())
+                                }
+                            }
+                        }
+
+                        TextField("Player 1 Name", text: $player1Name)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .padding()
+                    }
                     .padding()
-            }
-            .padding()
-            .onChange(of: teamPhotoPickerItem) {
-                guard let teamPhotoPickerItem else { return }
-                Task {
-                    teamPhotoData = try await teamPhotoPickerItem.loadTransferable(type: Data.self)
-                }
-            }
+                    .onChange(of: player1PhotoPickerItem) {
+                        guard let player1PhotoPickerItem else { return }
+                        Task {
+                            player1PhotoData = try await player1PhotoPickerItem.loadTransferable(type: Data.self)
+                        }
+                    }
 
-            Divider()
+                    Divider()
 
-            // MARK: - Player 1 Row
-            HStack {
-                PhotosPicker(selection: $player1PhotoPickerItem) {
-                    Group {
-                        if let player1PhotoData,
-                           let uiImage = UIImage(data: player1PhotoData) {
+                    HStack {
+                        PhotosPicker(selection: $player2PhotoPickerItem) {
+                            Group {
+                                if let player2PhotoData,
+                                   let uiImage = UIImage(data: player2PhotoData) {
 
-                            Image(uiImage: uiImage)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: avatarSize, height: avatarSize)
-                                .clipShape(Circle())
-                                .clipped()
+                                    Image(uiImage: uiImage)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: avatarSize, height: avatarSize)
+                                        .clipShape(Circle())
+                                        .clipped()
 
-                        } else {
-                            Image(systemName: "person.circle.fill")
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: avatarSize, height: avatarSize)
-                                .clipShape(Circle())
+                                } else {
+                                    Image(systemName: "person.circle.fill")
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: avatarSize, height: avatarSize)
+                                        .clipShape(Circle())
+                                }
+                            }
+                        }
+
+                        TextField("Player 2 Name", text: $player2Name)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .padding()
+                    }
+                    .padding()
+                    .onChange(of: player2PhotoPickerItem) {
+                        guard let player2PhotoPickerItem else { return }
+                        Task {
+                            player2PhotoData = try await player2PhotoPickerItem.loadTransferable(type: Data.self)
                         }
                     }
                 }
-
-                TextField("Player 1 Name", text: $player1Name)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding()
             }
-            .padding()
-            .onChange(of: player1PhotoPickerItem) {
-                guard let player1PhotoPickerItem else { return }
-                Task {
-                    player1PhotoData = try await player1PhotoPickerItem.loadTransferable(type: Data.self)
+
+                // MARK: - Save Button
+                Button("Save") {
+                    saveTeam()
                 }
-            }
+                .buttonSizing(.flexible)
+                .buttonBorderShape(.roundedRectangle(radius: 8))
+                .buttonStyle(.glassProminent)
+                .padding()
+                .disabled(isSaveDisabled)
 
-            Divider()
+                Spacer()
 
-            // MARK: - Player 2 Row
-            HStack {
-                PhotosPicker(selection: $player2PhotoPickerItem) {
-                    Group {
-                        if let player2PhotoData,
-                           let uiImage = UIImage(data: player2PhotoData) {
-
-                            Image(uiImage: uiImage)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: avatarSize, height: avatarSize)
-                                .clipShape(Circle())
-                                .clipped()
-
-                        } else {
-                            Image(systemName: "person.circle.fill")
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: avatarSize, height: avatarSize)
-                                .clipShape(Circle())
-                        }
-                    }
-                }
-
-                TextField("Player 2 Name", text: $player2Name)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding()
-            }
-            .padding()
-            .onChange(of: player2PhotoPickerItem) {
-                guard let player2PhotoPickerItem else { return }
-                Task {
-                    player2PhotoData = try await player2PhotoPickerItem.loadTransferable(type: Data.self)
-                }
-            }
-
-            Divider()
-
-            // MARK: - Save Button
-            Button("Save") {
-                saveTeam()
-            }
-            .buttonSizing(.flexible)
-            .buttonBorderShape(.roundedRectangle(radius: 8))
-            .buttonStyle(.glassProminent)
-            .padding()
-            .disabled(isSaveDisabled)
-
-            Spacer()
         }
         .padding()
     }
