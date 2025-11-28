@@ -16,7 +16,6 @@ struct StartingView: View {
     // see who goes first
     @State private var isSelectedTeam1GoingFirst = false
 
-    private let avatarSize: CGFloat = 72
 
     var body: some View {
         VStack {
@@ -25,11 +24,9 @@ struct StartingView: View {
 
                     // MARK: - Pickers + Team Cards
                     HStack(alignment: .top) {
-                        // LEFT SIDE
                         VStack(alignment: .leading, spacing: 8) {
                             Picker("Select Team 1", selection: $selectedTeam1) {
                                 Text("Select Team").tag(TeamEntity?.none)
-
                                 ForEach(teams.filter { team in
                                     team.id != selectedTeam2?.id
                                 }) { team in
@@ -38,21 +35,19 @@ struct StartingView: View {
                             }
                             .pickerStyle(.menu)
 
-                            TeamCardView(team: selectedTeam1,
-                                         avatarSize: avatarSize + 20)
+                            TeamCardView(team: selectedTeam1)
                                 .frame(maxWidth: .infinity,
                                        alignment: .leading)
                         }
 
-                        // CENTER "VS."
+
                         VStack {
                             Spacer()
                             Text("VS")
                                 .font(.system(size: 75, weight: .heavy))
-                                .padding(.vertical, 4)
                             Spacer()
                         }
-                        .frame(minWidth: 40)
+
 
                         // RIGHT SIDE
                         VStack(alignment: .trailing, spacing: 8) {
@@ -67,8 +62,7 @@ struct StartingView: View {
                             }
                             .pickerStyle(.menu)
 
-                            TeamCardView(team: selectedTeam2,
-                                         avatarSize: avatarSize + 20)
+                            TeamCardView(team: selectedTeam2 )
                                 .frame(maxWidth: .infinity,
                                        alignment: .trailing)
                         }

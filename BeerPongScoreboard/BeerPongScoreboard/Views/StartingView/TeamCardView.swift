@@ -3,11 +3,10 @@ import SwiftData
 
 struct TeamCardView: View {
     let team: TeamEntity?
-    let avatarSize: CGFloat
+    private let avatarSize: CGFloat = 100
 
     var body: some View {
         VStack(spacing: 8) {
-            // Avatar / placeholder
             ZStack {
                 Circle()
                     .fill(Color(.systemGray5))
@@ -26,19 +25,17 @@ struct TeamCardView: View {
             .frame(width: avatarSize, height: avatarSize)
             .clipShape(Circle())
 
-            // Name or "Select team"
             Text(team?.name ?? "Select Team")
                 .font(.title2.bold())
                 .foregroundColor(team == nil ? .secondary : .primary)
 
-            // Wins / losses (or placeholder)
             Text(team != nil
                  ? "Wins: \(team!.wins)  Losses: \(team!.losses)"
                  : "Wins: 0  Losses: 0")
                 .font(.headline)
                 .foregroundColor(.secondary)
         }
-        .frame(width: 180)          // <- fixed width so both sides match
+        .frame(width: 180)
         .multilineTextAlignment(.center)
     }
 }

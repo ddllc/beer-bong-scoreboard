@@ -7,12 +7,13 @@ struct RockPaperScissorsView: View {
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @State private var isRPSDecided = false
 
     // MARK: - State
 
     @State private var team1Choice: RPSChoice?
     @State private var team2Choice: RPSChoice?
-    @State private var resultText: String = "Pick a player and Rock, Paper, or Scissors for each team."
+    @State private var resultText: String = "Pick a player and Rock, Paper, or Scissors for each team to see who goes first!"
 
     @State private var team1SelectedPlayer: PlayerEntity?
     @State private var team2SelectedPlayer: PlayerEntity?
@@ -25,7 +26,7 @@ struct RockPaperScissorsView: View {
             Text(resultText)
                 .multilineTextAlignment(.center)
                 .lineLimit(nil)
-               
+
 
             Spacer()
 
@@ -41,7 +42,7 @@ struct RockPaperScissorsView: View {
                             ForEach(team1.players) { player in
                                 Button(player.name) {
                                     team1SelectedPlayer = player
-                                    updateResultIfReady()
+                                    determineRPSWinner()
                                 }
                             }
                         } label: {
@@ -62,7 +63,7 @@ struct RockPaperScissorsView: View {
                         ForEach(RPSChoice.allCases, id: \.self) { choice in
                             Button(choice.rawValue) {
                                 team1Choice = choice
-                                updateResultIfReady()
+                                determineRPSWinner()
                             }
                             .padding(.horizontal, 12)
                             .padding(.vertical, 8)
@@ -87,7 +88,7 @@ struct RockPaperScissorsView: View {
                             ForEach(team2.players) { player in
                                 Button(player.name) {
                                     team2SelectedPlayer = player
-                                    updateResultIfReady()
+                                    determineRPSWinner()
                                 }
                             }
                         } label: {
@@ -108,7 +109,7 @@ struct RockPaperScissorsView: View {
                         ForEach(RPSChoice.allCases, id: \.self) { choice in
                             Button(choice.rawValue) {
                                 team2Choice = choice
-                                updateResultIfReady()
+                                determineRPSWinner()
                             }
                             .padding(.horizontal, 12)
                             .padding(.vertical, 8)
@@ -131,7 +132,7 @@ struct RockPaperScissorsView: View {
             .buttonSizing(.flexible)
             .buttonBorderShape(.roundedRectangle(radius: 8))
             .padding()
-            .disabled(team1SelectedPlayer == nil || team2SelectedPlayer == nil || team1Choice == nil || team2Choice == nil)
+            .disabled(isRPSDecided)
 
         }
         .padding()
@@ -139,74 +140,71 @@ struct RockPaperScissorsView: View {
 
     // MARK: - Logic
 
-    private func updateResultIfReady() {
+    private func determineRPSWinner() {
         guard
-            let c1 = team1Choice,
-            let c2 = team2Choice,
-            let p1 = team1SelectedPlayer,
-            let p2 = team2SelectedPlayer
+            let team1Choice = team1Choice,
+            let team2Choice = team2Choice,
+            let team1SelectedPlayer = team1SelectedPlayer,
+            let team2SelectedPlayer = team2SelectedPlayer
         else {
             resultText = "Pick a player AND a choice for each team."
             return
         }
 
-        if c1 == c2 {
-            resultText = """
-            \(team1.name) (\(p1.name)) chose \(c1.rawValue).
-            \(team2.name) (\(p2.name)) chose \(c2.rawValue).
-
-            It's a tie! Change a choice to play again.
-            """
-            applyRPSResult(result: .tie, player1: p1, player2: p2)
+        guard team1Choice == team2Choice else {
+            resultText = "It's a tie! Change a choice to play again."
+            applyRPSResult(result: .tie, team1SelectedPlayer: team1SelectedPlayer, team2SelectedPlayer: team1SelectedPlayer)
             return
         }
 
-        let team1Wins =
-            (c1 == .rock && c2 == .scissors) ||
-            (c1 == .paper && c2 == .rock) ||
-            (c1 == .scissors && c2 == .paper)
+        if team1Choice == .rock, team2Choice == .paper {
+            resultText = "\(team1SelectedPlayer.team) Goes First!"
+            applyRPSResult(result: .team1Win, team1SelectedPlayer: team1SelectedPlayer, team2SelectedPlayer: team2SelectedPlayer)
+        } else if team2Choice == .rock, team1Choice == .paper {
+            resultText = "\(team2SelectedPlayer.team) Goes First!"
+            applyRPSResult(result: .team2Win, team1SelectedPlayer: team1SelectedPlayer, team2SelectedPlayer: team2SelectedPlayer)
+        }
 
-        let winnerTeamName = team1Wins ? team1.name : team2.name
-        let winnerPlayerName = team1Wins ? p1.name : p2.name
+        if team1Choice == .rock, team2Choice == .scissors {
+            resultText = "\(team1SelectedPlayer.team) Goes First!"
+            applyRPSResult(result: .team1Win, team1SelectedPlayer: team1SelectedPlayer, team2SelectedPlayer: team2SelectedPlayer)
+        } else if team2Choice == .scissors, team1Choice == .rock {
+            resultText = "\(team2SelectedPlayer.team) Goes First!"
+            applyRPSResult(result: .team2Win, team1SelectedPlayer: team1SelectedPlayer, team2SelectedPlayer: team2SelectedPlayer)
+        }
 
-        resultText = """
-        \(team1.name) (\(p1.name)) chose \(c1.rawValue).
-        \(team2.name) (\(p2.name)) chose \(c2.rawValue).
-
-        \(winnerTeamName) - goes first!
-        """
-
-        applyRPSResult(
-            result: team1Wins ? .team1Win : .team2Win,
-            player1: p1,
-            player2: p2
-        )
+        if team1Choice == .scissors, team2Choice == .paper {
+            resultText = "\(team1SelectedPlayer.team) Goes First!"
+            applyRPSResult(result: .team1Win, team1SelectedPlayer: team1SelectedPlayer, team2SelectedPlayer: team2SelectedPlayer)
+        } else if team2Choice == .paper, team1Choice == .scissors {
+            resultText = "\(team2SelectedPlayer.team) Goes First!"
+            applyRPSResult(result: .team2Win, team1SelectedPlayer: team1SelectedPlayer, team2SelectedPlayer: team2SelectedPlayer)
+        }
     }
 
 
     private func applyRPSResult(
         result: RPSResult,
-        player1: PlayerEntity,
-        player2: PlayerEntity
+        team1SelectedPlayer: PlayerEntity,
+        team2SelectedPlayer: PlayerEntity
     ) {
         switch result {
         case .tie:
-            player1.rpsTies += 1
-            player2.rpsTies += 1
-
+            team1SelectedPlayer.rpsTies += 1
+            team2SelectedPlayer.rpsTies += 1
         case .team1Win:
-            player1.rpsWins += 1
-            player2.rpsLosses += 1
-
+            team1SelectedPlayer.rpsWins += 1
+            team2SelectedPlayer.rpsLosses += 1
+            isRPSDecided = true
         case .team2Win:
-            player1.rpsLosses += 1
-            player2.rpsWins += 1
+            team1SelectedPlayer.rpsLosses += 1
+            team2SelectedPlayer.rpsWins += 1
+            isRPSDecided = true
         }
 
         do {
             try modelContext.save()
         } catch {
-            // You can surface this as an alert later if you want
             print("⚠️ Failed to save RPS stats: \(error)")
         }
     }
