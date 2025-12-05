@@ -27,36 +27,20 @@ struct AddTeamView: View {
     }
 
     var body: some View {
-        VStack {
-            // MARK: - Cancel button
-            HStack {
-                Spacer()
-                Button("Cancel") {
-                    dismiss()
-                }
-            }
-
-            HStack {
-                // MARK: - Team Selection
-                VStack(alignment: .leading) {
-                    HStack {
-                        Text("Add A Team")
-                            .font(.largeTitle)
-                            .bold()
-                    }
-                    HStack {
+        NavigationStack {
+            List {
+                // MARK: - Team Section
+                Section("Team") {
+                    HStack(spacing: 16) {
                         PhotosPicker(selection: $teamPhotoPickerItem) {
                             Group {
                                 if let teamPhotoData,
                                    let uiImage = UIImage(data: teamPhotoData) {
-
                                     Image(uiImage: uiImage)
                                         .resizable()
                                         .scaledToFill()
                                         .frame(width: avatarSize, height: avatarSize)
                                         .clipShape(Circle())
-                                        .clipped()
-
                                 } else {
                                     Image(systemName: "photo.circle.fill")
                                         .resizable()
@@ -68,10 +52,7 @@ struct AddTeamView: View {
                         }
 
                         TextField("Team Name", text: $teamName)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .padding()
                     }
-                    .padding()
                     .onChange(of: teamPhotoPickerItem) {
                         guard let teamPhotoPickerItem else { return }
                         Task {
@@ -80,23 +61,18 @@ struct AddTeamView: View {
                     }
                 }
 
-
-
-                // MARK: - Player Selections
-                VStack {
-                    HStack {
+                // MARK: - Player 1
+                Section("Player 1") {
+                    HStack(spacing: 16) {
                         PhotosPicker(selection: $player1PhotoPickerItem) {
                             Group {
                                 if let player1PhotoData,
                                    let uiImage = UIImage(data: player1PhotoData) {
-
                                     Image(uiImage: uiImage)
                                         .resizable()
                                         .scaledToFill()
                                         .frame(width: avatarSize, height: avatarSize)
                                         .clipShape(Circle())
-                                        .clipped()
-
                                 } else {
                                     Image(systemName: "person.circle.fill")
                                         .resizable()
@@ -108,32 +84,27 @@ struct AddTeamView: View {
                         }
 
                         TextField("Player 1 Name", text: $player1Name)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .padding()
                     }
-                    .padding()
                     .onChange(of: player1PhotoPickerItem) {
                         guard let player1PhotoPickerItem else { return }
                         Task {
                             player1PhotoData = try await player1PhotoPickerItem.loadTransferable(type: Data.self)
                         }
                     }
+                }
 
-                    Divider()
-
-                    HStack {
+                // MARK: - Player 2
+                Section("Player 2") {
+                    HStack(spacing: 16) {
                         PhotosPicker(selection: $player2PhotoPickerItem) {
                             Group {
                                 if let player2PhotoData,
                                    let uiImage = UIImage(data: player2PhotoData) {
-
                                     Image(uiImage: uiImage)
                                         .resizable()
                                         .scaledToFill()
                                         .frame(width: avatarSize, height: avatarSize)
                                         .clipShape(Circle())
-                                        .clipped()
-
                                 } else {
                                     Image(systemName: "person.circle.fill")
                                         .resizable()
@@ -145,10 +116,7 @@ struct AddTeamView: View {
                         }
 
                         TextField("Player 2 Name", text: $player2Name)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .padding()
                     }
-                    .padding()
                     .onChange(of: player2PhotoPickerItem) {
                         guard let player2PhotoPickerItem else { return }
                         Task {
@@ -157,21 +125,18 @@ struct AddTeamView: View {
                     }
                 }
             }
-
-                // MARK: - Save Button
-                Button("Save") {
-                    saveTeam()
+            .navigationTitle("Add Team")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
                 }
-                .buttonSizing(.flexible)
-                .buttonBorderShape(.roundedRectangle(radius: 8))
-                .buttonStyle(.glassProminent)
-                .padding()
-                .disabled(isSaveDisabled)
 
-                Spacer()
-
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") { saveTeam() }
+                        .disabled(isSaveDisabled)
+                }
+            }
         }
-        .padding()
     }
 
     // MARK: - Save Logic (SwiftData)

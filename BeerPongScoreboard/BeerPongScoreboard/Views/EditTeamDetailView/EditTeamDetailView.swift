@@ -24,6 +24,7 @@ struct EditTeamDetailView: View {
 
     var body: some View {
         Form {
+
             // MARK: Team Header
             Section {
                 VStack(spacing: 12) {
@@ -54,16 +55,18 @@ struct EditTeamDetailView: View {
                 .padding(.vertical, 8)
             }
 
-            // MARK: Players
+            // MARK: Players (Reorderable)
             Section {
                 if team.players.isEmpty {
                     Text("No players yet")
                         .foregroundStyle(.secondary)
+
                 } else {
                     ForEach(team.players) { player in
                         PlayerRowView(player: player, size: playerAvatarSize)
                     }
                     .onDelete(perform: deletePlayers)
+                    .onMove(perform: movePlayers)
                 }
 
                 if team.players.count >= 2 {
@@ -98,10 +101,10 @@ struct EditTeamDetailView: View {
         .navigationTitle(team.name)
         .navigationBarTitleDisplayMode(.inline)
 
-        // ✅ hide system back button so user can't pop without our logic
+        // Hide system back button so user can't pop without our logic
         .navigationBarBackButtonHidden(true)
 
-        // ✅ disable swipe-back unless allowPop == true
+        // Disable swipe-back unless allowPop = true OR team is valid
         .modifier(DisableSwipeBackModifier(isEnabled: team.players.count == 2 || allowPop))
 
         // MARK: Toolbar (Back + Save)
@@ -124,7 +127,7 @@ struct EditTeamDetailView: View {
             }
         }
 
-        // MARK: Replace player dialog
+        // MARK: Replace Player Dialog
         .confirmationDialog(
             "Team Full",
             isPresented: $showReplaceDialog,
@@ -154,7 +157,7 @@ struct EditTeamDetailView: View {
             }
         }
 
-        // MARK: Invalid team alert
+        // MARK: Invalid Team Alert
         .alert("Team Needs 2 Players", isPresented: $showInvalidTeamAlert) {
             Button("Stay Here", role: .cancel) {}
 
@@ -164,11 +167,12 @@ struct EditTeamDetailView: View {
                 allowPop = true
                 dismiss()
             }
+
         } message: {
             Text("A beer pong team must have exactly 2 players before leaving this screen.")
         }
 
-        // Handle team photo
+        // MARK: Handle team photo changes
         .onChange(of: teamPhotoItem) { _, newItem in
             guard let newItem else { return }
             Task {
@@ -178,8 +182,12 @@ struct EditTeamDetailView: View {
                 }
             }
         }
+
+        // ✅ Always show drag handles for reordering
+        .environment(\.editMode, .constant(.active))
     }
 
+    // MARK: - Back Button Logic
     private func handleBack() {
         if team.players.count != 2 {
             showInvalidTeamAlert = true
@@ -189,6 +197,7 @@ struct EditTeamDetailView: View {
         dismiss()
     }
 
+    // MARK: - Save Logic
     private func handleSave() {
         if team.players.count != 2 {
             showInvalidTeamAlert = true
@@ -199,11 +208,18 @@ struct EditTeamDetailView: View {
         dismiss()
     }
 
+    // MARK: - Delete Players
     private func deletePlayers(at offsets: IndexSet) {
         for index in offsets {
             let player = team.players[index]
             modelContext.delete(player)
         }
+        try? modelContext.save()
+    }
+
+    // MARK: - Move / Reorder Players
+    private func movePlayers(from source: IndexSet, to destination: Int) {
+        team.players.move(fromOffsets: source, toOffset: destination)
         try? modelContext.save()
     }
 }
