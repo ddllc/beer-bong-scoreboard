@@ -19,7 +19,7 @@ struct EditTeamsView: View {
             } else {
                 ForEach(teams) { team in
                     NavigationLink {
-                        EditTeamDetailView(team: team)
+//                        EditTeamDetailView(team: team)
                     } label: {
                         TeamRowView(team: team)
                     }
@@ -43,7 +43,7 @@ struct EditTeamsView: View {
         }
         .fullScreenCover(isPresented: $isAddTeamPresented) {
             NavigationStack {
-                AddTeamView()
+//                AddTeamView()
             }
         }
     }

@@ -1,223 +1,195 @@
 import SwiftUI
-import SwiftData
+
+private enum RPSChoice: String, CaseIterable, Identifiable {
+    case rock
+    case paper
+    case scissors
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .rock:     return "🪨 Rock"
+        case .paper:    return "📄 Paper"
+        case .scissors: return "✂️ Scissors"
+        }
+    }
+}
 
 struct RockPaperScissorsView: View {
-    let team1: TeamEntity
-    let team2: TeamEntity
+    let team1: TeamModel
+    let team2: TeamModel
 
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.modelContext) private var modelContext
-    @State private var isRPSDecided = false
+    /// Called when a winner is decided and the user confirms.
+    /// Passes back the starting team.
+    let onDecideStarter: (TeamModel) -> Void
 
-    // MARK: - State
+    /// Called when the user cancels (optional).
+    let onCancel: () -> Void
 
     @State private var team1Choice: RPSChoice?
     @State private var team2Choice: RPSChoice?
-    @State private var resultText: String = "Pick a player and Rock, Paper, or Scissors for each team to see who goes first!"
-
-    @State private var team1SelectedPlayer: PlayerEntity?
-    @State private var team2SelectedPlayer: PlayerEntity?
+    @State private var resultText: String = "Both teams pick Rock, Paper, or Scissors."
+    @State private var winningTeam: TeamModel?
 
     var body: some View {
-        VStack {
-            Text("Rock • Paper • Scissors")
+        VStack(spacing: 24) {
+            // Title
+            Text("Who Goes First?")
                 .font(.largeTitle.bold())
-
-            Text(resultText)
                 .multilineTextAlignment(.center)
-                .lineLimit(nil)
 
+            Text("Play Rock • Paper • Scissors to decide which team starts.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+
+            // Team vs Team layout
+            HStack(spacing: 16) {
+                teamColumn(
+                    title: team1.name,
+                    choice: $team1Choice
+                )
+
+                Text("VS")
+                    .font(.headline.bold())
+                    .padding(.horizontal, 4)
+
+                teamColumn(
+                    title: team2.name,
+                    choice: $team2Choice
+                )
+            }
+            .padding(.horizontal)
+
+            // Result text
+            Text(resultText)
+                .font(.body.weight(.medium))
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
 
             Spacer()
 
-            VStack(spacing: 20) {
-                // MARK: Team 1 section
-                HStack(spacing: 8) {
-                    Text(team1.name)
-                        .font(.title3.bold())
-
-                    // Player picker
-                    if !team1.players.isEmpty {
-                        Menu {
-                            ForEach(team1.players) { player in
-                                Button(player.name) {
-                                    team1SelectedPlayer = player
-                                    determineRPSWinner()
-                                }
-                            }
-                        } label: {
-                            HStack {
-                                Text(team1SelectedPlayer?.name ?? "Choose player")
-                                Spacer()
-                                Image(systemName: "chevron.down")
-                                    .font(.caption)
-                            }
-                            .padding(8)
-                            .background(Color.gray.opacity(0.15))
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                        }
+            // Action buttons
+            VStack(spacing: 12) {
+                Button {
+                    if let winner = winningTeam {
+                        onDecideStarter(winner)
                     }
-
-                    // RPS choices
-                    HStack {
-                        ForEach(RPSChoice.allCases, id: \.self) { choice in
-                            Button(choice.rawValue) {
-                                team1Choice = choice
-                                determineRPSWinner()
-                            }
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(
-                                team1Choice == choice
-                                ? Color.blue.opacity(0.3)
-                                : Color.gray.opacity(0.15)
-                            )
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                        }
-                    }
+                } label: {
+                    Text(startButtonTitle)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .font(.headline)
+                        .contentShape(Rectangle())
                 }
+                .buttonStyle(.borderedProminent)
+                .disabled(winningTeam == nil)
 
-                // MARK: Team 2 section
-                HStack(spacing: 8) {
-                    Text(team2.name)
-                        .font(.title3.bold())
-
-                    // Player picker
-                    if !team2.players.isEmpty {
-                        Menu {
-                            ForEach(team2.players) { player in
-                                Button(player.name) {
-                                    team2SelectedPlayer = player
-                                    determineRPSWinner()
-                                }
-                            }
-                        } label: {
-                            HStack {
-                                Text(team2SelectedPlayer?.name ?? "Choose player")
-                                Spacer()
-                                Image(systemName: "chevron.down")
-                                    .font(.caption)
-                            }
-                            .padding(8)
-                            .background(Color.gray.opacity(0.15))
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                        }
-                    }
-
-                    // RPS choices
-                    HStack {
-                        ForEach(RPSChoice.allCases, id: \.self) { choice in
-                            Button(choice.rawValue) {
-                                team2Choice = choice
-                                determineRPSWinner()
-                            }
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(
-                                team2Choice == choice
-                                ? Color.green.opacity(0.3)
-                                : Color.gray.opacity(0.15)
-                            )
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                        }
-                    }
+                Button(role: .cancel) {
+                    onCancel()
+                } label: {
+                    Text("Cancel")
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
                 }
+                .buttonStyle(.bordered)
             }
-            Spacer()
-
-            NavigationLink(destination: GameView()) {
-                Text("Start Game")
-            }
-            .buttonStyle(.glassProminent)
-            .buttonSizing(.flexible)
-            .buttonBorderShape(.roundedRectangle(radius: 8))
-            .padding()
-            .disabled(isRPSDecided)
-
+            .padding(.horizontal)
+            .padding(.bottom, 16)
         }
-        .padding()
+        .padding(.top, 24)
+        .onChange(of: team1Choice) { _ in
+            evaluateIfReady()
+        }
+        .onChange(of: team2Choice) { _ in
+            evaluateIfReady()
+        }
+    }
+
+    // MARK: - Subviews
+
+    private func teamColumn(
+        title: String,
+        choice: Binding<RPSChoice?>
+    ) -> some View {
+        VStack(spacing: 12) {
+            Text(title)
+                .font(.headline)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .minimumScaleFactor(0.8)
+
+            // Choice buttons
+            VStack(spacing: 8) {
+                ForEach(RPSChoice.allCases) { option in
+                    Button {
+                        choice.wrappedValue = option
+                    } label: {
+                        HStack {
+                            Text(option.label)
+                            Spacer()
+                            if choice.wrappedValue == option {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .imageScale(.medium)
+                            }
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(choice.wrappedValue == option ? .accentColor : .secondary)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity)
     }
 
     // MARK: - Logic
 
-    private func determineRPSWinner() {
-        guard
-            let team1Choice = team1Choice,
-            let team2Choice = team2Choice,
-            let team1SelectedPlayer = team1SelectedPlayer,
-            let team2SelectedPlayer = team2SelectedPlayer
-        else {
-            resultText = "Pick a player AND a choice for each team."
+    private var startButtonTitle: String {
+        if let winner = winningTeam {
+            return "\(winner.name) starts first"
+        } else {
+            return "Decide Starter"
+        }
+    }
+
+    private func evaluateIfReady() {
+        guard let t1 = team1Choice, let t2 = team2Choice else {
+            winningTeam = nil
+            resultText = "Both teams pick Rock, Paper, or Scissors."
             return
         }
 
-        guard team1Choice == team2Choice else {
-            resultText = "It's a tie! Change a choice to play again."
-            applyRPSResult(result: .tie, team1SelectedPlayer: team1SelectedPlayer, team2SelectedPlayer: team1SelectedPlayer)
+        if t1 == t2 {
+            winningTeam = nil
+            resultText = "It's a tie! Pick again."
             return
         }
 
-        if team1Choice == .rock, team2Choice == .paper {
-            resultText = "\(team1SelectedPlayer.team) Goes First!"
-            applyRPSResult(result: .team1Win, team1SelectedPlayer: team1SelectedPlayer, team2SelectedPlayer: team2SelectedPlayer)
-        } else if team2Choice == .rock, team1Choice == .paper {
-            resultText = "\(team2SelectedPlayer.team) Goes First!"
-            applyRPSResult(result: .team2Win, team1SelectedPlayer: team1SelectedPlayer, team2SelectedPlayer: team2SelectedPlayer)
-        }
+        let team1Wins = does(t1, beat: t2)
 
-        if team1Choice == .rock, team2Choice == .scissors {
-            resultText = "\(team1SelectedPlayer.team) Goes First!"
-            applyRPSResult(result: .team1Win, team1SelectedPlayer: team1SelectedPlayer, team2SelectedPlayer: team2SelectedPlayer)
-        } else if team2Choice == .scissors, team1Choice == .rock {
-            resultText = "\(team2SelectedPlayer.team) Goes First!"
-            applyRPSResult(result: .team2Win, team1SelectedPlayer: team1SelectedPlayer, team2SelectedPlayer: team2SelectedPlayer)
-        }
-
-        if team1Choice == .scissors, team2Choice == .paper {
-            resultText = "\(team1SelectedPlayer.team) Goes First!"
-            applyRPSResult(result: .team1Win, team1SelectedPlayer: team1SelectedPlayer, team2SelectedPlayer: team2SelectedPlayer)
-        } else if team2Choice == .paper, team1Choice == .scissors {
-            resultText = "\(team2SelectedPlayer.team) Goes First!"
-            applyRPSResult(result: .team2Win, team1SelectedPlayer: team1SelectedPlayer, team2SelectedPlayer: team2SelectedPlayer)
+        if team1Wins {
+            winningTeam = team1
+            resultText = "\(team1.name) wins and goes first!"
+        } else {
+            winningTeam = team2
+            resultText = "\(team2.name) wins and goes first!"
         }
     }
 
-
-    private func applyRPSResult(
-        result: RPSResult,
-        team1SelectedPlayer: PlayerEntity,
-        team2SelectedPlayer: PlayerEntity
-    ) {
-        switch result {
-        case .tie:
-            team1SelectedPlayer.rpsTies += 1
-            team2SelectedPlayer.rpsTies += 1
-        case .team1Win:
-            team1SelectedPlayer.rpsWins += 1
-            team2SelectedPlayer.rpsLosses += 1
-            isRPSDecided = true
-        case .team2Win:
-            team1SelectedPlayer.rpsLosses += 1
-            team2SelectedPlayer.rpsWins += 1
-            isRPSDecided = true
+    private func does(_ a: RPSChoice, beat b: RPSChoice) -> Bool {
+        switch (a, b) {
+        case (.rock, .scissors),
+             (.paper, .rock),
+             (.scissors, .paper):
+            return true
+        default:
+            return false
         }
-
-        do {
-            try modelContext.save()
-        } catch {
-            print("⚠️ Failed to save RPS stats: \(error)")
-        }
-    }
-
-    private enum RPSResult {
-        case team1Win
-        case team2Win
-        case tie
-    }
-
-    private enum RPSChoice: String, CaseIterable {
-        case rock = "Rock"
-        case paper = "Paper"
-        case scissors = "Scissors"
     }
 }
+
+

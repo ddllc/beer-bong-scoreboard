@@ -13,10 +13,6 @@ struct StartingView: View {
     @State private var selectedTeam1: TeamEntity?
     @State private var selectedTeam2: TeamEntity?
 
-    // see who goes first
-    @State private var isSelectedTeam1GoingFirst = false
-
-
     var body: some View {
         VStack {
             ScrollView(showsIndicators: false) {
@@ -24,9 +20,11 @@ struct StartingView: View {
 
                     // MARK: - Pickers + Team Cards
                     HStack(alignment: .top) {
+                        // LEFT SIDE
                         VStack(alignment: .leading, spacing: 8) {
                             Picker("Select Team 1", selection: $selectedTeam1) {
                                 Text("Select Team").tag(TeamEntity?.none)
+
                                 ForEach(teams.filter { team in
                                     team.id != selectedTeam2?.id
                                 }) { team in
@@ -40,14 +38,12 @@ struct StartingView: View {
                                        alignment: .leading)
                         }
 
-
                         VStack {
                             Spacer()
                             Text("VS")
                                 .font(.system(size: 75, weight: .heavy))
                             Spacer()
                         }
-
 
                         // RIGHT SIDE
                         VStack(alignment: .trailing, spacing: 8) {
@@ -62,7 +58,7 @@ struct StartingView: View {
                             }
                             .pickerStyle(.menu)
 
-                            TeamCardView(team: selectedTeam2 )
+                            TeamCardView(team: selectedTeam2)
                                 .frame(maxWidth: .infinity,
                                        alignment: .trailing)
                         }
@@ -72,26 +68,19 @@ struct StartingView: View {
                 .padding(.horizontal)
             }
 
-            // MARK: - Rock Paper Scissors Button
+            // MARK: - Start Game Button (RPS removed)
             VStack(alignment: .trailing) {
-                if let team1 = selectedTeam1,
-                   let team2 = selectedTeam2 {
-
-                    NavigationLink {
-                        RockPaperScissorsView(
-                            team1: team1,
-                            team2: team2
-                        )
-                    } label: {
-                        Text("Rock Paper Scissors")
+                if selectedTeam1 != nil, selectedTeam2 != nil {
+                    Button("Start Game") {
+                        // TODO: Hook this up to your GameModel / GameEntity flow
+                        // You have selectedTeam1 and selectedTeam2 here.
                     }
                     .buttonStyle(.glassProminent)
                     .buttonSizing(.flexible)
                     .buttonBorderShape(.roundedRectangle(radius: 8))
                     .padding()
-
                 } else {
-                    Button("Rock Paper Scissors") {}
+                    Button("Start Game") { }
                         .buttonStyle(.glassProminent)
                         .buttonSizing(.flexible)
                         .buttonBorderShape(.roundedRectangle(radius: 8))
@@ -105,7 +94,7 @@ struct StartingView: View {
         .navigationTitle("Beer Pong Scoreboard")
         .navigationBarTitleDisplayMode(.inline)
         .fullScreenCover(isPresented: $isAddTeamSheetPresented) {
-            AddTeamView()
+//            AddTeamView()
         }
         .fullScreenCover(isPresented: $isEditTeamSheetPresented) {
             EditTeamsView()
