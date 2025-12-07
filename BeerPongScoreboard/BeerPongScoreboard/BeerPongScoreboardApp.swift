@@ -3,6 +3,7 @@ import SwiftData
 
 @main
 struct BeerPongScoreboardApp: App {
+
     @State private var appData = AppData()
 
     var body: some Scene {
@@ -15,13 +16,7 @@ struct BeerPongScoreboardApp: App {
                 TeamEntity.self,
                 PlayerEntity.self
             ])
+
         }
     }
 }
-
-
-
-// to use
-// @Environment(\.modelContext) private var modelContext
-// @Query(sort: \TeamEntity.name) private var teams: [TeamEntity]
-

@@ -2,125 +2,128 @@ import SwiftUI
 import SwiftData
 
 struct StartingView: View {
-    @State private var isShowRulesSheetPresented = false
-    @State private var isAddTeamSheetPresented = false
-    @State private var isEditTeamSheetPresented = false
-
-    // Pull teams from SwiftData (auto-updates)
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Query(sort: \TeamEntity.name) private var teams: [TeamEntity]
-
-    // Two selections
+    @State private var isShowRulesSheetPresented = false
     @State private var selectedTeam1: TeamEntity?
     @State private var selectedTeam2: TeamEntity?
 
+    private var availableTeamsForTeam1: [TeamEntity] {
+        teams.filter { $0.id != selectedTeam2?.id }
+    }
+
+    private var availableTeamsForTeam2: [TeamEntity] {
+        teams.filter { $0.id != selectedTeam1?.id }
+    }
+
     var body: some View {
-        VStack {
             ScrollView(showsIndicators: false) {
-                VStack(spacing: 32) {
-
-                    // MARK: - Pickers + Team Cards
-                    HStack(alignment: .top) {
-                        // LEFT SIDE
-                        VStack(alignment: .leading, spacing: 8) {
-                            Picker("Select Team 1", selection: $selectedTeam1) {
-                                Text("Select Team").tag(TeamEntity?.none)
-
-                                ForEach(teams.filter { team in
-                                    team.id != selectedTeam2?.id
-                                }) { team in
-                                    Text(team.name).tag(TeamEntity?.some(team))
-                                }
+                VStack {
+                    // MARK: - Matchup Row
+                    HStack {
+                        // MARK: Matchup Left Column
+                        HStack(alignment: .lastTextBaseline) {
+                            VStack {
+                                Image("SoloCupRed")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .opacity(0.85)
                             }
-                            .pickerStyle(.menu)
 
-                            TeamCardView(team: selectedTeam1)
-                                .frame(maxWidth: .infinity,
-                                       alignment: .leading)
+                            VStack {
+                                Picker("Select Team 1", selection: $selectedTeam1) {
+                                    Text("Select Team")
+                                        .tag(nil as TeamEntity?)
+                                    ForEach(availableTeamsForTeam1) { team in
+                                        Text(team.name).tag(team as TeamEntity?)
+                                    }
+                                }
+                                .pickerStyle(.menu)
+                                .tint(.soloCupRed)
+
+                                TeamCardView(team: selectedTeam1)
+
+                            }
+                            .padding(4)
+                            .background(
+                                .ultraThinMaterial,
+                                in: RoundedRectangle(cornerRadius: 22, style: .continuous)
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                                    .stroke(.white.opacity(0.15), lineWidth: 1)
+                            )
                         }
 
+                        // MARK: Matchup Center Column
                         VStack {
                             Spacer()
                             Text("VS")
-                                .font(.system(size: 75, weight: .heavy))
+                                .font(.system(size: 75))
+                                .fontWeight(.heavy)
                             Spacer()
                         }
 
-                        // RIGHT SIDE
-                        VStack(alignment: .trailing, spacing: 8) {
-                            Picker("Pick Team 2", selection: $selectedTeam2) {
-                                Text("Select Team").tag(TeamEntity?.none)
+                        // MARK: Matchup Right Column
+                        HStack(alignment: .lastTextBaseline) {
+                            VStack {
+                                Picker("Select Team 2", selection: $selectedTeam2) {
+                                    Text("Select Team")
+                                        .tag(nil as TeamEntity?)
 
-                                ForEach(teams.filter { team in
-                                    team.id != selectedTeam1?.id
-                                }) { team in
-                                    Text(team.name).tag(TeamEntity?.some(team))
+                                    ForEach(availableTeamsForTeam2) { team in
+                                        Text(team.name).tag(team as TeamEntity?)
+                                    }
                                 }
-                            }
-                            .pickerStyle(.menu)
+                                .pickerStyle(.menu)
+                                .tint(.soloCupBlue)
 
-                            TeamCardView(team: selectedTeam2)
-                                .frame(maxWidth: .infinity,
-                                       alignment: .trailing)
+                                TeamCardView(team: selectedTeam2)
+                            }
+                            .padding(4)
+                            .background(
+                                .ultraThinMaterial,
+                                in: RoundedRectangle(cornerRadius: 22, style: .continuous)
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                                    .stroke(.white.opacity(0.15), lineWidth: 1)
+                            )
+
+                            VStack {
+                                Image("SoloCupBlue")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .opacity(0.85)
+                            }
                         }
                     }
                     .frame(maxWidth: .infinity)
-                }
-                .padding(.horizontal)
-            }
 
-            // MARK: - Start Game Button (RPS removed)
-            VStack(alignment: .trailing) {
-                if selectedTeam1 != nil, selectedTeam2 != nil {
-                    Button("Start Game") {
-                        // TODO: Hook this up to your GameModel / GameEntity flow
-                        // You have selectedTeam1 and selectedTeam2 here.
-                    }
-                    .buttonStyle(.glassProminent)
-                    .buttonSizing(.flexible)
-                    .buttonBorderShape(.roundedRectangle(radius: 8))
-                    .padding()
-                } else {
-                    Button("Start Game") { }
+                    // MARK: - Start Button
+                    HStack {
+                        Button {
+
+                        } label: {
+                            Text("Start Game")
+                                .font(.title2)
+                                .bold()
+                        }
+                        .frame(maxWidth: 300)
                         .buttonStyle(.glassProminent)
                         .buttonSizing(.flexible)
                         .buttonBorderShape(.roundedRectangle(radius: 8))
-                        .padding()
+
                         .disabled(true)
+                    }
+                    .padding(.top, 32)
                 }
             }
-
-            Spacer()
+        .onChange(of: dynamicTypeSize) { _, newSize in
+            print("Dynamic type size changed to: \(newSize)")
         }
         .navigationTitle("Beer Pong Scoreboard")
         .navigationBarTitleDisplayMode(.inline)
-        .fullScreenCover(isPresented: $isAddTeamSheetPresented) {
-//            AddTeamView()
-        }
-        .fullScreenCover(isPresented: $isEditTeamSheetPresented) {
-            EditTeamsView()
-        }
-        .onAppear {
-            if selectedTeam1 == nil { selectedTeam1 = teams.first }
-            if selectedTeam2 == nil { selectedTeam2 = teams.dropFirst().first }
-        }
-        .onChange(of: teams) {
-            if selectedTeam1 == nil { selectedTeam1 = teams.first }
-            if selectedTeam2 == nil { selectedTeam2 = teams.dropFirst().first }
-
-            if selectedTeam1?.id == selectedTeam2?.id {
-                selectedTeam2 = nil
-            }
-        }
-        .onChange(of: selectedTeam1) {
-            if selectedTeam1?.id == selectedTeam2?.id {
-                selectedTeam2 = nil
-            }
-        }
-        .onChange(of: selectedTeam2) {
-            if selectedTeam2?.id == selectedTeam1?.id {
-                selectedTeam1 = nil
-            }
-        }
         .sheet(isPresented: $isShowRulesSheetPresented) {
             SafariView(url: URL(string: "https://www.probeersports.com/beer-pong")!)
                 .ignoresSafeArea()
@@ -131,7 +134,7 @@ struct StartingView: View {
                     isShowRulesSheetPresented = true
                 }
             }
-            ToolbarItem {
+            ToolbarItem(placement: .topBarTrailing) {
                 NavigationLink(destination: EditTeamsView()) {
                     Text("Edit Teams")
                 }

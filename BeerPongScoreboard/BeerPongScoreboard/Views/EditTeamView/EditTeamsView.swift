@@ -1,27 +1,22 @@
 import SwiftUI
 import SwiftData
-import PhotosUI
-
-// MARK: - EditTeamsView (List of teams)
 
 struct EditTeamsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \TeamEntity.name) private var teams: [TeamEntity]
 
-    @State private var isAddTeamPresented = false
-
     var body: some View {
         List {
             if teams.isEmpty {
                 ContentUnavailableView("No Teams Yet",
-                                       systemImage: "person.3.fill",
+                                       systemImage: "person.2.fill",
                                        description: Text("Tap Add to create your first team."))
             } else {
                 ForEach(teams) { team in
                     NavigationLink {
 //                        EditTeamDetailView(team: team)
                     } label: {
-                        TeamRowView(team: team)
+                        EditTeamsRowView(team: team)
                     }
                 }
                 .onDelete(perform: deleteTeams)
@@ -30,20 +25,15 @@ struct EditTeamsView: View {
         .navigationTitle("Edit Teams")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    isAddTeamPresented = true
-                } label: {
+                NavigationLink(destination: AddTeamView()) {
                     Label("Add Team", systemImage: "plus")
                 }
             }
 
-            ToolbarItem(placement: .topBarLeading) {
-                EditButton()
-            }
-        }
-        .fullScreenCover(isPresented: $isAddTeamPresented) {
-            NavigationStack {
-//                AddTeamView()
+            if !teams.isEmpty {
+                ToolbarItem(placement: .topBarLeading) {
+                    EditButton()
+                }
             }
         }
     }

@@ -1,44 +1,31 @@
 import SwiftUI
 
-struct TeamRowView: View {
+struct EditTeamsRowView: View {
     let team: TeamEntity
-    private let avatarSize: CGFloat = 44
 
     var body: some View {
-        HStack(spacing: 12) {
-            if let data = team.photoData,
-               let uiImage = UIImage(data: data) {
-                Image(uiImage: uiImage)
+        HStack {
+            
+            if let teamPhoto = team.photoData {
+                Image(uiImage: UIImage(data: teamPhoto)!)
                     .resizable()
-                    .scaledToFill()
-                    .frame(width: avatarSize, height: avatarSize)
-                    .clipShape(Circle())
+                    .scaledToFit()
+                    .frame(width: 40, height: 40)
+
             } else {
                 Image(systemName: "photo.circle.fill")
                     .resizable()
-                    .scaledToFill()
-                    .frame(width: avatarSize, height: avatarSize)
-                    .foregroundStyle(.secondary)
+                    .scaledToFit()
+                    .frame(width: 40, height: 40)
+
             }
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(team.name)
-                    .font(.headline)
+            Text(team.name)
 
-                Text("\(team.players.count) player\(team.players.count == 1 ? "" : "s")")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
+            Text(team.players[0].name)
 
-            Spacer()
+            Text(team.players[1].name)
 
-            VStack(alignment: .trailing, spacing: 2) {
-                Text("W \(team.wins)")
-                Text("L \(team.losses)")
-            }
-            .font(.subheadline)
-            .foregroundStyle(.secondary)
         }
-        .padding(.vertical, 6)
     }
 }

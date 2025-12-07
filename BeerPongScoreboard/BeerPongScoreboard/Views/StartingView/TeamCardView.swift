@@ -1,12 +1,11 @@
 import SwiftUI
-import SwiftData
 
 struct TeamCardView: View {
     let team: TeamEntity?
     private let avatarSize: CGFloat = 100
 
     var body: some View {
-        VStack(spacing: 8) {
+        VStack {
             ZStack {
                 Circle()
                     .fill(Color(.systemGray5))
@@ -17,7 +16,7 @@ struct TeamCardView: View {
                         .resizable()
                         .scaledToFill()
                 } else {
-                    Image(systemName: "photo")
+                    Image(systemName: "person.2.fill")
                         .font(.system(size: avatarSize * 0.4))
                         .foregroundStyle(.secondary)
                 }
@@ -26,16 +25,23 @@ struct TeamCardView: View {
             .clipShape(Circle())
 
             Text(team?.name ?? "Select Team")
-                .font(.title2.bold())
-                .foregroundColor(team == nil ? .secondary : .primary)
+                .font(.title2)
+                .bold()
 
-            Text(team != nil
-                 ? "Wins: \(team!.wins)  Losses: \(team!.losses)"
-                 : "Wins: 0  Losses: 0")
-                .font(.headline)
-                .foregroundColor(.secondary)
+
+            Group {
+                if let team {
+                    Text("Wins: \(team.wins)")
+                    Text("Losses: \(team.losses)")
+                } else {
+                    Text("Wins: 0")
+                    Text("Losses: 0")
+                }
+            }
+            .font(.headline)
+            .foregroundColor(.secondary)
         }
-        .frame(width: 180)
-        .multilineTextAlignment(.center)
+        .frame(width: 175)
+
     }
 }
