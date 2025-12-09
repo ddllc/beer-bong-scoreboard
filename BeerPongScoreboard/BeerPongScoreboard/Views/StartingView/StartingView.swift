@@ -20,6 +20,26 @@ struct StartingView: View {
         selectedTeam1 != nil && selectedTeam2 != nil
     }
 
+    private var currentGame: GameModel? {
+        guard let team1 = selectedTeam1,
+              let team2 = selectedTeam2 else {
+            return nil
+        }
+
+        return GameModel(
+            id: UUID(),
+            startedAt: Date(),
+            endedAt: nil,
+            team1: team1.toModel(),
+            team2: team2.toModel(),
+            team1CupsSunk: 0,
+            team2CupsSunk: 0,
+            startingTeamID: team1.id,   // or team2.id after RPS
+            winnerTeamID: nil
+        )
+    }
+
+
     var body: some View {
             ScrollView(showsIndicators: false) {
                 VStack {
@@ -106,18 +126,35 @@ struct StartingView: View {
 
                     // MARK: - Start Button
                     HStack {
-                        NavigationLink(destination: GameView()) {
-                            Text("Start Game")
-                                .font(.title2)
-                                .bold()
+                        if let game = currentGame {
+                            NavigationLink {
+                                GameView(game: game)
+                            } label: {
+                                Text("Start Game")
+                                    .font(.title2)
+                                    .bold()
+                            }
+                            .frame(maxWidth: 300)
+                            .buttonStyle(.glassProminent)
+                            .buttonSizing(.flexible)
+                            .buttonBorderShape(.roundedRectangle(radius: 8))
+                        } else {
+                            Button {
+                                // no-op
+                            } label: {
+                                Text("Start Game")
+                                    .font(.title2)
+                                    .bold()
+                            }
+                            .frame(maxWidth: 300)
+                            .buttonStyle(.glassProminent)
+                            .buttonSizing(.flexible)
+                            .buttonBorderShape(.roundedRectangle(radius: 8))
+                            .disabled(true)
                         }
-                        .frame(maxWidth: 300)
-                        .buttonStyle(.glassProminent)
-                        .buttonSizing(.flexible)
-                        .buttonBorderShape(.roundedRectangle(radius: 8))
-                        .disabled(!canStartGame)
                     }
                     .padding(.top, 32)
+
                 }
             }
         .onChange(of: dynamicTypeSize) { _, newSize in

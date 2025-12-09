@@ -10,6 +10,7 @@ struct GameModel: Identifiable, Hashable {
     let team2CupsSunk: Int
     let startingTeamID: UUID
     let winnerTeamID: UUID?
+
 }
 
 extension GameModel {
