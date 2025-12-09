@@ -16,6 +16,10 @@ struct StartingView: View {
         teams.filter { $0.id != selectedTeam1?.id }
     }
 
+    private var canStartGame: Bool {
+        selectedTeam1 != nil && selectedTeam2 != nil
+    }
+
     var body: some View {
             ScrollView(showsIndicators: false) {
                 VStack {
@@ -102,9 +106,7 @@ struct StartingView: View {
 
                     // MARK: - Start Button
                     HStack {
-                        Button {
-
-                        } label: {
+                        NavigationLink(destination: GameView()) {
                             Text("Start Game")
                                 .font(.title2)
                                 .bold()
@@ -113,8 +115,7 @@ struct StartingView: View {
                         .buttonStyle(.glassProminent)
                         .buttonSizing(.flexible)
                         .buttonBorderShape(.roundedRectangle(radius: 8))
-
-                        .disabled(true)
+                        .disabled(!canStartGame)
                     }
                     .padding(.top, 32)
                 }
