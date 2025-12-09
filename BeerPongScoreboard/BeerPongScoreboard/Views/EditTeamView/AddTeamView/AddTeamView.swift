@@ -74,9 +74,9 @@ struct AddTeamView: View {
                 }
             }
 
-            // MARK: - Player 1
+            // MARK: - Players Section
             Section("Players") {
-                HStack(spacing: 16) {
+                HStack {
                     PhotosPicker(selection: $player1PhotoPickerItem) {
                         Group {
                             if let player1PhotoData,
@@ -110,7 +110,7 @@ struct AddTeamView: View {
                     }
                 }
 
-                HStack(spacing: 16) {
+                HStack {
                     PhotosPicker(selection: $player2PhotoPickerItem) {
                         Group {
                             if let player2PhotoData,
@@ -149,7 +149,7 @@ struct AddTeamView: View {
                 }
             }
         }
-        .listStyle(.grouped)
+        .scrollDismissesKeyboard(.interactively)
         .navigationTitle("Add Team")
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {

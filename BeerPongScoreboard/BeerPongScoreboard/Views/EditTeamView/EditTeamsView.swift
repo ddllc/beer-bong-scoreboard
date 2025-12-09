@@ -14,7 +14,7 @@ struct EditTeamsView: View {
             } else {
                 ForEach(teams) { team in
                     NavigationLink {
-//                        EditTeamDetailView(team: team)
+                        EditTeamDetailView(team: team)
                     } label: {
                         EditTeamsRowView(team: team)
                     }
@@ -22,6 +22,7 @@ struct EditTeamsView: View {
                 .onDelete(perform: deleteTeams)
             }
         }
+        .scrollDismissesKeyboard(.interactively)
         .navigationTitle("Edit Teams")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {

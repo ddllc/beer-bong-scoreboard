@@ -100,10 +100,10 @@ struct RockPaperScissorsView: View {
             .padding(.bottom, 16)
         }
         .padding(.top, 24)
-        .onChange(of: team1Choice) { _ in
+        .onChange(of: team1Choice) {
             evaluateIfReady()
         }
-        .onChange(of: team2Choice) { _ in
+        .onChange(of: team2Choice) {
             evaluateIfReady()
         }
     }
