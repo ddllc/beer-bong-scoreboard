@@ -20,7 +20,7 @@ struct StartingView: View {
             ScrollView(showsIndicators: false) {
                 VStack {
                     // MARK: - Matchup Row
-                    HStack {
+                    HStack(alignment: .lastTextBaseline) {
                         // MARK: Matchup Left Column
                         HStack(alignment: .lastTextBaseline) {
                             VStack {

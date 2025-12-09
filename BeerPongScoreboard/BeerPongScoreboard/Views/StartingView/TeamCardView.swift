@@ -27,7 +27,9 @@ struct TeamCardView: View {
             Text(team?.name ?? "Select Team")
                 .font(.title2)
                 .bold()
-
+                .multilineTextAlignment(.center)
+                    .lineLimit(nil)           // <-- allow unlimited lines
+                    .fixedSize(horizontal: false, vertical: true) // <-- important!
 
             Group {
                 if let team {

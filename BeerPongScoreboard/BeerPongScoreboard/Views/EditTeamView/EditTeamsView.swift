@@ -3,16 +3,32 @@ import SwiftData
 
 struct EditTeamsView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \TeamEntity.name) private var teams: [TeamEntity]
+
+    @Query(sort: \TeamEntity.name) private var allTeams: [TeamEntity]
+    @State private var searchText = ""
+
+    private var filteredTeams: [TeamEntity] {
+        guard !searchText.isEmpty else { return allTeams }
+
+        let query = searchText.lowercased()
+
+        return allTeams.filter { team in
+            let teamMatches = team.name.lowercased().contains(query)
+            let playersMatch = team.players.contains { $0.name.lowercased().contains(query) }
+            return teamMatches || playersMatch
+        }
+    }
 
     var body: some View {
         List {
-            if teams.isEmpty {
-                ContentUnavailableView("No Teams Yet",
-                                       systemImage: "person.2.fill",
-                                       description: Text("Tap Add to create your first team."))
+            if filteredTeams.isEmpty {
+                ContentUnavailableView(
+                    "No Teams Found",
+                    systemImage: "person.2.fill",
+                    description: Text("Try searching for a different name.")
+                )
             } else {
-                ForEach(teams) { team in
+                ForEach(filteredTeams) { team in
                     NavigationLink {
                         EditTeamDetailView(team: team)
                     } label: {
@@ -22,6 +38,7 @@ struct EditTeamsView: View {
                 .onDelete(perform: deleteTeams)
             }
         }
+        .searchable(text: $searchText, prompt: "Search teams or players")
         .scrollDismissesKeyboard(.interactively)
         .navigationTitle("Edit Teams")
         .toolbar {
@@ -31,7 +48,7 @@ struct EditTeamsView: View {
                 }
             }
 
-            if !teams.isEmpty {
+            if !filteredTeams.isEmpty {
                 ToolbarItem(placement: .topBarLeading) {
                     EditButton()
                 }
@@ -41,15 +58,8 @@ struct EditTeamsView: View {
 
     private func deleteTeams(at offsets: IndexSet) {
         for index in offsets {
-            modelContext.delete(teams[index])
+            modelContext.delete(filteredTeams[index])
         }
         try? modelContext.save()
-    }
-}
-
-#Preview {
-    NavigationStack {
-        EditTeamsView()
-            .modelContainer(for: [TeamEntity.self, PlayerEntity.self], inMemory: true)
     }
 }
