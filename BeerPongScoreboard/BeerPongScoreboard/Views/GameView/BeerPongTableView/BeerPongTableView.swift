@@ -1,13 +1,12 @@
 import SwiftUI
 
 struct BeerPongTableView: View {
-    @Environment(AppData.self) private var appData: AppData
+    @Binding var game: GameModel
 
     var body: some View {
         HStack {
-            Team1RackView()
-            Spacer()
-            Team2RackView()
+            RoundedRectangle(cornerRadius: 8)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
 
 
