@@ -9,10 +9,11 @@ struct GameView: View {
 
     var body: some View {
 
-        VStack(spacing: 4) {
+        VStack {
                 ScoreboardView(game: $game)
                 BeerPongTableView(game: $game)
+            Spacer()
             }
-
+        .navigationBarBackButtonHidden(true)
     }
 }
