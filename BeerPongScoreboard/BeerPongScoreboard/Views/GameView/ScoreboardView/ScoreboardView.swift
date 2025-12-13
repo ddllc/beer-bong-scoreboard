@@ -57,6 +57,5 @@ struct ScoreboardView: View {
         .frame(height: 75)
         .padding(.horizontal)
         .ignoresSafeArea(edges: .top)
-        .background(Color(.soloCupRed))
     }
 }

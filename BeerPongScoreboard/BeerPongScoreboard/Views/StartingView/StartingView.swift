@@ -42,7 +42,7 @@ struct StartingView: View {
 
     var body: some View {
             ScrollView(showsIndicators: false) {
-                VStack {
+                VStack(spacing: 0) {
                     // MARK: - Matchup Row
                     HStack(alignment: .lastTextBaseline) {
                         // MARK: Matchup Left Column
@@ -153,7 +153,7 @@ struct StartingView: View {
                             .disabled(true)
                         }
                     }
-                    .padding(.top, 32)
+
 
                 }
             }
