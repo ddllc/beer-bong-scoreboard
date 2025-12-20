@@ -2,62 +2,39 @@ import SwiftUI
 
 struct BeerPongTableView: View {
     @Binding var game: GameModel
-    let cupSize: CGFloat = 55
+    let cupSize: CGFloat = 60
 
     @State private var leftSideScore = 0
     @State private var rightSideScore = 0
 
-    // Left rack (5 + 4 + 3 + 2 + 1 = 15 cups)
     @State private var isLeftCup1SunkAnimationActive = false
     @State private var isLeftCup2SunkAnimationActive = false
     @State private var isLeftCup3SunkAnimationActive = false
     @State private var isLeftCup4SunkAnimationActive = false
     @State private var isLeftCup5SunkAnimationActive = false
-
     @State private var isLeftCup6SunkAnimationActive = false
     @State private var isLeftCup7SunkAnimationActive = false
     @State private var isLeftCup8SunkAnimationActive = false
     @State private var isLeftCup9SunkAnimationActive = false
-
     @State private var isLeftCup10SunkAnimationActive = false
-    @State private var isLeftCup11SunkAnimationActive = false
-    @State private var isLeftCup12SunkAnimationActive = false
 
-    @State private var isLeftCup13SunkAnimationActive = false
-    @State private var isLeftCup14SunkAnimationActive = false
-
-    @State private var isLeftCup15SunkAnimationActive = false
-
-    // Right rack (1 + 2 + 3 + 4 + 5 = 15 cups)
     @State private var isRightCup1SunkAnimationActive = false
-
     @State private var isRightCup2SunkAnimationActive = false
     @State private var isRightCup3SunkAnimationActive = false
-
     @State private var isRightCup4SunkAnimationActive = false
     @State private var isRightCup5SunkAnimationActive = false
     @State private var isRightCup6SunkAnimationActive = false
-
     @State private var isRightCup7SunkAnimationActive = false
     @State private var isRightCup8SunkAnimationActive = false
     @State private var isRightCup9SunkAnimationActive = false
     @State private var isRightCup10SunkAnimationActive = false
 
-    @State private var isRightCup11SunkAnimationActive = false
-    @State private var isRightCup12SunkAnimationActive = false
-    @State private var isRightCup13SunkAnimationActive = false
-    @State private var isRightCup14SunkAnimationActive = false
-    @State private var isRightCup15SunkAnimationActive = false
-
     var body: some View {
         HStack {
             // MARK: - LEFT RACK (BLUE TEAM)
-            HStack {
-
-                // 5 cups (Left)
-                VStack(spacing: 0) {
-
-                    Image("SoloCupBlue") // ✅ BLUE
+            HStack(spacing: 26) {
+                VStack(spacing: 20) {
+                    Image("SoloCupBlue")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -76,11 +53,9 @@ struct BeerPongTableView: View {
                             } else {
                                 leftSideScore -= 1
                             }
-                            print(game.team1CupsSunk)
                         }
 
-
-                    Image("SoloCupBlue") // ✅ BLUE
+                    Image("SoloCupBlue")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -93,8 +68,15 @@ struct BeerPongTableView: View {
                                 isLeftCup2SunkAnimationActive.toggle()
                             }
                         }
+                        .onChange(of: isLeftCup2SunkAnimationActive) { _, newValue in
+                            if newValue {
+                                leftSideScore += 1
+                            } else {
+                                leftSideScore -= 1
+                            }
+                        }
 
-                    Image("SoloCupBlue") // ✅ BLUE
+                    Image("SoloCupBlue")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -107,8 +89,15 @@ struct BeerPongTableView: View {
                                 isLeftCup3SunkAnimationActive.toggle()
                             }
                         }
+                        .onChange(of: isLeftCup3SunkAnimationActive) { _, newValue in
+                            if newValue {
+                                leftSideScore += 1
+                            } else {
+                                leftSideScore -= 1
+                            }
+                        }
 
-                    Image("SoloCupBlue") // ✅ BLUE
+                    Image("SoloCupBlue")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -121,8 +110,17 @@ struct BeerPongTableView: View {
                                 isLeftCup4SunkAnimationActive.toggle()
                             }
                         }
+                        .onChange(of: isLeftCup4SunkAnimationActive) { _, newValue in
+                            if newValue {
+                                leftSideScore += 1
+                            } else {
+                                leftSideScore -= 1
+                            }
+                        }
+                }
 
-                    Image("SoloCupBlue") // ✅ BLUE
+                VStack(spacing: 20) {
+                    Image("SoloCupBlue")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -135,12 +133,15 @@ struct BeerPongTableView: View {
                                 isLeftCup5SunkAnimationActive.toggle()
                             }
                         }
-                }
+                        .onChange(of: isLeftCup5SunkAnimationActive) { _, newValue in
+                            if newValue {
+                                leftSideScore += 1
+                            } else {
+                                leftSideScore -= 1
+                            }
+                        }
 
-                // 4 cups (Left)
-                VStack(spacing: 0) {
-
-                    Image("SoloCupBlue") // ✅ BLUE
+                    Image("SoloCupBlue")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -153,8 +154,15 @@ struct BeerPongTableView: View {
                                 isLeftCup6SunkAnimationActive.toggle()
                             }
                         }
+                        .onChange(of: isLeftCup6SunkAnimationActive) { _, newValue in
+                            if newValue {
+                                leftSideScore += 1
+                            } else {
+                                leftSideScore -= 1
+                            }
+                        }
 
-                    Image("SoloCupBlue") // ✅ BLUE
+                    Image("SoloCupBlue")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -167,8 +175,17 @@ struct BeerPongTableView: View {
                                 isLeftCup7SunkAnimationActive.toggle()
                             }
                         }
+                        .onChange(of: isLeftCup7SunkAnimationActive) { _, newValue in
+                            if newValue {
+                                leftSideScore += 1
+                            } else {
+                                leftSideScore -= 1
+                            }
+                        }
+                }
 
-                    Image("SoloCupBlue") // ✅ BLUE
+                VStack(spacing: 20) {
+                    Image("SoloCupBlue")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -181,8 +198,15 @@ struct BeerPongTableView: View {
                                 isLeftCup8SunkAnimationActive.toggle()
                             }
                         }
+                        .onChange(of: isLeftCup8SunkAnimationActive) { _, newValue in
+                            if newValue {
+                                leftSideScore += 1
+                            } else {
+                                leftSideScore -= 1
+                            }
+                        }
 
-                    Image("SoloCupBlue") // ✅ BLUE
+                    Image("SoloCupBlue")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -195,12 +219,17 @@ struct BeerPongTableView: View {
                                 isLeftCup9SunkAnimationActive.toggle()
                             }
                         }
+                        .onChange(of: isLeftCup9SunkAnimationActive) { _, newValue in
+                            if newValue {
+                                leftSideScore += 1
+                            } else {
+                                leftSideScore -= 1
+                            }
+                        }
                 }
 
-                // 3 cups (Left)
-                VStack(spacing: 0) {
-
-                    Image("SoloCupBlue") // ✅ BLUE
+                VStack(spacing: 20) {
+                    Image("SoloCupBlue")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -213,82 +242,11 @@ struct BeerPongTableView: View {
                                 isLeftCup10SunkAnimationActive.toggle()
                             }
                         }
-
-                    Image("SoloCupBlue") // ✅ BLUE
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: cupSize, height: cupSize)
-                        .rotationEffect(.degrees(isLeftCup11SunkAnimationActive ? -60 : 0), anchor: .bottom)
-                        .offset(x: isLeftCup11SunkAnimationActive ? -6 : 0,
-                                y: isLeftCup11SunkAnimationActive ? 6 : 0)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            withAnimation(.easeOut(duration: 0.18)) {
-                                isLeftCup11SunkAnimationActive.toggle()
-                            }
-                        }
-
-                    Image("SoloCupBlue") // ✅ BLUE
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: cupSize, height: cupSize)
-                        .rotationEffect(.degrees(isLeftCup12SunkAnimationActive ? -60 : 0), anchor: .bottom)
-                        .offset(x: isLeftCup12SunkAnimationActive ? -6 : 0,
-                                y: isLeftCup12SunkAnimationActive ? 6 : 0)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            withAnimation(.easeOut(duration: 0.18)) {
-                                isLeftCup12SunkAnimationActive.toggle()
-                            }
-                        }
-                }
-
-                // 2 cups (Left)
-                VStack(spacing: 0) {
-
-                    Image("SoloCupBlue") // ✅ BLUE
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: cupSize, height: cupSize)
-                        .rotationEffect(.degrees(isLeftCup13SunkAnimationActive ? -60 : 0), anchor: .bottom)
-                        .offset(x: isLeftCup13SunkAnimationActive ? -6 : 0,
-                                y: isLeftCup13SunkAnimationActive ? 6 : 0)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            withAnimation(.easeOut(duration: 0.18)) {
-                                isLeftCup13SunkAnimationActive.toggle()
-                            }
-                        }
-
-                    Image("SoloCupBlue") // ✅ BLUE
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: cupSize, height: cupSize)
-                        .rotationEffect(.degrees(isLeftCup14SunkAnimationActive ? -60 : 0), anchor: .bottom)
-                        .offset(x: isLeftCup14SunkAnimationActive ? -6 : 0,
-                                y: isLeftCup14SunkAnimationActive ? 6 : 0)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            withAnimation(.easeOut(duration: 0.18)) {
-                                isLeftCup14SunkAnimationActive.toggle()
-                            }
-                        }
-                }
-
-                // 1 cup (Left)
-                VStack(spacing: 0) {
-
-                    Image("SoloCupBlue") // ✅ BLUE
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: cupSize, height: cupSize)
-                        .rotationEffect(.degrees(isLeftCup15SunkAnimationActive ? -60 : 0), anchor: .bottom)
-                        .offset(x: isLeftCup15SunkAnimationActive ? -6 : 0,
-                                y: isLeftCup15SunkAnimationActive ? 6 : 0)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            withAnimation(.easeOut(duration: 0.18)) {
-                                isLeftCup15SunkAnimationActive.toggle()
+                        .onChange(of: isLeftCup10SunkAnimationActive) { _, newValue in
+                            if newValue {
+                                leftSideScore += 1
+                            } else {
+                                leftSideScore -= 1
                             }
                         }
                 }
@@ -302,9 +260,8 @@ struct BeerPongTableView: View {
                 .padding(.horizontal, 16)
 
             // MARK: - RIGHT RACK (RED TEAM)
-            HStack {
-
-                VStack(spacing: 0) {
+            HStack(spacing: 26) {
+                VStack(spacing: 20) {
                     Image("SoloCupRed")
                         .resizable()
                         .scaledToFit()
@@ -318,9 +275,16 @@ struct BeerPongTableView: View {
                                 isRightCup1SunkAnimationActive.toggle()
                             }
                         }
+                        .onChange(of: isRightCup1SunkAnimationActive) { _, newValue in
+                            if newValue {
+                                rightSideScore += 1
+                            } else {
+                                rightSideScore -= 1
+                            }
+                        }
                 }
 
-                VStack(spacing: 0) {
+                VStack(spacing: 20) {
                     Image("SoloCupRed")
                         .resizable()
                         .scaledToFit()
@@ -332,6 +296,13 @@ struct BeerPongTableView: View {
                         .onTapGesture {
                             withAnimation(.easeOut(duration: 0.18)) {
                                 isRightCup2SunkAnimationActive.toggle()
+                            }
+                        }
+                        .onChange(of: isRightCup2SunkAnimationActive) { _, newValue in
+                            if newValue {
+                                rightSideScore += 1
+                            } else {
+                                rightSideScore -= 1
                             }
                         }
 
@@ -348,9 +319,16 @@ struct BeerPongTableView: View {
                                 isRightCup3SunkAnimationActive.toggle()
                             }
                         }
+                        .onChange(of: isRightCup3SunkAnimationActive) { _, newValue in
+                            if newValue {
+                                rightSideScore += 1
+                            } else {
+                                rightSideScore -= 1
+                            }
+                        }
                 }
 
-                VStack(spacing: 0) {
+                VStack(spacing: 20) {
                     Image("SoloCupRed")
                         .resizable()
                         .scaledToFit()
@@ -362,6 +340,13 @@ struct BeerPongTableView: View {
                         .onTapGesture {
                             withAnimation(.easeOut(duration: 0.18)) {
                                 isRightCup4SunkAnimationActive.toggle()
+                            }
+                        }
+                        .onChange(of: isRightCup4SunkAnimationActive) { _, newValue in
+                            if newValue {
+                                rightSideScore += 1
+                            } else {
+                                rightSideScore -= 1
                             }
                         }
 
@@ -378,6 +363,13 @@ struct BeerPongTableView: View {
                                 isRightCup5SunkAnimationActive.toggle()
                             }
                         }
+                        .onChange(of: isRightCup5SunkAnimationActive) { _, newValue in
+                            if newValue {
+                                rightSideScore += 1
+                            } else {
+                                rightSideScore -= 1
+                            }
+                        }
 
                     Image("SoloCupRed")
                         .resizable()
@@ -392,9 +384,16 @@ struct BeerPongTableView: View {
                                 isRightCup6SunkAnimationActive.toggle()
                             }
                         }
+                        .onChange(of: isRightCup6SunkAnimationActive) { _, newValue in
+                            if newValue {
+                                rightSideScore += 1
+                            } else {
+                                rightSideScore -= 1
+                            }
+                        }
                 }
 
-                VStack(spacing: 0) {
+                VStack(spacing: 20) {
                     Image("SoloCupRed")
                         .resizable()
                         .scaledToFit()
@@ -406,6 +405,13 @@ struct BeerPongTableView: View {
                         .onTapGesture {
                             withAnimation(.easeOut(duration: 0.18)) {
                                 isRightCup7SunkAnimationActive.toggle()
+                            }
+                        }
+                        .onChange(of: isRightCup7SunkAnimationActive) { _, newValue in
+                            if newValue {
+                                rightSideScore += 1
+                            } else {
+                                rightSideScore -= 1
                             }
                         }
 
@@ -422,6 +428,13 @@ struct BeerPongTableView: View {
                                 isRightCup8SunkAnimationActive.toggle()
                             }
                         }
+                        .onChange(of: isRightCup8SunkAnimationActive) { _, newValue in
+                            if newValue {
+                                rightSideScore += 1
+                            } else {
+                                rightSideScore -= 1
+                            }
+                        }
 
                     Image("SoloCupRed")
                         .resizable()
@@ -434,6 +447,13 @@ struct BeerPongTableView: View {
                         .onTapGesture {
                             withAnimation(.easeOut(duration: 0.18)) {
                                 isRightCup9SunkAnimationActive.toggle()
+                            }
+                        }
+                        .onChange(of: isRightCup9SunkAnimationActive) { _, newValue in
+                            if newValue {
+                                rightSideScore += 1
+                            } else {
+                                rightSideScore -= 1
                             }
                         }
 
@@ -450,89 +470,21 @@ struct BeerPongTableView: View {
                                 isRightCup10SunkAnimationActive.toggle()
                             }
                         }
-                }
-
-                VStack(spacing: 0) {
-                    Image("SoloCupRed")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: cupSize, height: cupSize)
-                        .rotationEffect(.degrees(isRightCup11SunkAnimationActive ? 60 : 0), anchor: .bottom)
-                        .offset(x: isRightCup11SunkAnimationActive ? 6 : 0,
-                                y: isRightCup11SunkAnimationActive ? 6 : 0)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            withAnimation(.easeOut(duration: 0.18)) {
-                                isRightCup11SunkAnimationActive.toggle()
-                            }
-                        }
-
-                    Image("SoloCupRed")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: cupSize, height: cupSize)
-                        .rotationEffect(.degrees(isRightCup12SunkAnimationActive ? 60 : 0), anchor: .bottom)
-                        .offset(x: isRightCup12SunkAnimationActive ? 6 : 0,
-                                y: isRightCup12SunkAnimationActive ? 6 : 0)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            withAnimation(.easeOut(duration: 0.18)) {
-                                isRightCup12SunkAnimationActive.toggle()
-                            }
-                        }
-
-                    Image("SoloCupRed")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: cupSize, height: cupSize)
-                        .rotationEffect(.degrees(isRightCup13SunkAnimationActive ? 60 : 0), anchor: .bottom)
-                        .offset(x: isRightCup13SunkAnimationActive ? 6 : 0,
-                                y: isRightCup13SunkAnimationActive ? 6 : 0)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            withAnimation(.easeOut(duration: 0.18)) {
-                                isRightCup13SunkAnimationActive.toggle()
-                            }
-                        }
-
-                    Image("SoloCupRed")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: cupSize, height: cupSize)
-                        .rotationEffect(.degrees(isRightCup14SunkAnimationActive ? 60 : 0), anchor: .bottom)
-                        .offset(x: isRightCup14SunkAnimationActive ? 6 : 0,
-                                y: isRightCup14SunkAnimationActive ? 6 : 0)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            withAnimation(.easeOut(duration: 0.18)) {
-                                isRightCup14SunkAnimationActive.toggle()
-                            }
-                        }
-
-                    Image("SoloCupRed")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: cupSize, height: cupSize)
-                        .rotationEffect(.degrees(isRightCup15SunkAnimationActive ? 60 : 0), anchor: .bottom)
-                        .offset(x: isRightCup15SunkAnimationActive ? 6 : 0,
-                                y: isRightCup15SunkAnimationActive ? 6 : 0)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            withAnimation(.easeOut(duration: 0.18)) {
-                                isRightCup15SunkAnimationActive.toggle()
+                        .onChange(of: isRightCup10SunkAnimationActive) { _, newValue in
+                            if newValue {
+                                rightSideScore += 1
+                            } else {
+                                rightSideScore -= 1
                             }
                         }
                 }
             }
         }
-        .onChange(of: isLeftCup1SunkAnimationActive) { _, newValue in
-            game = game.update(team1CupsSunk: newValue ? 1 : 0)
+        .onChange(of: leftSideScore) { _, newValue in
+            game = game.update(team1CupsSunk: newValue)
         }
-        .onChange(of: game.team1CupsSunk) { oldValue, newValue in
-            print("----------in beerpongtableview")
-            print("old value: \(game.team1CupsSunk)")
-            print("new Value: \(game.team1CupsSunk)")
-            print("----------in beerpongtableview")
+        .onChange(of: rightSideScore) { _, newValue in
+            game = game.update(team2CupsSunk: newValue)
         }
     }
 }

@@ -48,7 +48,7 @@ struct StartingView: View {
                         // MARK: Matchup Left Column
                         HStack(alignment: .lastTextBaseline) {
                             VStack {
-                                Image("SoloCupRed")
+                                Image("SoloCupBlue")
                                     .resizable()
                                     .scaledToFit()
                                     .opacity(0.85)
@@ -63,7 +63,7 @@ struct StartingView: View {
                                     }
                                 }
                                 .pickerStyle(.menu)
-                                .tint(.soloCupRed)
+                                .tint(.soloCupBlue)
 
                                 TeamCardView(team: selectedTeam1)
 
@@ -100,7 +100,7 @@ struct StartingView: View {
                                     }
                                 }
                                 .pickerStyle(.menu)
-                                .tint(.soloCupBlue)
+                                .tint(.soloCupRed)
 
                                 TeamCardView(team: selectedTeam2)
                             }
@@ -115,7 +115,7 @@ struct StartingView: View {
                             )
 
                             VStack {
-                                Image("SoloCupBlue")
+                                Image("SoloCupRed")
                                     .resizable()
                                     .scaledToFit()
                                     .opacity(0.85)
