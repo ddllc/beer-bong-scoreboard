@@ -3,13 +3,18 @@ import SwiftUI
 struct RulesView: View {
     @Environment(AppData.self) private var appData
     @Environment(\.dismiss) private var dismiss
+
     @State private var isRerackEnabled = false
     @State private var isOneRerackEnabled = false
     @State private var isTwoReracksEnabled = false
 
+    @State private var isTurnIndicatorEnabled = false
+
     var body: some View {
         NavigationStack {
             Form {
+
+                // MARK: - Re-Rack Options
                 Section("Re-Rack Options") {
 
                     Toggle("Allow Re-Rack", isOn: $isRerackEnabled)
@@ -31,8 +36,12 @@ struct RulesView: View {
                             }
                     }
                 }
-            }
 
+                // MARK: - Turn Indicator
+                Section("Turn Indicator") {
+                    Toggle("Show Turn Indicator", isOn: $isTurnIndicatorEnabled)
+                }
+            }
             .navigationTitle("Game Rules")
             .toolbar {
                 Button("Cancel", role: .cancel) {
@@ -43,6 +52,7 @@ struct RulesView: View {
                     appData.isRerackEnabled = isRerackEnabled
                     appData.isOneRerackEnabled = isOneRerackEnabled
                     appData.isTwoReracksEnabled = isTwoReracksEnabled
+                    appData.isTurnIndicatorEnabled = isTurnIndicatorEnabled
                     dismiss()
                 }
             }
