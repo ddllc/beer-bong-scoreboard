@@ -11,10 +11,13 @@ struct ScoreboardView: View {
                     .font(.headline)
                     .multilineTextAlignment(.center)
                     .lineLimit(1)
+                Text("t1 cups: \(game.team1CupsSunk)")
+                    .font(.caption)
+                    .monospacedDigit()
+
                 HStack(spacing: 3) {
-                    ForEach(1...10, id: \.self) { _ in
-                        Image(systemName: "circle")
-                            .font(.subheadline)
+                    ForEach(1...10, id: \.self) { index in
+                        Image(systemName: index <= game.team1CupsSunk ? "circle.fill" : "circle")
                     }
                 }
             }
@@ -52,10 +55,15 @@ struct ScoreboardView: View {
                     }
                 }
             }
-
         }
         .frame(height: 75)
         .padding(.horizontal)
         .ignoresSafeArea(edges: .top)
+        .onChange(of: game.team1CupsSunk) { oldValue, newValue in
+            print("----------in scoreboard")
+            print("old value: \(game.team1CupsSunk)")
+            print("new Value: \(game.team1CupsSunk)")
+            print("----------in scoreboard")
+        }
     }
 }

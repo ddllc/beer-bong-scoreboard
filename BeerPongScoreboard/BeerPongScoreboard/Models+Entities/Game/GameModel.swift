@@ -1,6 +1,6 @@
 import Foundation
 
-struct GameModel: Identifiable, Hashable {
+struct GameModel: Identifiable {
     let id: UUID
     let startedAt: Date
     let endedAt: Date?
@@ -10,11 +10,9 @@ struct GameModel: Identifiable, Hashable {
     let team2CupsSunk: Int
     let startingTeamID: UUID
     let winnerTeamID: UUID?
-
 }
 
 extension GameModel {
-
     // MARK: - Immutable update API
     func update(
         startedAt: Date? = nil,
@@ -51,13 +49,5 @@ extension GameModel {
             startingTeamID: startingTeamID,
             winnerTeamID: winnerTeamID
         )
-    }
-
-    static func == (lhs: GameModel, rhs: GameModel) -> Bool {
-        lhs.id == rhs.id
-    }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
     }
 }

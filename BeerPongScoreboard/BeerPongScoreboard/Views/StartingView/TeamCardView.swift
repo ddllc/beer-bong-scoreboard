@@ -28,8 +28,8 @@ struct TeamCardView: View {
                 .font(.title2)
                 .bold()
                 .multilineTextAlignment(.center)
-                    .lineLimit(nil)           // <-- allow unlimited lines
-                    .fixedSize(horizontal: false, vertical: true) // <-- important!
+                    .lineLimit(nil)
+                    .fixedSize(horizontal: false, vertical: true)
 
             Group {
                 if let team {
