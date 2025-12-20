@@ -34,7 +34,7 @@ struct BeerPongTableView: View {
             // MARK: - LEFT RACK (BLUE TEAM)
             HStack(spacing: 26) {
                 VStack(spacing: 20) {
-                    Image("SoloCupBlue")
+                    Image("SoloCupBlueWhiteRim")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -55,7 +55,7 @@ struct BeerPongTableView: View {
                             }
                         }
 
-                    Image("SoloCupBlue")
+                    Image("SoloCupBlueWhiteRim")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -76,7 +76,7 @@ struct BeerPongTableView: View {
                             }
                         }
 
-                    Image("SoloCupBlue")
+                    Image("SoloCupBlueWhiteRim")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -97,7 +97,7 @@ struct BeerPongTableView: View {
                             }
                         }
 
-                    Image("SoloCupBlue")
+                    Image("SoloCupBlueWhiteRim")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -120,7 +120,7 @@ struct BeerPongTableView: View {
                 }
 
                 VStack(spacing: 20) {
-                    Image("SoloCupBlue")
+                    Image("SoloCupBlueWhiteRim")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -141,7 +141,7 @@ struct BeerPongTableView: View {
                             }
                         }
 
-                    Image("SoloCupBlue")
+                    Image("SoloCupBlueWhiteRim")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -162,7 +162,7 @@ struct BeerPongTableView: View {
                             }
                         }
 
-                    Image("SoloCupBlue")
+                    Image("SoloCupBlueWhiteRim")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -185,7 +185,7 @@ struct BeerPongTableView: View {
                 }
 
                 VStack(spacing: 20) {
-                    Image("SoloCupBlue")
+                    Image("SoloCupBlueWhiteRim")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -206,7 +206,7 @@ struct BeerPongTableView: View {
                             }
                         }
 
-                    Image("SoloCupBlue")
+                    Image("SoloCupBlueWhiteRim")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -229,7 +229,7 @@ struct BeerPongTableView: View {
                 }
 
                 VStack(spacing: 20) {
-                    Image("SoloCupBlue")
+                    Image("SoloCupBlueWhiteRim")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -262,7 +262,7 @@ struct BeerPongTableView: View {
             // MARK: - RIGHT RACK (RED TEAM)
             HStack(spacing: 26) {
                 VStack(spacing: 20) {
-                    Image("SoloCupRed")
+                    Image("SoloCupRedWhiteRim")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -285,7 +285,7 @@ struct BeerPongTableView: View {
                 }
 
                 VStack(spacing: 20) {
-                    Image("SoloCupRed")
+                    Image("SoloCupRedWhiteRim")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -306,7 +306,7 @@ struct BeerPongTableView: View {
                             }
                         }
 
-                    Image("SoloCupRed")
+                    Image("SoloCupRedWhiteRim")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -329,7 +329,7 @@ struct BeerPongTableView: View {
                 }
 
                 VStack(spacing: 20) {
-                    Image("SoloCupRed")
+                    Image("SoloCupRedWhiteRim")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -350,7 +350,7 @@ struct BeerPongTableView: View {
                             }
                         }
 
-                    Image("SoloCupRed")
+                    Image("SoloCupRedWhiteRim")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -371,7 +371,7 @@ struct BeerPongTableView: View {
                             }
                         }
 
-                    Image("SoloCupRed")
+                    Image("SoloCupRedWhiteRim")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -394,7 +394,7 @@ struct BeerPongTableView: View {
                 }
 
                 VStack(spacing: 20) {
-                    Image("SoloCupRed")
+                    Image("SoloCupRedWhiteRim")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -415,7 +415,7 @@ struct BeerPongTableView: View {
                             }
                         }
 
-                    Image("SoloCupRed")
+                    Image("SoloCupRedWhiteRim")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -436,7 +436,7 @@ struct BeerPongTableView: View {
                             }
                         }
 
-                    Image("SoloCupRed")
+                    Image("SoloCupRedWhiteRim")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -457,7 +457,7 @@ struct BeerPongTableView: View {
                             }
                         }
 
-                    Image("SoloCupRed")
+                    Image("SoloCupRedWhiteRim")
                         .resizable()
                         .scaledToFit()
                         .frame(width: cupSize, height: cupSize)
@@ -480,6 +480,7 @@ struct BeerPongTableView: View {
                 }
             }
         }
+        .background(.green)
         .onChange(of: leftSideScore) { _, newValue in
             game = game.update(team1CupsSunk: newValue)
         }

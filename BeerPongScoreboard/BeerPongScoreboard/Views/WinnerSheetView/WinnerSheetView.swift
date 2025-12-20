@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct WinnerSheetView: View {
+    @Environment(AppData.self) private var appData
     @Environment(\.dismiss) private var dismiss
     let winningTeamName: String
     let scoreLine: String

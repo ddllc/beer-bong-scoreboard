@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "SoloCupBlueWhiteRim.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
