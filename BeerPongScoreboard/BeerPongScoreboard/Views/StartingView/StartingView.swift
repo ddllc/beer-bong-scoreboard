@@ -163,9 +163,13 @@ struct StartingView: View {
         .navigationTitle("Beer Pong Scoreboard")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $isShowRulesSheetPresented) {
-            SafariView(url: URL(string: "https://www.probeersports.com/beer-pong")!)
-                .ignoresSafeArea()
+            // MARK: Web Sheet Rules
+            // SafariView(url: URL(string: "https://www.probeersports.com/beer-pong")!)
+            // .ignoresSafeArea()
+            
+            RulesView()
         }
+        // MARK: Settings Rules
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button("Rules") {

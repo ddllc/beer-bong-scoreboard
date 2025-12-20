@@ -2,8 +2,12 @@ import SwiftUI
 
 @Observable
 class AppData {
+    var isRerackEnabled = false
+    var isOneRerackEnabled = false
+    var isTwoReracksEnabled = false
 
-    
+
+
     var team1Cups: [SoloCupModel] = (1...10).map {
         SoloCupModel(id: $0, soloCupNumber: $0, soloCupColor: .red, isSunk: false)
     }
