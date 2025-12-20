@@ -5,12 +5,11 @@ struct ScoreboardView: View {
 
     var body: some View {
         HStack(alignment: .lastTextBaseline) {
-            // MARK: - Team 1
             VStack(spacing: 4) {
-                Text("\(game.team1.name.uppercased())")
+                Text(game.team1.name.uppercased())
                     .font(.headline)
-                    .multilineTextAlignment(.center)
                     .lineLimit(1)
+
                 HStack(spacing: 3) {
                     ForEach(1...10, id: \.self) { index in
                         Image(systemName: index <= game.team1CupsSunk ? "circle.fill" : "circle")
@@ -21,28 +20,29 @@ struct ScoreboardView: View {
             Spacer()
 
             VStack(spacing: 4) {
-                HStack {
-                    Text("\(game.team1.totalCupsSunk) - \(game.team2.totalCupsSunk)")
-                        .font(.title)
-                        .fontWeight(.heavy)
-                }
-                HStack(spacing: 4) {
+                Text("\(game.team1CupsSunk) - \(game.team2CupsSunk)")
+                    .font(.title)
+                    .fontWeight(.heavy)
+                    .monospacedDigit()
+
+                HStack(spacing: 6) {
                     Text("Duration")
-                    Text(timerInterval: .now ... Date(timeIntervalSinceNow: 86_400),countsDown: false)
-                        .italic()
-                        .monospacedDigit()
-                        .font(.callout)
+
+                    TimelineView(.periodic(from: game.startedAt, by: 1)) { context in
+                        Text(timerInterval: game.startedAt ... context.date, countsDown: false)
+                            .italic()
+                            .monospacedDigit()
+                            .font(.callout)
+                    }
                 }
             }
 
             Spacer()
 
-            // MARK: - Team 2
             VStack(spacing: 4) {
-                Text("\(game.team2.name.uppercased())")
-                    .multilineTextAlignment(.center)
-                    .lineLimit(1)
+                Text(game.team2.name.uppercased())
                     .font(.headline)
+                    .lineLimit(1)
 
                 HStack(spacing: 3) {
                     ForEach(1...10, id: \.self) { index in

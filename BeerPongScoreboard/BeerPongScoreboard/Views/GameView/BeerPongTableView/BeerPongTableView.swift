@@ -252,7 +252,7 @@ struct BeerPongTableView: View {
                 }
             }
 
-            // CENTER DIVIDER LINE
+            // MARK: - CENTER DIVIDER LINE
             Rectangle()
                 .fill(.white)
                 .frame(width: 2)
