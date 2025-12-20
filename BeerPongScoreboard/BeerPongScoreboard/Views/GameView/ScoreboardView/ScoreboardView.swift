@@ -3,9 +3,10 @@ import SwiftUI
 struct ScoreboardView: View {
     @Environment(AppData.self) private var appData
     @Binding var game: GameModel
+    @Binding var isActionsModalPresented: Bool
 
     var body: some View {
-        HStack(alignment: .lastTextBaseline) {
+        HStack(alignment: .bottom) {
 
             // MARK: - Team 1
             VStack(spacing: 4) {
@@ -29,7 +30,7 @@ struct ScoreboardView: View {
                     .onTapGesture {
                         guard appData.isTurnIndicatorEnabled else { return }
                         if appData.currentTurnTeamID == game.team1.id {
-                            appData.currentTurnTeamID = nil   // tap again = clear
+                            appData.currentTurnTeamID = nil
                         } else {
                             appData.currentTurnTeamID = game.team1.id
                         }
@@ -45,11 +46,14 @@ struct ScoreboardView: View {
             Spacer()
 
             // MARK: - Score + Timer
-            VStack(spacing: 4) {
-                Text("\(game.team1CupsSunk) - \(game.team2CupsSunk)")
-                    .font(.title)
-                    .fontWeight(.heavy)
-                    .monospacedDigit()
+            VStack(spacing: 0) {
+                Spacer()
+
+                    Text("\(game.team1CupsSunk) - \(game.team2CupsSunk)")
+                        .font(.title)
+                        .fontWeight(.heavy)
+                        .monospacedDigit()
+
 
                 HStack(spacing: 6) {
                     Text("Duration")
@@ -61,6 +65,16 @@ struct ScoreboardView: View {
                             .font(.callout)
                     }
                 }
+
+
+                    Button {
+                        isActionsModalPresented.toggle()
+                    } label: {
+                        // chevron alternate
+                        Image(systemName: isActionsModalPresented ? "chevron.compact.down" : "chevron.compact.up")
+                            .font(.title3)
+                    }
+
             }
 
             Spacer()

@@ -1,8 +1,10 @@
 import SwiftUI
 
 struct GameView: View {
+    @Environment(\.dismiss) private var dismiss
     @State private var game: GameModel
     @State private var isWinnerSheetPresented = false
+    @State private var isActionsModalPresented = false
 
     private var durationText: String {
         let end = game.endedAt ?? Date()
@@ -19,13 +21,40 @@ struct GameView: View {
     }
 
     var body: some View {
+        ZStack(alignment: .bottom) {
 
-        VStack {
-                ScoreboardView(game: $game)
+            VStack {
+                ScoreboardView(game: $game, isActionsModalPresented: $isActionsModalPresented)
                 BeerPongTableView(game: $game)
 
-            Spacer()
+                Spacer()
             }
+
+            VStack(spacing: 20) {
+                Button("Pause Game") {
+                    dismiss()
+                }
+                .buttonStyle(.glassProminent)
+                .buttonSizing(.flexible)
+                .buttonBorderShape(.roundedRectangle(radius: 8))
+
+                Button("Cancel Game", role: .cancel) {
+                    dismiss()
+                }
+                .buttonStyle(.glassProminent)
+                .buttonSizing(.flexible)
+                .buttonBorderShape(.roundedRectangle(radius: 8))
+            }
+            .padding()
+            .background(.secondary)
+            .clipShape(
+                RoundedRectangle(
+                    cornerRadius: 8
+                )
+            )
+            .opacity(isActionsModalPresented ? 1 : 0)
+            .frame(width: 200)
+        }
         .navigationBarBackButtonHidden(true)
         .onChange(of: game.team1CupsSunk) { _, newValue in
             if newValue == 10 {
