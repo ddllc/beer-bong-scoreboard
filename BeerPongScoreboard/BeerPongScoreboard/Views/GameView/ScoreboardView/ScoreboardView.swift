@@ -7,39 +7,45 @@ struct ScoreboardView: View {
 
     var body: some View {
         HStack(alignment: .bottom) {
-
             // MARK: - Team 1
             VStack(spacing: 4) {
                 Text(game.team1.name.uppercased())
                     .font(.headline)
                     .lineLimit(1)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
-                    .foregroundStyle(
-                        appData.isTurnIndicatorEnabled && appData.currentTurnTeamID == game.team1.id
-                        ? Color.white
-                        : Color.primary
-                    )
-                    .background(
-                        appData.isTurnIndicatorEnabled && appData.currentTurnTeamID == game.team1.id
-                        ? Color("SoloCupBlue")
-                        : Color.clear
-                    )
-                    .clipShape(Capsule())
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        guard appData.isTurnIndicatorEnabled else { return }
-                        if appData.currentTurnTeamID == game.team1.id {
-                            appData.currentTurnTeamID = nil
-                        } else {
-                            appData.currentTurnTeamID = game.team1.id
-                        }
-                    }
+
 
                 HStack(spacing: 3) {
                     ForEach(1...10, id: \.self) { index in
                         Image(systemName: index <= game.team1CupsSunk ? "circle.fill" : "circle")
                     }
+                }
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 8)
+            .foregroundStyle(
+                appData.isTurnIndicatorEnabled && appData.currentTurnTeamID == game.team1.id
+                ? Color.white
+                : Color.primary
+            )
+            .background(
+                appData.isTurnIndicatorEnabled && appData.currentTurnTeamID == game.team1.id
+                ? Color("SoloCupBlue")
+                : Color.clear
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 4))
+            .overlay(alignment: .topTrailing) {
+                Image(systemName: "arrow.right")
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                    .padding(.top, 2)
+                    .padding(.trailing, 4)
+            }
+            .onTapGesture {
+                guard appData.isTurnIndicatorEnabled else { return }
+                if appData.currentTurnTeamID == game.team1.id {
+                    appData.currentTurnTeamID = nil
+                } else {
+                    appData.currentTurnTeamID = game.team1.id
                 }
             }
 
@@ -68,7 +74,9 @@ struct ScoreboardView: View {
 
 
                     Button {
-                        isActionsModalPresented.toggle()
+                        withAnimation {
+                            isActionsModalPresented.toggle()
+                        }
                     } label: {
                         // chevron alternate
                         Image(systemName: isActionsModalPresented ? "chevron.compact.down" : "chevron.compact.up")
@@ -84,28 +92,6 @@ struct ScoreboardView: View {
                 Text(game.team2.name.uppercased())
                     .font(.headline)
                     .lineLimit(1)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
-                    .foregroundStyle(
-                        appData.isTurnIndicatorEnabled && appData.currentTurnTeamID == game.team2.id
-                        ? Color.white
-                        : Color.primary
-                    )
-                    .background(
-                        appData.isTurnIndicatorEnabled && appData.currentTurnTeamID == game.team2.id
-                        ? Color("SoloCupRed")
-                        : Color.clear
-                    )
-                    .clipShape(Capsule())
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        guard appData.isTurnIndicatorEnabled else { return }
-                        if appData.currentTurnTeamID == game.team2.id {
-                            appData.currentTurnTeamID = nil   // tap again = clear
-                        } else {
-                            appData.currentTurnTeamID = game.team2.id
-                        }
-                    }
 
                 HStack(spacing: 3) {
                     ForEach(1...10, id: \.self) { index in
@@ -113,10 +99,39 @@ struct ScoreboardView: View {
                     }
                 }
             }
+            .padding(.horizontal)
+            .padding(.vertical, 8)
+            .foregroundStyle(
+                appData.isTurnIndicatorEnabled && appData.currentTurnTeamID == game.team2.id
+                ? Color.white
+                : Color.primary
+            )
+            .background(
+                appData.isTurnIndicatorEnabled && appData.currentTurnTeamID == game.team2.id
+                ? Color("SoloCupRed")
+                : Color.clear
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 4))
+            .overlay(alignment: .topLeading) {
+                Image(systemName: "arrow.left")
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                    .padding(.top, 2)
+                    .padding(.leading, 4)
+            }
+            .onTapGesture {
+                guard appData.isTurnIndicatorEnabled else { return }
+                if appData.currentTurnTeamID == game.team2.id {
+                    appData.currentTurnTeamID = nil
+                } else {
+                    appData.currentTurnTeamID = game.team2.id
+                }
+            }
         }
-        .frame(height: 75)
-        .padding(.horizontal)
-        .ignoresSafeArea(edges: .top)
+        .padding(.vertical, 4)
+//        .frame(height: 75)
+//        .padding(.horizontal)
+//        .ignoresSafeArea(edges: .top)
     }
 }
 

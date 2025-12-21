@@ -2,6 +2,7 @@ import SwiftUI
 
 struct BeerPongTableView: View {
     @Binding var game: GameModel
+    @Binding var isActionsModalPresented: Bool
     let cupSize: CGFloat = 60
 
     @State private var leftSideScore = 0
@@ -32,18 +33,18 @@ struct BeerPongTableView: View {
     var body: some View {
         ZStack {
             Color("TableBackground")
-                .ignoresSafeArea(edges: [.leading, .trailing, .bottom])
+//                .ignoresSafeArea(edges: [.leading, .trailing, .bottom])
 
             // MARK: - CENTER DIVIDER LINE
             Rectangle()
                 .fill(.white)
                 .frame(width: 2)
                 .frame(maxHeight: .infinity)
-                .ignoresSafeArea(edges: [.bottom])
+//                .ignoresSafeArea(edges: [.bottom])
             HStack {
                 // MARK: - LEFT RACK (BLUE TEAM)
-                HStack(spacing: 26) {
-                    VStack(spacing: 20) {
+                HStack(spacing: isActionsModalPresented ? 0 : 26) {
+                    VStack(spacing: isActionsModalPresented ? 0 : 20) {
                         Image("SoloCupBlueWhiteRim")
                             .resizable()
                             .scaledToFit()
@@ -129,7 +130,7 @@ struct BeerPongTableView: View {
                             }
                     }
 
-                    VStack(spacing: 20) {
+                    VStack(spacing: isActionsModalPresented ? 0 : 20) {
                         Image("SoloCupBlueWhiteRim")
                             .resizable()
                             .scaledToFit()
@@ -194,7 +195,7 @@ struct BeerPongTableView: View {
                             }
                     }
 
-                    VStack(spacing: 20) {
+                    VStack(spacing: isActionsModalPresented ? 0 : 20) {
                         Image("SoloCupBlueWhiteRim")
                             .resizable()
                             .scaledToFit()
@@ -238,7 +239,7 @@ struct BeerPongTableView: View {
                             }
                     }
 
-                    VStack(spacing: 20) {
+                    VStack(spacing: isActionsModalPresented ? 0 : 20) {
                         Image("SoloCupBlueWhiteRim")
                             .resizable()
                             .scaledToFit()
@@ -267,8 +268,8 @@ struct BeerPongTableView: View {
 
 
                 // MARK: - RIGHT RACK (RED TEAM)
-                HStack(spacing: 26) {
-                    VStack(spacing: 20) {
+                HStack(spacing: isActionsModalPresented ? 0 : 26) {
+                    VStack(spacing: isActionsModalPresented ? 0 : 20) {
                         Image("SoloCupRedWhiteRim")
                             .resizable()
                             .scaledToFit()
@@ -291,7 +292,7 @@ struct BeerPongTableView: View {
                             }
                     }
 
-                    VStack(spacing: 20) {
+                    VStack(spacing: isActionsModalPresented ? 0 : 20) {
                         Image("SoloCupRedWhiteRim")
                             .resizable()
                             .scaledToFit()
@@ -335,7 +336,7 @@ struct BeerPongTableView: View {
                             }
                     }
 
-                    VStack(spacing: 20) {
+                    VStack(spacing: isActionsModalPresented ? 0 : 20) {
                         Image("SoloCupRedWhiteRim")
                             .resizable()
                             .scaledToFit()
@@ -400,7 +401,7 @@ struct BeerPongTableView: View {
                             }
                     }
 
-                    VStack(spacing: 20) {
+                    VStack(spacing: isActionsModalPresented ? 0 : 20) {
                         Image("SoloCupRedWhiteRim")
                             .resizable()
                             .scaledToFit()

@@ -6,12 +6,11 @@ struct TableBackgroundView: View {
         ZStack {
             // Table color
             Color.tableBackground
-                .ignoresSafeArea()
+//                .ignoresSafeArea()
 
             // Center line (horizontal for landscape)
             Rectangle()
                 .fill(Color.tableBackground)
-                .frame()
         }
     }
 }

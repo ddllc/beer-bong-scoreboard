@@ -21,13 +21,10 @@ struct GameView: View {
     }
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-
+        ZStack(alignment: .center) {
             VStack {
                 ScoreboardView(game: $game, isActionsModalPresented: $isActionsModalPresented)
-                BeerPongTableView(game: $game)
-
-                Spacer()
+                BeerPongTableView(game: $game, isActionsModalPresented: $isActionsModalPresented)
             }
 
             VStack(spacing: 20) {
@@ -72,4 +69,5 @@ struct GameView: View {
             WinnerSheetView(winningTeamName: game.winnerTeamID == game.team1.id ? game.team1.name : game.team2.name, scoreLine: "\(game.team1CupsSunk)-\(game.team2CupsSunk)", durationText: durationText)
         }
     }
+
 }
