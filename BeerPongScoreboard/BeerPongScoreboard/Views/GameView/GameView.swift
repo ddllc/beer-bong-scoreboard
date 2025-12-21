@@ -66,7 +66,7 @@ struct GameView: View {
             }
         }
         .sheet(isPresented: $isWinnerSheetPresented) {
-            WinnerSheetView(winningTeamName: game.winnerTeamID == game.team1.id ? game.team1.name : game.team2.name, scoreLine: "\(game.team1CupsSunk)-\(game.team2CupsSunk)", durationText: durationText)
+            WinnerSheetView(game: game)
         }
     }
 

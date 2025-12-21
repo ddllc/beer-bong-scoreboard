@@ -3,38 +3,64 @@ import SwiftUI
 struct WinnerSheetView: View {
     @Environment(AppData.self) private var appData
     @Environment(\.dismiss) private var dismiss
-    let winningTeamName: String
-    let scoreLine: String
-    let durationText: String
+    let game: GameModel
 
     var body: some View {
         NavigationStack {
-            VStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 6) {
 
-                // MARK: - Celebration
-                Image(systemName: "trophy.fill")
-                    .font(.system(size: 64))
-                    .foregroundStyle(.yellow)
+                    Text("Game Stats")
+                        .font(.headline)
 
-                Text("\(winningTeamName) Win!")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .multilineTextAlignment(.center)
+                    Text("Game ID: \(game.id.uuidString)")
+                    Text("Started At: \(game.startedAt.formatted())")
+                    Text("Starting Team ID: \(game.startingTeamID.uuidString)")
 
-                Text(scoreLine)
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                    .monospacedDigit()
+                    Text("Ended At: \(game.endedAt?.formatted() ?? "In Progress")")
+                    Text("Winner Team ID: \(game.winnerTeamID?.uuidString ?? "None")")
 
-                Text("Duration: \(durationText)")
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
-                Spacer()
+                    Text("Score: \(game.team1CupsSunk) - \(game.team2CupsSunk)")
+
+                    Divider()
+
+                    Text("Team 1")
+                        .font(.subheadline)
+                        .bold()
+
+                    Text("ID: \(game.team1.id.uuidString)")
+                    Text("Name: \(game.team1.name)")
+                    Text("Created: \(game.team1.dateCreated.formatted())")
+                    Text("Wins: \(game.team1.wins)")
+                    Text("Losses: \(game.team1.losses)")
+                    Text("Total Cups Sunk: \(game.team1.totalCupsSunk)")
+                    Text("Total Cups Allowed: \(game.team1.totalCupsAllowed)")
+                    Text("Players: \(game.team1.players.map { $0.name }.joined(separator: ", "))")
+                    Text("Has Photo: \(game.team1.photoData != nil ? "Yes" : "No")")
+
+                    Divider()
+
+                    Text("Team 2")
+                        .font(.subheadline)
+                        .bold()
+
+                    Text("ID: \(game.team2.id.uuidString)")
+                    Text("Name: \(game.team2.name)")
+                    Text("Created: \(game.team2.dateCreated.formatted())")
+                    Text("Wins: \(game.team2.wins)")
+                    Text("Losses: \(game.team2.losses)")
+                    Text("Total Cups Sunk: \(game.team2.totalCupsSunk)")
+                    Text("Total Cups Allowed: \(game.team2.totalCupsAllowed)")
+                    Text("Players: \(game.team2.players.map { $0.name }.joined(separator: ", "))")
+                    Text("Has Photo: \(game.team2.photoData != nil ? "Yes" : "No")")
+                }
+
+
 
                 // MARK: - End Game Button
                 VStack {
                     Button(role: .confirm) {
-
+                        
                     } label: {
                         Text("End Game")
                             .font(.title)
