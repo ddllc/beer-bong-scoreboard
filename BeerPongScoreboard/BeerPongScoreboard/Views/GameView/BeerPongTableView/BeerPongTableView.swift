@@ -33,457 +33,142 @@ struct BeerPongTableView: View {
     var body: some View {
         ZStack {
             Color("TableBackground")
-//                .ignoresSafeArea(edges: [.leading, .trailing, .bottom])
 
             // MARK: - CENTER DIVIDER LINE
             Rectangle()
                 .fill(.white)
                 .frame(width: 2)
                 .frame(maxHeight: .infinity)
-//                .ignoresSafeArea(edges: [.bottom])
+
             HStack {
-                // MARK: - LEFT RACK (BLUE TEAM)
+                // MARK: - LEFT RACK (BLUE TEAM) 10 Cup Rack
                 HStack(spacing: isActionsModalPresented ? 0 : 26) {
                     VStack(spacing: isActionsModalPresented ? 0 : 20) {
-                        Image("SoloCupBlueWhiteRim")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: cupSize, height: cupSize)
-                            .rotationEffect(.degrees(isLeftCup1SunkAnimationActive ? -60 : 0), anchor: .bottom)
-                            .offset(x: isLeftCup1SunkAnimationActive ? -6 : 0,
-                                    y: isLeftCup1SunkAnimationActive ? 6 : 0)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                withAnimation(.easeOut(duration: 0.18)) {
-                                    isLeftCup1SunkAnimationActive.toggle()
-                                }
-                            }
+
+                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup1SunkAnimationActive)
                             .onChange(of: isLeftCup1SunkAnimationActive) { _, newValue in
-                                if newValue {
-                                    leftSideScore += 1
-                                } else {
-                                    leftSideScore -= 1
-                                }
+                                leftSideScore += newValue ? 1 : -1
                             }
 
-                        Image("SoloCupBlueWhiteRim")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: cupSize, height: cupSize)
-                            .rotationEffect(.degrees(isLeftCup2SunkAnimationActive ? -60 : 0), anchor: .bottom)
-                            .offset(x: isLeftCup2SunkAnimationActive ? -6 : 0,
-                                    y: isLeftCup2SunkAnimationActive ? 6 : 0)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                withAnimation(.easeOut(duration: 0.18)) {
-                                    isLeftCup2SunkAnimationActive.toggle()
-                                }
-                            }
+                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup2SunkAnimationActive)
                             .onChange(of: isLeftCup2SunkAnimationActive) { _, newValue in
-                                if newValue {
-                                    leftSideScore += 1
-                                } else {
-                                    leftSideScore -= 1
-                                }
+                                leftSideScore += newValue ? 1 : -1
                             }
 
-                        Image("SoloCupBlueWhiteRim")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: cupSize, height: cupSize)
-                            .rotationEffect(.degrees(isLeftCup3SunkAnimationActive ? -60 : 0), anchor: .bottom)
-                            .offset(x: isLeftCup3SunkAnimationActive ? -6 : 0,
-                                    y: isLeftCup3SunkAnimationActive ? 6 : 0)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                withAnimation(.easeOut(duration: 0.18)) {
-                                    isLeftCup3SunkAnimationActive.toggle()
-                                }
-                            }
+                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup3SunkAnimationActive)
                             .onChange(of: isLeftCup3SunkAnimationActive) { _, newValue in
-                                if newValue {
-                                    leftSideScore += 1
-                                } else {
-                                    leftSideScore -= 1
-                                }
+                                leftSideScore += newValue ? 1 : -1
                             }
 
-                        Image("SoloCupBlueWhiteRim")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: cupSize, height: cupSize)
-                            .rotationEffect(.degrees(isLeftCup4SunkAnimationActive ? -60 : 0), anchor: .bottom)
-                            .offset(x: isLeftCup4SunkAnimationActive ? -6 : 0,
-                                    y: isLeftCup4SunkAnimationActive ? 6 : 0)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                withAnimation(.easeOut(duration: 0.18)) {
-                                    isLeftCup4SunkAnimationActive.toggle()
-                                }
-                            }
+                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup4SunkAnimationActive)
                             .onChange(of: isLeftCup4SunkAnimationActive) { _, newValue in
-                                if newValue {
-                                    leftSideScore += 1
-                                } else {
-                                    leftSideScore -= 1
-                                }
+                                leftSideScore += newValue ? 1 : -1
                             }
                     }
 
                     VStack(spacing: isActionsModalPresented ? 0 : 20) {
-                        Image("SoloCupBlueWhiteRim")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: cupSize, height: cupSize)
-                            .rotationEffect(.degrees(isLeftCup5SunkAnimationActive ? -60 : 0), anchor: .bottom)
-                            .offset(x: isLeftCup5SunkAnimationActive ? -6 : 0,
-                                    y: isLeftCup5SunkAnimationActive ? 6 : 0)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                withAnimation(.easeOut(duration: 0.18)) {
-                                    isLeftCup5SunkAnimationActive.toggle()
-                                }
-                            }
+
+                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup5SunkAnimationActive)
                             .onChange(of: isLeftCup5SunkAnimationActive) { _, newValue in
-                                if newValue {
-                                    leftSideScore += 1
-                                } else {
-                                    leftSideScore -= 1
-                                }
+                                leftSideScore += newValue ? 1 : -1
                             }
 
-                        Image("SoloCupBlueWhiteRim")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: cupSize, height: cupSize)
-                            .rotationEffect(.degrees(isLeftCup6SunkAnimationActive ? -60 : 0), anchor: .bottom)
-                            .offset(x: isLeftCup6SunkAnimationActive ? -6 : 0,
-                                    y: isLeftCup6SunkAnimationActive ? 6 : 0)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                withAnimation(.easeOut(duration: 0.18)) {
-                                    isLeftCup6SunkAnimationActive.toggle()
-                                }
-                            }
+                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup6SunkAnimationActive)
                             .onChange(of: isLeftCup6SunkAnimationActive) { _, newValue in
-                                if newValue {
-                                    leftSideScore += 1
-                                } else {
-                                    leftSideScore -= 1
-                                }
+                                leftSideScore += newValue ? 1 : -1
                             }
 
-                        Image("SoloCupBlueWhiteRim")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: cupSize, height: cupSize)
-                            .rotationEffect(.degrees(isLeftCup7SunkAnimationActive ? -60 : 0), anchor: .bottom)
-                            .offset(x: isLeftCup7SunkAnimationActive ? -6 : 0,
-                                    y: isLeftCup7SunkAnimationActive ? 6 : 0)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                withAnimation(.easeOut(duration: 0.18)) {
-                                    isLeftCup7SunkAnimationActive.toggle()
-                                }
-                            }
+                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup7SunkAnimationActive)
                             .onChange(of: isLeftCup7SunkAnimationActive) { _, newValue in
-                                if newValue {
-                                    leftSideScore += 1
-                                } else {
-                                    leftSideScore -= 1
-                                }
+                                leftSideScore += newValue ? 1 : -1
                             }
                     }
 
                     VStack(spacing: isActionsModalPresented ? 0 : 20) {
-                        Image("SoloCupBlueWhiteRim")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: cupSize, height: cupSize)
-                            .rotationEffect(.degrees(isLeftCup8SunkAnimationActive ? -60 : 0), anchor: .bottom)
-                            .offset(x: isLeftCup8SunkAnimationActive ? -6 : 0,
-                                    y: isLeftCup8SunkAnimationActive ? 6 : 0)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                withAnimation(.easeOut(duration: 0.18)) {
-                                    isLeftCup8SunkAnimationActive.toggle()
-                                }
-                            }
+
+                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup8SunkAnimationActive)
                             .onChange(of: isLeftCup8SunkAnimationActive) { _, newValue in
-                                if newValue {
-                                    leftSideScore += 1
-                                } else {
-                                    leftSideScore -= 1
-                                }
+                                leftSideScore += newValue ? 1 : -1
                             }
 
-                        Image("SoloCupBlueWhiteRim")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: cupSize, height: cupSize)
-                            .rotationEffect(.degrees(isLeftCup9SunkAnimationActive ? -60 : 0), anchor: .bottom)
-                            .offset(x: isLeftCup9SunkAnimationActive ? -6 : 0,
-                                    y: isLeftCup9SunkAnimationActive ? 6 : 0)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                withAnimation(.easeOut(duration: 0.18)) {
-                                    isLeftCup9SunkAnimationActive.toggle()
-                                }
-                            }
+                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup9SunkAnimationActive)
                             .onChange(of: isLeftCup9SunkAnimationActive) { _, newValue in
-                                if newValue {
-                                    leftSideScore += 1
-                                } else {
-                                    leftSideScore -= 1
-                                }
+                                leftSideScore += newValue ? 1 : -1
                             }
                     }
 
                     VStack(spacing: isActionsModalPresented ? 0 : 20) {
-                        Image("SoloCupBlueWhiteRim")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: cupSize, height: cupSize)
-                            .rotationEffect(.degrees(isLeftCup10SunkAnimationActive ? -60 : 0), anchor: .bottom)
-                            .offset(x: isLeftCup10SunkAnimationActive ? -6 : 0,
-                                    y: isLeftCup10SunkAnimationActive ? 6 : 0)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                withAnimation(.easeOut(duration: 0.18)) {
-                                    isLeftCup10SunkAnimationActive.toggle()
-                                }
-                            }
+
+                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup10SunkAnimationActive)
                             .onChange(of: isLeftCup10SunkAnimationActive) { _, newValue in
-                                if newValue {
-                                    leftSideScore += 1
-                                } else {
-                                    leftSideScore -= 1
-                                }
+                                leftSideScore += newValue ? 1 : -1
                             }
                     }
                 }
 
-
                 Spacer()
 
-
-                // MARK: - RIGHT RACK (RED TEAM)
+                // MARK: - RIGHT RACK (RED TEAM) 10 Cup Rack
                 HStack(spacing: isActionsModalPresented ? 0 : 26) {
                     VStack(spacing: isActionsModalPresented ? 0 : 20) {
-                        Image("SoloCupRedWhiteRim")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: cupSize, height: cupSize)
-                            .rotationEffect(.degrees(isRightCup1SunkAnimationActive ? 60 : 0), anchor: .bottom)
-                            .offset(x: isRightCup1SunkAnimationActive ? 6 : 0,
-                                    y: isRightCup1SunkAnimationActive ? 6 : 0)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                withAnimation(.easeOut(duration: 0.18)) {
-                                    isRightCup1SunkAnimationActive.toggle()
-                                }
-                            }
+
+                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup1SunkAnimationActive)
                             .onChange(of: isRightCup1SunkAnimationActive) { _, newValue in
-                                if newValue {
-                                    rightSideScore += 1
-                                } else {
-                                    rightSideScore -= 1
-                                }
+                                rightSideScore += newValue ? 1 : -1
                             }
                     }
 
                     VStack(spacing: isActionsModalPresented ? 0 : 20) {
-                        Image("SoloCupRedWhiteRim")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: cupSize, height: cupSize)
-                            .rotationEffect(.degrees(isRightCup2SunkAnimationActive ? 60 : 0), anchor: .bottom)
-                            .offset(x: isRightCup2SunkAnimationActive ? 6 : 0,
-                                    y: isRightCup2SunkAnimationActive ? 6 : 0)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                withAnimation(.easeOut(duration: 0.18)) {
-                                    isRightCup2SunkAnimationActive.toggle()
-                                }
-                            }
+
+                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup2SunkAnimationActive)
                             .onChange(of: isRightCup2SunkAnimationActive) { _, newValue in
-                                if newValue {
-                                    rightSideScore += 1
-                                } else {
-                                    rightSideScore -= 1
-                                }
+                                rightSideScore += newValue ? 1 : -1
                             }
 
-                        Image("SoloCupRedWhiteRim")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: cupSize, height: cupSize)
-                            .rotationEffect(.degrees(isRightCup3SunkAnimationActive ? 60 : 0), anchor: .bottom)
-                            .offset(x: isRightCup3SunkAnimationActive ? 6 : 0,
-                                    y: isRightCup3SunkAnimationActive ? 6 : 0)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                withAnimation(.easeOut(duration: 0.18)) {
-                                    isRightCup3SunkAnimationActive.toggle()
-                                }
-                            }
+                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup3SunkAnimationActive)
                             .onChange(of: isRightCup3SunkAnimationActive) { _, newValue in
-                                if newValue {
-                                    rightSideScore += 1
-                                } else {
-                                    rightSideScore -= 1
-                                }
+                                rightSideScore += newValue ? 1 : -1
                             }
                     }
 
                     VStack(spacing: isActionsModalPresented ? 0 : 20) {
-                        Image("SoloCupRedWhiteRim")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: cupSize, height: cupSize)
-                            .rotationEffect(.degrees(isRightCup4SunkAnimationActive ? 60 : 0), anchor: .bottom)
-                            .offset(x: isRightCup4SunkAnimationActive ? 6 : 0,
-                                    y: isRightCup4SunkAnimationActive ? 6 : 0)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                withAnimation(.easeOut(duration: 0.18)) {
-                                    isRightCup4SunkAnimationActive.toggle()
-                                }
-                            }
+
+                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup4SunkAnimationActive)
                             .onChange(of: isRightCup4SunkAnimationActive) { _, newValue in
-                                if newValue {
-                                    rightSideScore += 1
-                                } else {
-                                    rightSideScore -= 1
-                                }
+                                rightSideScore += newValue ? 1 : -1
                             }
 
-                        Image("SoloCupRedWhiteRim")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: cupSize, height: cupSize)
-                            .rotationEffect(.degrees(isRightCup5SunkAnimationActive ? 60 : 0), anchor: .bottom)
-                            .offset(x: isRightCup5SunkAnimationActive ? 6 : 0,
-                                    y: isRightCup5SunkAnimationActive ? 6 : 0)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                withAnimation(.easeOut(duration: 0.18)) {
-                                    isRightCup5SunkAnimationActive.toggle()
-                                }
-                            }
+                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup5SunkAnimationActive)
                             .onChange(of: isRightCup5SunkAnimationActive) { _, newValue in
-                                if newValue {
-                                    rightSideScore += 1
-                                } else {
-                                    rightSideScore -= 1
-                                }
+                                rightSideScore += newValue ? 1 : -1
                             }
 
-                        Image("SoloCupRedWhiteRim")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: cupSize, height: cupSize)
-                            .rotationEffect(.degrees(isRightCup6SunkAnimationActive ? 60 : 0), anchor: .bottom)
-                            .offset(x: isRightCup6SunkAnimationActive ? 6 : 0,
-                                    y: isRightCup6SunkAnimationActive ? 6 : 0)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                withAnimation(.easeOut(duration: 0.18)) {
-                                    isRightCup6SunkAnimationActive.toggle()
-                                }
-                            }
+                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup6SunkAnimationActive)
                             .onChange(of: isRightCup6SunkAnimationActive) { _, newValue in
-                                if newValue {
-                                    rightSideScore += 1
-                                } else {
-                                    rightSideScore -= 1
-                                }
+                                rightSideScore += newValue ? 1 : -1
                             }
                     }
 
                     VStack(spacing: isActionsModalPresented ? 0 : 20) {
-                        Image("SoloCupRedWhiteRim")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: cupSize, height: cupSize)
-                            .rotationEffect(.degrees(isRightCup7SunkAnimationActive ? 60 : 0), anchor: .bottom)
-                            .offset(x: isRightCup7SunkAnimationActive ? 6 : 0,
-                                    y: isRightCup7SunkAnimationActive ? 6 : 0)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                withAnimation(.easeOut(duration: 0.18)) {
-                                    isRightCup7SunkAnimationActive.toggle()
-                                }
-                            }
+
+                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup7SunkAnimationActive)
                             .onChange(of: isRightCup7SunkAnimationActive) { _, newValue in
-                                if newValue {
-                                    rightSideScore += 1
-                                } else {
-                                    rightSideScore -= 1
-                                }
+                                rightSideScore += newValue ? 1 : -1
                             }
 
-                        Image("SoloCupRedWhiteRim")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: cupSize, height: cupSize)
-                            .rotationEffect(.degrees(isRightCup8SunkAnimationActive ? 60 : 0), anchor: .bottom)
-                            .offset(x: isRightCup8SunkAnimationActive ? 6 : 0,
-                                    y: isRightCup8SunkAnimationActive ? 6 : 0)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                withAnimation(.easeOut(duration: 0.18)) {
-                                    isRightCup8SunkAnimationActive.toggle()
-                                }
-                            }
+                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup8SunkAnimationActive)
                             .onChange(of: isRightCup8SunkAnimationActive) { _, newValue in
-                                if newValue {
-                                    rightSideScore += 1
-                                } else {
-                                    rightSideScore -= 1
-                                }
+                                rightSideScore += newValue ? 1 : -1
                             }
 
-                        Image("SoloCupRedWhiteRim")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: cupSize, height: cupSize)
-                            .rotationEffect(.degrees(isRightCup9SunkAnimationActive ? 60 : 0), anchor: .bottom)
-                            .offset(x: isRightCup9SunkAnimationActive ? 6 : 0,
-                                    y: isRightCup9SunkAnimationActive ? 6 : 0)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                withAnimation(.easeOut(duration: 0.18)) {
-                                    isRightCup9SunkAnimationActive.toggle()
-                                }
-                            }
+                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup9SunkAnimationActive)
                             .onChange(of: isRightCup9SunkAnimationActive) { _, newValue in
-                                if newValue {
-                                    rightSideScore += 1
-                                } else {
-                                    rightSideScore -= 1
-                                }
+                                rightSideScore += newValue ? 1 : -1
                             }
 
-                        Image("SoloCupRedWhiteRim")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: cupSize, height: cupSize)
-                            .rotationEffect(.degrees(isRightCup10SunkAnimationActive ? 60 : 0), anchor: .bottom)
-                            .offset(x: isRightCup10SunkAnimationActive ? 6 : 0,
-                                    y: isRightCup10SunkAnimationActive ? 6 : 0)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                withAnimation(.easeOut(duration: 0.18)) {
-                                    isRightCup10SunkAnimationActive.toggle()
-                                }
-                            }
+                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup10SunkAnimationActive)
                             .onChange(of: isRightCup10SunkAnimationActive) { _, newValue in
-                                if newValue {
-                                    rightSideScore += 1
-                                } else {
-                                    rightSideScore -= 1
-                                }
+                                rightSideScore += newValue ? 1 : -1
                             }
                     }
                 }

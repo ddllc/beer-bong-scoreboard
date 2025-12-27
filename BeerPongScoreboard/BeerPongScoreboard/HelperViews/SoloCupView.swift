@@ -25,13 +25,21 @@ struct SoloCupView: View {
     enum SoloCupStyle: String, CaseIterable, Identifiable {
         case red
         case blue
+        case redWhiteRim
+        case blueWhiteRim
 
         var id: String { rawValue }
 
         var imageName: String {
             switch self {
-            case .red:  return "SoloCupRed"
-            case .blue: return "SoloCupBlue"
+            case .red:
+                return "SoloCupRed"
+            case .blue:
+                return "SoloCupBlue"
+            case .redWhiteRim:
+                return "SoloCupRedWhiteRim"
+            case .blueWhiteRim:
+                return "SoloCupBlueWhiteRim"
             }
         }
     }
