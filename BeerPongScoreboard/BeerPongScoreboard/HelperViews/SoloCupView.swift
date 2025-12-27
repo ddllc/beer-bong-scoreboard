@@ -1,38 +1,48 @@
 import SwiftUI
 
 struct SoloCupView: View {
-    @Environment(AppData.self) private var appData: AppData
-
-    let teamNumber: Int
-    let cupID: Int
-    let soloCupColor: SoloCupColor
-
-    var isSunk: Bool {
-        // Fetch current status from correct team's array
-        let cups = teamNumber == 1 ? appData.team1Cups : appData.team2Cups
-        return cups.first(where: { $0.id == cupID })?.isSunk ?? false
-    }
+    let style: SoloCupStyle
+    let cupSize: CGFloat
+    let fallDirection: FallDirection
+    @Binding var isSunk: Bool
 
     var body: some View {
-        Button {
-            appData.toggleCupSunkState(forTeam: teamNumber, withID: cupID)
-        } label: {
-            Image(soloCupColor == .red ? "SoloCupRed" : "SoloCupBlue")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 75)
-                .rotationEffect(isSunk ? Angle(degrees: -90) : .zero)
+        Image(style.imageName)
+            .resizable()
+            .scaledToFit()
+            .frame(width: cupSize, height: cupSize)
+            .rotationEffect(.degrees(isSunk ? fallDirection.rotationDegrees : 0), anchor: .bottom)
+            .offset(x: isSunk ? fallDirection.xOffset : 0,
+                    y: isSunk ? 6 : 0)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                withAnimation(.easeOut(duration: 0.18)) {
+                    isSunk.toggle()
+                }
+            }
+    }
+
+    enum SoloCupStyle: String, CaseIterable, Identifiable {
+        case red
+        case blue
+
+        var id: String { rawValue }
+
+        var imageName: String {
+            switch self {
+            case .red:  return "SoloCupRed"
+            case .blue: return "SoloCupBlue"
+            }
         }
+    }
+
+    enum FallDirection {
+        case left
+        case right
+
+        var rotationDegrees: Double { self == .left ? -60 : 60 }
+        var xOffset: CGFloat { self == .left ? -6 : 6 }
     }
 }
 
-#Preview("SoloCupRed") {
-    // For preview, use a temporary AppData environment
-    SoloCupView(teamNumber: 1, cupID: 1, soloCupColor: .red)
-        .environment(AppData())
-}
 
-#Preview("SoloCupBlue") {
-    SoloCupView(teamNumber: 2, cupID: 1, soloCupColor: .blue)
-        .environment(AppData())
-}
