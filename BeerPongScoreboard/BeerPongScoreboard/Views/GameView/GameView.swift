@@ -28,6 +28,13 @@ struct GameView: View {
             }
 
             VStack(spacing: 20) {
+                Button("RERACK") {
+                    dismiss()
+                }
+                .buttonStyle(.glassProminent)
+                .buttonSizing(.flexible)
+                .buttonBorderShape(.roundedRectangle(radius: 8))
+                
                 Button("Pause Game") {
                     dismiss()
                 }

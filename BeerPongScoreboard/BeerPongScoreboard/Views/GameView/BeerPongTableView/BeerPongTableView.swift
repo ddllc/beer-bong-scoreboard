@@ -30,6 +30,57 @@ struct BeerPongTableView: View {
     @State private var isRightCup9SunkAnimationActive = false
     @State private var isRightCup10SunkAnimationActive = false
 
+    private var leftRemainingCupIDs: [Int] {
+        [
+            (1, isLeftCup1SunkAnimationActive),
+            (2, isLeftCup2SunkAnimationActive),
+            (3, isLeftCup3SunkAnimationActive),
+            (4, isLeftCup4SunkAnimationActive),
+            (5, isLeftCup5SunkAnimationActive),
+            (6, isLeftCup6SunkAnimationActive),
+            (7, isLeftCup7SunkAnimationActive),
+            (8, isLeftCup8SunkAnimationActive),
+            (9, isLeftCup9SunkAnimationActive),
+            (10, isLeftCup10SunkAnimationActive)
+        ]
+        .filter { !$0.1 }
+        .map { $0.0 }
+    }
+
+    private var rightRemainingCupIDs: [Int] {
+        [
+            (1, isRightCup1SunkAnimationActive),
+            (2, isRightCup2SunkAnimationActive),
+            (3, isRightCup3SunkAnimationActive),
+            (4, isRightCup4SunkAnimationActive),
+            (5, isRightCup5SunkAnimationActive),
+            (6, isRightCup6SunkAnimationActive),
+            (7, isRightCup7SunkAnimationActive),
+            (8, isRightCup8SunkAnimationActive),
+            (9, isRightCup9SunkAnimationActive),
+            (10, isRightCup10SunkAnimationActive)
+        ]
+        .filter { !$0.1 }
+        .map { $0.0 }
+    }
+
+    // MARK: - ID → Binding (LEFT)
+
+    private func leftCupBinding(id: Int) -> Binding<Bool> {
+        switch id {
+        case 1: return $isLeftCup1SunkAnimationActive
+        case 2: return $isLeftCup2SunkAnimationActive
+        case 3: return $isLeftCup3SunkAnimationActive
+        case 4: return $isLeftCup4SunkAnimationActive
+        case 5: return $isLeftCup5SunkAnimationActive
+        case 6: return $isLeftCup6SunkAnimationActive
+        case 7: return $isLeftCup7SunkAnimationActive
+        case 8: return $isLeftCup8SunkAnimationActive
+        case 9: return $isLeftCup9SunkAnimationActive
+        default: return $isLeftCup10SunkAnimationActive
+        }
+    }
+
     var body: some View {
         ZStack {
             Color("TableBackground")
@@ -180,6 +231,12 @@ struct BeerPongTableView: View {
         }
         .onChange(of: rightSideScore) { _, newValue in
             game = game.update(team2CupsSunk: newValue)
+        }
+        .onChange(of: leftRemainingCupIDs) { _, newValue in
+            print("🟦 LEFT RACK UPDATED → Remaining cups:", newValue)
+        }
+        .onChange(of: rightRemainingCupIDs) { _, newValue in
+            print("🟥 RIGHT RACK UPDATED → Remaining cups:", newValue)
         }
     }
 }
