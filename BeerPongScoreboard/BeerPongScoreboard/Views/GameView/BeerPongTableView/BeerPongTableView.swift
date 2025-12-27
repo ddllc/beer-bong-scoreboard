@@ -18,6 +18,7 @@ struct BeerPongTableView: View {
     @State private var isLeftCup8SunkAnimationActive = false
     @State private var isLeftCup9SunkAnimationActive = false
     @State private var isLeftCup10SunkAnimationActive = false
+    @State private var isRerackAt6CupAvailable = false
 
     @State private var isRightCup1SunkAnimationActive = false
     @State private var isRightCup2SunkAnimationActive = false
@@ -234,6 +235,7 @@ struct BeerPongTableView: View {
         }
         .onChange(of: leftRemainingCupIDs) { _, newValue in
             print("🟦 LEFT RACK UPDATED → Remaining cups:", newValue)
+
         }
         .onChange(of: rightRemainingCupIDs) { _, newValue in
             print("🟥 RIGHT RACK UPDATED → Remaining cups:", newValue)

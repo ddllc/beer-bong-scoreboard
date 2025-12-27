@@ -40,6 +40,11 @@ struct ScoreboardView: View {
                     .padding(.top, 2)
                     .padding(.trailing, 4)
             }
+            .overlay(alignment: .topTrailing) {
+                if rerackAt6CupsAvailable {
+                    Image(systemName: "exclamationmark.triangle")
+                }
+            }
             .onTapGesture {
                 guard appData.isTurnIndicatorEnabled else { return }
                 if appData.currentTurnTeamID == game.team1.id {
