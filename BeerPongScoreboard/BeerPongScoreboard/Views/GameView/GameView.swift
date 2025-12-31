@@ -290,26 +290,26 @@ struct GameView: View {
 
                         HStack {
                             // MARK: - LEFT 10 Cup Rack
-                            HStack(spacing: isActionsModalPresented ? 0 : 26) {
-                                VStack(spacing: isActionsModalPresented ? 0 : 20) {
+                            HStack {
+                                VStack {
                                     SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup1SunkAnimationActive)
                                     SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup2SunkAnimationActive)
                                     SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup3SunkAnimationActive)
                                     SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup4SunkAnimationActive)
                                 }
 
-                                VStack(spacing: isActionsModalPresented ? 0 : 20) {
+                                VStack {
                                     SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup5SunkAnimationActive)
                                     SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup6SunkAnimationActive)
                                     SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup7SunkAnimationActive)
                                 }
 
-                                VStack(spacing: isActionsModalPresented ? 0 : 20) {
+                                VStack {
                                     SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup8SunkAnimationActive)
                                     SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup9SunkAnimationActive)
                                 }
 
-                                VStack(spacing: isActionsModalPresented ? 0 : 20) {
+                                VStack {
                                     SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup10SunkAnimationActive)
                                 }
                             }
@@ -326,23 +326,23 @@ struct GameView: View {
                             Spacer()
 
                             // MARK: - Right 10 Cup Rack
-                            HStack(spacing: isActionsModalPresented ? 0 : 26) {
-                                VStack(spacing: isActionsModalPresented ? 0 : 20) {
+                            HStack {
+                                VStack {
                                     SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup1SunkAnimationActive)
                                 }
 
-                                VStack(spacing: isActionsModalPresented ? 0 : 20) {
+                                VStack {
                                     SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup2SunkAnimationActive)
                                     SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup3SunkAnimationActive)
                                 }
 
-                                VStack(spacing: isActionsModalPresented ? 0 : 20) {
+                                VStack {
                                     SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup4SunkAnimationActive)
                                     SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup5SunkAnimationActive)
                                     SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup6SunkAnimationActive)
                                 }
 
-                                VStack(spacing: isActionsModalPresented ? 0 : 20) {
+                                VStack {
                                     SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup7SunkAnimationActive)
                                     SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup8SunkAnimationActive)
                                     SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup9SunkAnimationActive)
@@ -368,13 +368,14 @@ struct GameView: View {
             }
 
             // MARK: - Menu Modal
-            VStack(spacing: 20) {
+            VStack {
                 Button("RERACK") {
                     dismiss()
                 }
                 .buttonStyle(.glassProminent)
                 .buttonSizing(.flexible)
                 .buttonBorderShape(.roundedRectangle(radius: 8))
+                .frame(width: 200)
 
                 Button("Pause Game") {
                     dismiss()
@@ -382,6 +383,7 @@ struct GameView: View {
                 .buttonStyle(.glassProminent)
                 .buttonSizing(.flexible)
                 .buttonBorderShape(.roundedRectangle(radius: 8))
+                .frame(width: 200)
 
                 Button("Cancel Game", role: .cancel) {
                     dismiss()
@@ -389,14 +391,12 @@ struct GameView: View {
                 .buttonStyle(.glassProminent)
                 .buttonSizing(.flexible)
                 .buttonBorderShape(.roundedRectangle(radius: 8))
+                .frame(width: 200)
             }
-            .padding()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .ignoresSafeArea()
             .background(.secondary)
-            .clipShape(
-                RoundedRectangle(cornerRadius: 8)
-            )
             .opacity(isActionsModalPresented ? 1 : 0)
-            .frame(width: 200)
         }
         .navigationBarBackButtonHidden(true)
         .onChange(of: game.team1CupsSunk) { _, newValue in
