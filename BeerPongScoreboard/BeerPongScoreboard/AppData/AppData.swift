@@ -7,6 +7,7 @@ class AppData {
     var isTwoReracksEnabled = false
     var isTurnIndicatorEnabled = false
     var currentTurnTeamID: UUID?
+    
 
 
 

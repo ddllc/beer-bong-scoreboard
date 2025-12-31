@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct BeerPongTableView: View {
+    @Environment(AppData.self) private var appData
     @Binding var game: GameModel
     @Binding var isActionsModalPresented: Bool
     let cupSize: CGFloat = 60
@@ -44,8 +45,8 @@ struct BeerPongTableView: View {
             (9, isLeftCup9SunkAnimationActive),
             (10, isLeftCup10SunkAnimationActive)
         ]
-        .filter { !$0.1 }
-        .map { $0.0 }
+            .filter { !$0.1 }
+            .map { $0.0 }
     }
 
     private var rightRemainingCupIDs: [Int] {
@@ -61,8 +62,8 @@ struct BeerPongTableView: View {
             (9, isRightCup9SunkAnimationActive),
             (10, isRightCup10SunkAnimationActive)
         ]
-        .filter { !$0.1 }
-        .map { $0.0 }
+            .filter { !$0.1 }
+            .map { $0.0 }
     }
 
     // MARK: - ID → Binding (LEFT)
@@ -83,150 +84,276 @@ struct BeerPongTableView: View {
     }
 
     var body: some View {
-        ZStack {
-            Color("TableBackground")
+        VStack {
+            HStack(alignment: .bottom) {
+                // MARK: - Team 1
+                VStack(spacing: 4) {
+                    Text(game.team1.name.uppercased())
+                        .font(.headline)
+                        .lineLimit(1)
 
-            // MARK: - CENTER DIVIDER LINE
-            Rectangle()
-                .fill(.white)
-                .frame(width: 2)
-                .frame(maxHeight: .infinity)
 
-            HStack {
-                // MARK: - LEFT RACK (BLUE TEAM) 10 Cup Rack
-                HStack(spacing: isActionsModalPresented ? 0 : 26) {
-                    VStack(spacing: isActionsModalPresented ? 0 : 20) {
-
-                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup1SunkAnimationActive)
-                            .onChange(of: isLeftCup1SunkAnimationActive) { _, newValue in
-                                leftSideScore += newValue ? 1 : -1
-                            }
-
-                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup2SunkAnimationActive)
-                            .onChange(of: isLeftCup2SunkAnimationActive) { _, newValue in
-                                leftSideScore += newValue ? 1 : -1
-                            }
-
-                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup3SunkAnimationActive)
-                            .onChange(of: isLeftCup3SunkAnimationActive) { _, newValue in
-                                leftSideScore += newValue ? 1 : -1
-                            }
-
-                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup4SunkAnimationActive)
-                            .onChange(of: isLeftCup4SunkAnimationActive) { _, newValue in
-                                leftSideScore += newValue ? 1 : -1
-                            }
+                    HStack(spacing: 3) {
+                        ForEach(1...10, id: \.self) { index in
+                            Image(systemName: index <= game.team1CupsSunk ? "circle.fill" : "circle")
+                        }
                     }
-
-                    VStack(spacing: isActionsModalPresented ? 0 : 20) {
-
-                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup5SunkAnimationActive)
-                            .onChange(of: isLeftCup5SunkAnimationActive) { _, newValue in
-                                leftSideScore += newValue ? 1 : -1
-                            }
-
-                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup6SunkAnimationActive)
-                            .onChange(of: isLeftCup6SunkAnimationActive) { _, newValue in
-                                leftSideScore += newValue ? 1 : -1
-                            }
-
-                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup7SunkAnimationActive)
-                            .onChange(of: isLeftCup7SunkAnimationActive) { _, newValue in
-                                leftSideScore += newValue ? 1 : -1
-                            }
-                    }
-
-                    VStack(spacing: isActionsModalPresented ? 0 : 20) {
-
-                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup8SunkAnimationActive)
-                            .onChange(of: isLeftCup8SunkAnimationActive) { _, newValue in
-                                leftSideScore += newValue ? 1 : -1
-                            }
-
-                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup9SunkAnimationActive)
-                            .onChange(of: isLeftCup9SunkAnimationActive) { _, newValue in
-                                leftSideScore += newValue ? 1 : -1
-                            }
-                    }
-
-                    VStack(spacing: isActionsModalPresented ? 0 : 20) {
-
-                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup10SunkAnimationActive)
-                            .onChange(of: isLeftCup10SunkAnimationActive) { _, newValue in
-                                leftSideScore += newValue ? 1 : -1
-                            }
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 8)
+                .foregroundStyle(
+                    appData.isTurnIndicatorEnabled && appData.currentTurnTeamID == game.team1.id
+                    ? Color.white
+                    : Color.primary
+                )
+                .background(
+                    appData.isTurnIndicatorEnabled && appData.currentTurnTeamID == game.team1.id
+                    ? Color("SoloCupBlue")
+                    : Color.clear
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 4))
+                .overlay(alignment: .topTrailing) {
+                    Image(systemName: "arrow.right")
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                        .padding(.top, 2)
+                        .padding(.trailing, 4)
+                }
+                .onTapGesture {
+                    guard appData.isTurnIndicatorEnabled else { return }
+                    if appData.currentTurnTeamID == game.team1.id {
+                        appData.currentTurnTeamID = nil
+                    } else {
+                        appData.currentTurnTeamID = game.team1.id
                     }
                 }
 
                 Spacer()
 
-                // MARK: - RIGHT RACK (RED TEAM) 10 Cup Rack
-                HStack(spacing: isActionsModalPresented ? 0 : 26) {
-                    VStack(spacing: isActionsModalPresented ? 0 : 20) {
+                // MARK: - Score + Timer
+                VStack(spacing: 0) {
+                    Spacer()
 
-                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup1SunkAnimationActive)
-                            .onChange(of: isRightCup1SunkAnimationActive) { _, newValue in
-                                rightSideScore += newValue ? 1 : -1
-                            }
+                    Text("\(game.team1CupsSunk) - \(game.team2CupsSunk)")
+                        .font(.title)
+                        .fontWeight(.heavy)
+                        .monospacedDigit()
+
+
+                    HStack(spacing: 6) {
+                        Text("Duration")
+
+                        TimelineView(.periodic(from: game.startedAt, by: 1)) { context in
+                            Text(timerInterval: game.startedAt ... context.date, countsDown: false)
+                                .italic()
+                                .monospacedDigit()
+                                .font(.callout)
+                        }
                     }
 
-                    VStack(spacing: isActionsModalPresented ? 0 : 20) {
 
-                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup2SunkAnimationActive)
-                            .onChange(of: isRightCup2SunkAnimationActive) { _, newValue in
-                                rightSideScore += newValue ? 1 : -1
-                            }
-
-                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup3SunkAnimationActive)
-                            .onChange(of: isRightCup3SunkAnimationActive) { _, newValue in
-                                rightSideScore += newValue ? 1 : -1
-                            }
+                    Button {
+                        withAnimation {
+                            isActionsModalPresented.toggle()
+                        }
+                    } label: {
+                        // chevron alternate
+                        Image(systemName: isActionsModalPresented ? "chevron.compact.down" : "chevron.compact.up")
+                            .font(.title3)
                     }
 
-                    VStack(spacing: isActionsModalPresented ? 0 : 20) {
+                }
 
-                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup4SunkAnimationActive)
-                            .onChange(of: isRightCup4SunkAnimationActive) { _, newValue in
-                                rightSideScore += newValue ? 1 : -1
-                            }
+                Spacer()
 
-                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup5SunkAnimationActive)
-                            .onChange(of: isRightCup5SunkAnimationActive) { _, newValue in
-                                rightSideScore += newValue ? 1 : -1
-                            }
+                // MARK: - Team 2
+                VStack(spacing: 4) {
+                    Text(game.team2.name.uppercased())
+                        .font(.headline)
+                        .lineLimit(1)
 
-                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup6SunkAnimationActive)
-                            .onChange(of: isRightCup6SunkAnimationActive) { _, newValue in
-                                rightSideScore += newValue ? 1 : -1
-                            }
+                    HStack(spacing: 3) {
+                        ForEach(1...10, id: \.self) { index in
+                            Image(systemName: index <= game.team2CupsSunk ? "circle.fill" : "circle")
+                        }
                     }
-
-                    VStack(spacing: isActionsModalPresented ? 0 : 20) {
-
-                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup7SunkAnimationActive)
-                            .onChange(of: isRightCup7SunkAnimationActive) { _, newValue in
-                                rightSideScore += newValue ? 1 : -1
-                            }
-
-                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup8SunkAnimationActive)
-                            .onChange(of: isRightCup8SunkAnimationActive) { _, newValue in
-                                rightSideScore += newValue ? 1 : -1
-                            }
-
-                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup9SunkAnimationActive)
-                            .onChange(of: isRightCup9SunkAnimationActive) { _, newValue in
-                                rightSideScore += newValue ? 1 : -1
-                            }
-
-                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup10SunkAnimationActive)
-                            .onChange(of: isRightCup10SunkAnimationActive) { _, newValue in
-                                rightSideScore += newValue ? 1 : -1
-                            }
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 8)
+                .foregroundStyle(
+                    appData.isTurnIndicatorEnabled && appData.currentTurnTeamID == game.team2.id
+                    ? Color.white
+                    : Color.primary
+                )
+                .background(
+                    appData.isTurnIndicatorEnabled && appData.currentTurnTeamID == game.team2.id
+                    ? Color("SoloCupRed")
+                    : Color.clear
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 4))
+                .overlay(alignment: .topLeading) {
+                    Image(systemName: "arrow.left")
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                        .padding(.top, 2)
+                        .padding(.leading, 4)
+                }
+                .onTapGesture {
+                    guard appData.isTurnIndicatorEnabled else { return }
+                    if appData.currentTurnTeamID == game.team2.id {
+                        appData.currentTurnTeamID = nil
+                    } else {
+                        appData.currentTurnTeamID = game.team2.id
                     }
                 }
             }
             .padding(.vertical, 4)
+
+            ZStack {
+                Color("TableBackground")
+
+                // MARK: - CENTER DIVIDER LINE
+                Rectangle()
+                    .fill(.white)
+                    .frame(width: 2)
+                    .frame(maxHeight: .infinity)
+                HStack {
+                    // MARK: - LEFT RACK (BLUE TEAM) 10 Cup Rack
+                    HStack(spacing: isActionsModalPresented ? 0 : 26) {
+                        VStack(spacing: isActionsModalPresented ? 0 : 20) {
+
+                            SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup1SunkAnimationActive)
+                                .onChange(of: isLeftCup1SunkAnimationActive) { _, newValue in
+                                    leftSideScore += newValue ? 1 : -1
+                                }
+
+                            SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup2SunkAnimationActive)
+                                .onChange(of: isLeftCup2SunkAnimationActive) { _, newValue in
+                                    leftSideScore += newValue ? 1 : -1
+                                }
+
+                            SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup3SunkAnimationActive)
+                                .onChange(of: isLeftCup3SunkAnimationActive) { _, newValue in
+                                    leftSideScore += newValue ? 1 : -1
+                                }
+
+                            SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup4SunkAnimationActive)
+                                .onChange(of: isLeftCup4SunkAnimationActive) { _, newValue in
+                                    leftSideScore += newValue ? 1 : -1
+                                }
+                        }
+
+                        VStack(spacing: isActionsModalPresented ? 0 : 20) {
+
+                            SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup5SunkAnimationActive)
+                                .onChange(of: isLeftCup5SunkAnimationActive) { _, newValue in
+                                    leftSideScore += newValue ? 1 : -1
+                                }
+
+                            SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup6SunkAnimationActive)
+                                .onChange(of: isLeftCup6SunkAnimationActive) { _, newValue in
+                                    leftSideScore += newValue ? 1 : -1
+                                }
+
+                            SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup7SunkAnimationActive)
+                                .onChange(of: isLeftCup7SunkAnimationActive) { _, newValue in
+                                    leftSideScore += newValue ? 1 : -1
+                                }
+                        }
+
+                        VStack(spacing: isActionsModalPresented ? 0 : 20) {
+
+                            SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup8SunkAnimationActive)
+                                .onChange(of: isLeftCup8SunkAnimationActive) { _, newValue in
+                                    leftSideScore += newValue ? 1 : -1
+                                }
+
+                            SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup9SunkAnimationActive)
+                                .onChange(of: isLeftCup9SunkAnimationActive) { _, newValue in
+                                    leftSideScore += newValue ? 1 : -1
+                                }
+                        }
+
+                        VStack(spacing: isActionsModalPresented ? 0 : 20) {
+
+                            SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup10SunkAnimationActive)
+                                .onChange(of: isLeftCup10SunkAnimationActive) { _, newValue in
+                                    leftSideScore += newValue ? 1 : -1
+                                }
+                        }
+                    }
+
+                    Spacer()
+
+                    // MARK: - RIGHT RACK (RED TEAM) 10 Cup Rack
+                    HStack(spacing: isActionsModalPresented ? 0 : 26) {
+                        VStack(spacing: isActionsModalPresented ? 0 : 20) {
+
+                            SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup1SunkAnimationActive)
+                                .onChange(of: isRightCup1SunkAnimationActive) { _, newValue in
+                                    rightSideScore += newValue ? 1 : -1
+                                }
+                        }
+
+                        VStack(spacing: isActionsModalPresented ? 0 : 20) {
+
+                            SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup2SunkAnimationActive)
+                                .onChange(of: isRightCup2SunkAnimationActive) { _, newValue in
+                                    rightSideScore += newValue ? 1 : -1
+                                }
+
+                            SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup3SunkAnimationActive)
+                                .onChange(of: isRightCup3SunkAnimationActive) { _, newValue in
+                                    rightSideScore += newValue ? 1 : -1
+                                }
+                        }
+
+                        VStack(spacing: isActionsModalPresented ? 0 : 20) {
+
+                            SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup4SunkAnimationActive)
+                                .onChange(of: isRightCup4SunkAnimationActive) { _, newValue in
+                                    rightSideScore += newValue ? 1 : -1
+                                }
+
+                            SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup5SunkAnimationActive)
+                                .onChange(of: isRightCup5SunkAnimationActive) { _, newValue in
+                                    rightSideScore += newValue ? 1 : -1
+                                }
+
+                            SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup6SunkAnimationActive)
+                                .onChange(of: isRightCup6SunkAnimationActive) { _, newValue in
+                                    rightSideScore += newValue ? 1 : -1
+                                }
+                        }
+
+                        VStack(spacing: isActionsModalPresented ? 0 : 20) {
+
+                            SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup7SunkAnimationActive)
+                                .onChange(of: isRightCup7SunkAnimationActive) { _, newValue in
+                                    rightSideScore += newValue ? 1 : -1
+                                }
+
+                            SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup8SunkAnimationActive)
+                                .onChange(of: isRightCup8SunkAnimationActive) { _, newValue in
+                                    rightSideScore += newValue ? 1 : -1
+                                }
+
+                            SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup9SunkAnimationActive)
+                                .onChange(of: isRightCup9SunkAnimationActive) { _, newValue in
+                                    rightSideScore += newValue ? 1 : -1
+                                }
+
+                            SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup10SunkAnimationActive)
+                                .onChange(of: isRightCup10SunkAnimationActive) { _, newValue in
+                                    rightSideScore += newValue ? 1 : -1
+                                }
+                        }
+                    }
+                }
+                .padding(.vertical, 4)
+            }
         }
+
         .onChange(of: leftSideScore) { _, newValue in
             game = game.update(team1CupsSunk: newValue)
         }

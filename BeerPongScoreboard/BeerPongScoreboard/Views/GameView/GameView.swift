@@ -1,11 +1,142 @@
 import SwiftUI
 
 struct GameView: View {
+    // MARK: - Environment Objects
+    @Environment(AppData.self) private var appData
     @Environment(\.dismiss) private var dismiss
+
+    // MARK: - GameModel & CupSize
     @State private var game: GameModel
+    let cupSize: CGFloat = 60
+
+    // MARK: - Modal States
     @State private var isWinnerSheetPresented = false
     @State private var isActionsModalPresented = false
 
+    // MARK: - Left Cup Animations
+    @State private var isLeftCup1SunkAnimationActive = false
+    @State private var isLeftCup2SunkAnimationActive = false
+    @State private var isLeftCup3SunkAnimationActive = false
+    @State private var isLeftCup4SunkAnimationActive = false
+    @State private var isLeftCup5SunkAnimationActive = false
+    @State private var isLeftCup6SunkAnimationActive = false
+    @State private var isLeftCup7SunkAnimationActive = false
+    @State private var isLeftCup8SunkAnimationActive = false
+    @State private var isLeftCup9SunkAnimationActive = false
+    @State private var isLeftCup10SunkAnimationActive = false
+
+    // MARK: - Right Cup Animations
+    @State private var isRightCup1SunkAnimationActive = false
+    @State private var isRightCup2SunkAnimationActive = false
+    @State private var isRightCup3SunkAnimationActive = false
+    @State private var isRightCup4SunkAnimationActive = false
+    @State private var isRightCup5SunkAnimationActive = false
+    @State private var isRightCup6SunkAnimationActive = false
+    @State private var isRightCup7SunkAnimationActive = false
+    @State private var isRightCup8SunkAnimationActive = false
+    @State private var isRightCup9SunkAnimationActive = false
+    @State private var isRightCup10SunkAnimationActive = false
+
+    // MARK: Rerack States
+    @State private var isChoosingRerack6Left = false
+    @State private var isChoosingRerack6Right = false
+    @State private var isChoosingRerack4Left = false
+    @State private var isChoosingRerack4Right = false
+    @State private var leftReracksUsed = 0
+    @State private var rightReracksUsed = 0
+
+    private var rerackAt6AvailableForLeft: Bool {
+        appData.isRerackEnabled && leftRemainingCupIDs.count == 6
+    }
+
+    private var rerackAt6AvailableForRight: Bool {
+        appData.isRerackEnabled && rightRemainingCupIDs.count == 6
+    }
+
+
+    // MARK: Team Scores
+    private var leftSideScore: Int {
+        [isLeftCup1SunkAnimationActive, isLeftCup2SunkAnimationActive, isLeftCup3SunkAnimationActive, isLeftCup4SunkAnimationActive, isLeftCup5SunkAnimationActive,
+         isLeftCup6SunkAnimationActive, isLeftCup7SunkAnimationActive, isLeftCup8SunkAnimationActive, isLeftCup9SunkAnimationActive, isLeftCup10SunkAnimationActive]
+            .filter { $0 }
+            .count
+    }
+
+    private var rightSideScore: Int {
+        [isRightCup1SunkAnimationActive, isRightCup2SunkAnimationActive, isRightCup3SunkAnimationActive, isRightCup4SunkAnimationActive, isRightCup5SunkAnimationActive,
+         isRightCup6SunkAnimationActive, isRightCup7SunkAnimationActive, isRightCup8SunkAnimationActive, isRightCup9SunkAnimationActive, isRightCup10SunkAnimationActive]
+            .filter { $0 }
+            .count
+    }
+
+    // MARK: - Remaining Cups
+    private var leftRemainingCupIDs: [Int] {
+        [
+            (1, isLeftCup1SunkAnimationActive),
+            (2, isLeftCup2SunkAnimationActive),
+            (3, isLeftCup3SunkAnimationActive),
+            (4, isLeftCup4SunkAnimationActive),
+            (5, isLeftCup5SunkAnimationActive),
+            (6, isLeftCup6SunkAnimationActive),
+            (7, isLeftCup7SunkAnimationActive),
+            (8, isLeftCup8SunkAnimationActive),
+            (9, isLeftCup9SunkAnimationActive),
+            (10, isLeftCup10SunkAnimationActive)
+        ]
+        .filter { !$0.1 }
+        .map { $0.0 }
+        .sorted()
+    }
+
+    private var rightRemainingCupIDs: [Int] {
+        [
+            (1, isRightCup1SunkAnimationActive),
+            (2, isRightCup2SunkAnimationActive),
+            (3, isRightCup3SunkAnimationActive),
+            (4, isRightCup4SunkAnimationActive),
+            (5, isRightCup5SunkAnimationActive),
+            (6, isRightCup6SunkAnimationActive),
+            (7, isRightCup7SunkAnimationActive),
+            (8, isRightCup8SunkAnimationActive),
+            (9, isRightCup9SunkAnimationActive),
+            (10, isRightCup10SunkAnimationActive)
+        ]
+        .filter { !$0.1 }
+        .map { $0.0 }
+        .sorted()
+    }
+
+    private func leftCupBinding(id: Int) -> Binding<Bool> {
+        switch id {
+        case 1: return $isLeftCup1SunkAnimationActive
+        case 2: return $isLeftCup2SunkAnimationActive
+        case 3: return $isLeftCup3SunkAnimationActive
+        case 4: return $isLeftCup4SunkAnimationActive
+        case 5: return $isLeftCup5SunkAnimationActive
+        case 6: return $isLeftCup6SunkAnimationActive
+        case 7: return $isLeftCup7SunkAnimationActive
+        case 8: return $isLeftCup8SunkAnimationActive
+        case 9: return $isLeftCup9SunkAnimationActive
+        default: return $isLeftCup10SunkAnimationActive
+        }
+    }
+
+    private func rightCupBinding(id: Int) -> Binding<Bool> {
+        switch id {
+        case 1: return $isRightCup1SunkAnimationActive
+        case 2: return $isRightCup2SunkAnimationActive
+        case 3: return $isRightCup3SunkAnimationActive
+        case 4: return $isRightCup4SunkAnimationActive
+        case 5: return $isRightCup5SunkAnimationActive
+        case 6: return $isRightCup6SunkAnimationActive
+        case 7: return $isRightCup7SunkAnimationActive
+        case 8: return $isRightCup8SunkAnimationActive
+        case 9: return $isRightCup9SunkAnimationActive
+        default: return $isRightCup10SunkAnimationActive
+        }
+    }
+
+    // MARK: - Game Duration
     private var durationText: String {
         let end = game.endedAt ?? Date()
         let seconds = Int(end.timeIntervalSince(game.startedAt))
@@ -16,17 +147,227 @@ struct GameView: View {
         return String(format: "%d:%02d", minutes, remainingSeconds)
     }
 
+    // MARK: Init
     init(game: GameModel) {
         _game = State(initialValue: game)
     }
 
+    // MARK: Body
     var body: some View {
         ZStack(alignment: .center) {
             VStack {
-                ScoreboardView(game: $game, isActionsModalPresented: $isActionsModalPresented)
-                BeerPongTableView(game: $game, isActionsModalPresented: $isActionsModalPresented)
+                VStack {
+                    HStack(alignment: .bottom) {
+                        // MARK: - Left Scoreboard
+                        VStack(spacing: 4) {
+                            Text(game.team1.name.uppercased())
+                                .font(.headline)
+                                .lineLimit(1)
+
+                            HStack(spacing: 3) {
+                                ForEach(1...10, id: \.self) { index in
+                                    Image(systemName: index <= game.team1CupsSunk ? "circle.fill" : "circle")
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                        .padding(.vertical, 8)
+                        .foregroundStyle(
+                            appData.isTurnIndicatorEnabled && appData.currentTurnTeamID == game.team1.id
+                            ? Color.white
+                            : Color.primary
+                        )
+                        .background(
+                            appData.isTurnIndicatorEnabled && appData.currentTurnTeamID == game.team1.id
+                            ? Color("SoloCupBlue")
+                            : Color.clear
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 4))
+                        .overlay(alignment: .topTrailing) {
+                            Image(systemName: "arrow.right")
+                                .font(.headline)
+                                .foregroundStyle(.white)
+                                .padding(.top, 2)
+                                .padding(.trailing, 4)
+                        }
+                        .onTapGesture {
+                            guard appData.isTurnIndicatorEnabled else { return }
+                            if appData.currentTurnTeamID == game.team1.id {
+                                appData.currentTurnTeamID = nil
+                            } else {
+                                appData.currentTurnTeamID = game.team1.id
+                            }
+                        }
+
+                        Spacer()
+
+                        // MARK: - Middle Scoreboard
+                        VStack(spacing: 0) {
+                            Spacer()
+
+                            Text("\(game.team1CupsSunk) - \(game.team2CupsSunk)")
+                                .font(.title)
+                                .fontWeight(.heavy)
+                                .monospacedDigit()
+
+                            HStack(spacing: 6) {
+                                Text("Duration")
+
+                                TimelineView(.periodic(from: game.startedAt, by: 1)) { context in
+                                    Text(timerInterval: game.startedAt ... context.date, countsDown: false)
+                                        .italic()
+                                        .monospacedDigit()
+                                        .font(.callout)
+                                }
+                            }
+
+                            Button {
+                                withAnimation {
+                                    isActionsModalPresented.toggle()
+                                }
+                            } label: {
+                                Image(systemName: isActionsModalPresented ? "chevron.compact.down" : "chevron.compact.up")
+                                    .font(.title3)
+                            }
+                        }
+
+                        Spacer()
+
+                        // MARK: - Right Scoreboard
+                        VStack(spacing: 4) {
+                            Text(game.team2.name.uppercased())
+                                .font(.headline)
+                                .lineLimit(1)
+
+                            HStack(spacing: 3) {
+                                ForEach(1...10, id: \.self) { index in
+                                    Image(systemName: index <= game.team2CupsSunk ? "circle.fill" : "circle")
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                        .padding(.vertical, 8)
+                        .foregroundStyle(
+                            appData.isTurnIndicatorEnabled && appData.currentTurnTeamID == game.team2.id
+                            ? Color.white
+                            : Color.primary
+                        )
+                        .background(
+                            appData.isTurnIndicatorEnabled && appData.currentTurnTeamID == game.team2.id
+                            ? Color("SoloCupRed")
+                            : Color.clear
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 4))
+                        .overlay(alignment: .topLeading) {
+                            Image(systemName: "arrow.left")
+                                .font(.headline)
+                                .foregroundStyle(.white)
+                                .padding(.top, 2)
+                                .padding(.leading, 4)
+                        }
+                        .onTapGesture {
+                            guard appData.isTurnIndicatorEnabled else { return }
+                            if appData.currentTurnTeamID == game.team2.id {
+                                appData.currentTurnTeamID = nil
+                            } else {
+                                appData.currentTurnTeamID = game.team2.id
+                            }
+                        }
+                    }
+                    .padding(.vertical, 4)
+
+
+
+                    ZStack {
+                        // MARK: - Table Background
+                        Color("TableBackground")
+
+                        // MARK: - CENTER DIVIDER LINE
+                        Rectangle()
+                            .fill(.white)
+                            .frame(width: 2)
+                            .frame(maxHeight: .infinity)
+
+                        HStack {
+                            // MARK: - LEFT 10 Cup Rack
+                            HStack(spacing: isActionsModalPresented ? 0 : 26) {
+                                VStack(spacing: isActionsModalPresented ? 0 : 20) {
+                                    SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup1SunkAnimationActive)
+                                    SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup2SunkAnimationActive)
+                                    SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup3SunkAnimationActive)
+                                    SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup4SunkAnimationActive)
+                                }
+
+                                VStack(spacing: isActionsModalPresented ? 0 : 20) {
+                                    SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup5SunkAnimationActive)
+                                    SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup6SunkAnimationActive)
+                                    SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup7SunkAnimationActive)
+                                }
+
+                                VStack(spacing: isActionsModalPresented ? 0 : 20) {
+                                    SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup8SunkAnimationActive)
+                                    SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup9SunkAnimationActive)
+                                }
+
+                                VStack(spacing: isActionsModalPresented ? 0 : 20) {
+                                    SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup10SunkAnimationActive)
+                                }
+                            }
+                            .overlay(alignment: .topTrailing) {
+                                if rerackAt6AvailableForLeft {
+                                    Image(systemName: "exclamationmark.triangle.fill")
+                                        .foregroundStyle(.yellow)
+                                        .padding(.top, 2)
+                                        .padding(.trailing, 4)
+
+                                }
+                            }
+
+                            Spacer()
+
+                            // MARK: - Right 10 Cup Rack
+                            HStack(spacing: isActionsModalPresented ? 0 : 26) {
+                                VStack(spacing: isActionsModalPresented ? 0 : 20) {
+                                    SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup1SunkAnimationActive)
+                                }
+
+                                VStack(spacing: isActionsModalPresented ? 0 : 20) {
+                                    SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup2SunkAnimationActive)
+                                    SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup3SunkAnimationActive)
+                                }
+
+                                VStack(spacing: isActionsModalPresented ? 0 : 20) {
+                                    SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup4SunkAnimationActive)
+                                    SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup5SunkAnimationActive)
+                                    SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup6SunkAnimationActive)
+                                }
+
+                                VStack(spacing: isActionsModalPresented ? 0 : 20) {
+                                    SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup7SunkAnimationActive)
+                                    SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup8SunkAnimationActive)
+                                    SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup9SunkAnimationActive)
+                                    SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup10SunkAnimationActive)
+                                }
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
+                .onChange(of: leftSideScore) { _, newValue in
+                    game = game.update(team1CupsSunk: newValue)
+                }
+                .onChange(of: rightSideScore) { _, newValue in
+                    game = game.update(team2CupsSunk: newValue)
+                }
+                .onChange(of: leftRemainingCupIDs) { _, newValue in
+                    print("🟦 LEFT RACK UPDATED → Remaining cups:", newValue)
+                }
+                .onChange(of: rightRemainingCupIDs) { _, newValue in
+                    print("🟥 RIGHT RACK UPDATED → Remaining cups:", newValue)
+                }
             }
 
+            // MARK: - Menu Modal
             VStack(spacing: 20) {
                 Button("RERACK") {
                     dismiss()
@@ -34,7 +375,7 @@ struct GameView: View {
                 .buttonStyle(.glassProminent)
                 .buttonSizing(.flexible)
                 .buttonBorderShape(.roundedRectangle(radius: 8))
-                
+
                 Button("Pause Game") {
                     dismiss()
                 }
@@ -52,9 +393,7 @@ struct GameView: View {
             .padding()
             .background(.secondary)
             .clipShape(
-                RoundedRectangle(
-                    cornerRadius: 8
-                )
+                RoundedRectangle(cornerRadius: 8)
             )
             .opacity(isActionsModalPresented ? 1 : 0)
             .frame(width: 200)
@@ -77,4 +416,39 @@ struct GameView: View {
         }
     }
 
+    // MARK: - Rerack Methods
+    private func applyLeftRerack(positions: [Int]) {
+        isLeftCup1SunkAnimationActive = true
+        isLeftCup2SunkAnimationActive = true
+        isLeftCup3SunkAnimationActive = true
+        isLeftCup4SunkAnimationActive = true
+        isLeftCup5SunkAnimationActive = true
+        isLeftCup6SunkAnimationActive = true
+        isLeftCup7SunkAnimationActive = true
+        isLeftCup8SunkAnimationActive = true
+        isLeftCup9SunkAnimationActive = true
+        isLeftCup10SunkAnimationActive = true
+
+        for id in positions {
+            switch id {
+            case 1: isLeftCup1SunkAnimationActive = false
+            case 2: isLeftCup2SunkAnimationActive = false
+            case 3: isLeftCup3SunkAnimationActive = false
+            case 4: isLeftCup4SunkAnimationActive = false
+            case 5: isLeftCup5SunkAnimationActive = false
+            case 6: isLeftCup6SunkAnimationActive = false
+            case 7: isLeftCup7SunkAnimationActive = false
+            case 8: isLeftCup8SunkAnimationActive = false
+            case 9: isLeftCup9SunkAnimationActive = false
+            default: isLeftCup10SunkAnimationActive = false
+            }
+        }
+    }
+
+    private func applyRerack6Left() {
+        // NOTE: survivors was unused; removed for now to avoid a warning.
+        // Pick your 6-cup formation positions here.
+        let rerackPositions: [Int] = [1, 2, 3, 4, 5, 6]
+        applyLeftRerack(positions: rerackPositions)
+    }
 }
