@@ -198,6 +198,13 @@ struct GameView: View {
                                 appData.currentTurnTeamID = game.team1.id
                             }
                         }
+                        .overlay {
+                            if rerackAt6AvailableForLeft {
+                                Button("Rerack 6") {
+                                    isChoosingRerack6Left = true
+                                }
+                            }
+                        }
 
                         Spacer()
 
