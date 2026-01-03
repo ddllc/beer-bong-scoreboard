@@ -553,6 +553,8 @@ struct GameView: View {
                         }
                         .padding(.vertical, 4)
                     }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: cupSize * 4 + 40)           
                 }
                 .onChange(of: leftSideScore) { _, newValue in
                     game = game.update(team1CupsSunk: newValue)
