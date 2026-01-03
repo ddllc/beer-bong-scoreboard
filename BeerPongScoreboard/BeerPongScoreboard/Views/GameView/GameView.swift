@@ -209,7 +209,7 @@ struct GameView: View {
 
     // MARK: Body
     var body: some View {
-        ZStack(alignment: .center) {
+        ZStack {
             VStack {
                 VStack {
                     HStack(alignment: .bottom) {
@@ -403,7 +403,7 @@ struct GameView: View {
                             .frame(maxHeight: .infinity)
 
                         HStack {
-                            // MARK: - LEFT RACKS
+                            // MARK: - LEFT 10 CUP RACK
                             if isChoosingRerack10Left {
                                 HStack {
                                     VStack {
@@ -428,6 +428,7 @@ struct GameView: View {
                                         SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup10SunkAnimationActive)
                                     }
                                 }
+                                // MARK: - LEFT 6 CUP RACK
                             } else if isChoosingRerack6Left {
                                 HStack {
                                     VStack {
@@ -445,6 +446,7 @@ struct GameView: View {
                                         SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup6SunkAnimationActive)
                                     }
                                 }
+                                // MARK: - LEFT 4 CUP RACK
                             } else if isChoosingRerack4Left {
                                 HStack {
                                     VStack {
@@ -460,6 +462,7 @@ struct GameView: View {
                                         SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup4SunkAnimationActive)
                                     }
                                 }
+                                // MARK: - LEFT 3 CUP RACK
                             } else if isChoosingRerack3Left {
                                 HStack {
                                     VStack {
@@ -475,7 +478,7 @@ struct GameView: View {
 
                             Spacer()
 
-                            // MARK: - RIGHT RACKS (now includes 4 + 3)
+                            // MARK: - RIGHT 10 CUP RACK
                             if isChoosingRerack10Right {
                                 HStack {
                                     VStack {
@@ -500,6 +503,7 @@ struct GameView: View {
                                         SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup10SunkAnimationActive)
                                     }
                                 }
+                                // MARK: - RIGHT 6 CUP RACK
                             } else if isChoosingRerack6Right {
                                 HStack {
                                     VStack {
@@ -517,6 +521,7 @@ struct GameView: View {
                                         SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup6SunkAnimationActive)
                                     }
                                 }
+                                // MARK: - RIGHT 4 CUP RACK
                             } else if isChoosingRerack4Right {
                                 HStack {
                                     VStack {
@@ -532,6 +537,7 @@ struct GameView: View {
                                         SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup4SunkAnimationActive)
                                     }
                                 }
+                                // MARK: - RIGHT 3 CUP RACK
                             } else if isChoosingRerack3Right {
                                 HStack {
                                     VStack {
