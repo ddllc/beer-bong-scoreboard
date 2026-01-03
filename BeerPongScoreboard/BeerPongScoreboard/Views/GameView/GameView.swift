@@ -46,11 +46,11 @@ struct GameView: View {
     @State private var rightReracksUsed = 0
 
     private var rerackAt6AvailableForLeft: Bool {
-        appData.isRerackEnabled && leftRemainingCupIDs.count == 6
+        appData.isRerackEnabled && leftRemaining10CupIDs.count == 6
     }
 
     private var rerackAt6AvailableForRight: Bool {
-        appData.isRerackEnabled && rightRemainingCupIDs.count == 6
+        appData.isRerackEnabled && rightRemaining10CupIDs.count == 6
     }
 
 
@@ -69,8 +69,8 @@ struct GameView: View {
             .count
     }
 
-    // MARK: - Remaining Cups
-    private var leftRemainingCupIDs: [Int] {
+    // MARK: -  10 Remaining Cups
+    private var leftRemaining10CupIDs: [Int] {
         [
             (1, isLeftCup1SunkAnimationActive),
             (2, isLeftCup2SunkAnimationActive),
@@ -88,7 +88,7 @@ struct GameView: View {
         .sorted()
     }
 
-    private var rightRemainingCupIDs: [Int] {
+    private var rightRemaining10CupIDs: [Int] {
         [
             (1, isRightCup1SunkAnimationActive),
             (2, isRightCup2SunkAnimationActive),
@@ -106,7 +106,7 @@ struct GameView: View {
         .sorted()
     }
 
-    private func leftCupBinding(id: Int) -> Binding<Bool> {
+    private func left10CupBinding(id: Int) -> Binding<Bool> {
         switch id {
         case 1: return $isLeftCup1SunkAnimationActive
         case 2: return $isLeftCup2SunkAnimationActive
@@ -121,7 +121,7 @@ struct GameView: View {
         }
     }
 
-    private func rightCupBinding(id: Int) -> Binding<Bool> {
+    private func right10CupBinding(id: Int) -> Binding<Bool> {
         switch id {
         case 1: return $isRightCup1SunkAnimationActive
         case 2: return $isRightCup2SunkAnimationActive
@@ -135,6 +135,28 @@ struct GameView: View {
         default: return $isRightCup10SunkAnimationActive
         }
     }
+
+    // MARK: - 6 Remaining Cups
+    private let leftRerack6CupPositions: [Int] = [1, 2, 3, 4, 5, 6]
+
+    private var leftRemaining6CupIDs: [Int] {
+        leftRerack6CupPositions
+            .filter { id in
+                !left10CupBinding(id: id).wrappedValue
+            }
+            .sorted()
+    }
+
+    private let rightRerack6CupPositions: [Int] = [1, 2, 3, 4, 5, 6]
+
+    private var rightRemaining6CupIDs: [Int] {
+        rightRerack6CupPositions
+            .filter { id in
+                !right10CupBinding(id: id).wrappedValue
+            }
+            .sorted()
+    }
+
 
     // MARK: - Game Duration
     private var durationText: String {
@@ -201,7 +223,9 @@ struct GameView: View {
                         .overlay {
                             if rerackAt6AvailableForLeft {
                                 Button("Rerack 6") {
+                                    applyRerack6Left()
                                     isChoosingRerack6Left = true
+                                    leftReracksUsed += 1
                                 }
                             }
                         }
@@ -297,36 +321,57 @@ struct GameView: View {
 
                         HStack {
                             // MARK: - LEFT 10 Cup Rack
-                            HStack {
-                                VStack {
-                                    SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup1SunkAnimationActive)
-                                    SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup2SunkAnimationActive)
-                                    SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup3SunkAnimationActive)
-                                    SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup4SunkAnimationActive)
+                            if !isChoosingRerack6Left {
+                                HStack {
+                                    VStack {
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup1SunkAnimationActive)
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup2SunkAnimationActive)
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup3SunkAnimationActive)
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup4SunkAnimationActive)
+                                    }
+
+                                    VStack {
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup5SunkAnimationActive)
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup6SunkAnimationActive)
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup7SunkAnimationActive)
+                                    }
+
+                                    VStack {
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup8SunkAnimationActive)
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup9SunkAnimationActive)
+                                    }
+
+                                    VStack {
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup10SunkAnimationActive)
+                                    }
+                                }
+                                .overlay(alignment: .topTrailing) {
+                                    if rerackAt6AvailableForLeft {
+                                        Image(systemName: "exclamationmark.triangle.fill")
+                                            .foregroundStyle(.yellow)
+                                            .padding(.top, 2)
+                                            .padding(.trailing, 4)
+
+                                    }
                                 }
 
-                                VStack {
-                                    SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup5SunkAnimationActive)
-                                    SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup6SunkAnimationActive)
-                                    SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup7SunkAnimationActive)
-                                }
+                            } else {
+                                // MARK: - LEFT 6 Cup Rack
+                                HStack {
+                                    VStack {
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup1SunkAnimationActive)
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup2SunkAnimationActive)
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup3SunkAnimationActive)
+                                    }
 
-                                VStack {
-                                    SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup8SunkAnimationActive)
-                                    SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup9SunkAnimationActive)
-                                }
+                                    VStack {
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup4SunkAnimationActive)
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup5SunkAnimationActive)
+                                    }
 
-                                VStack {
-                                    SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup10SunkAnimationActive)
-                                }
-                            }
-                            .overlay(alignment: .topTrailing) {
-                                if rerackAt6AvailableForLeft {
-                                    Image(systemName: "exclamationmark.triangle.fill")
-                                        .foregroundStyle(.yellow)
-                                        .padding(.top, 2)
-                                        .padding(.trailing, 4)
-
+                                    VStack {
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup6SunkAnimationActive)
+                                    }
                                 }
                             }
 
@@ -366,13 +411,20 @@ struct GameView: View {
                 .onChange(of: rightSideScore) { _, newValue in
                     game = game.update(team2CupsSunk: newValue)
                 }
-                .onChange(of: leftRemainingCupIDs) { _, newValue in
+                .onChange(of: leftRemaining10CupIDs) { _, newValue in
                     print("🟦 LEFT RACK UPDATED → Remaining cups:", newValue)
                 }
-                .onChange(of: rightRemainingCupIDs) { _, newValue in
+                .onChange(of: rightRemaining10CupIDs) { _, newValue in
                     print("🟥 RIGHT RACK UPDATED → Remaining cups:", newValue)
                 }
+                .onChange(of: leftRemaining6CupIDs) { _, newValue in
+                    print("🟦 LEFT 6 RERACK UPDATED → Remaining cups:", newValue)
+                }
+                .onChange(of: rightRemaining6CupIDs) { _, newValue in
+                    print("🟦 RIGHT 6 RERACK UPDATED → Remaining cups:", newValue)
+                }
             }
+
 
             // MARK: - Menu Modal
             VStack {
