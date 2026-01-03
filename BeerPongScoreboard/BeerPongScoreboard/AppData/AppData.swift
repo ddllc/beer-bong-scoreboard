@@ -3,8 +3,6 @@ import SwiftUI
 @Observable
 class AppData {
     var isRerackEnabled = false
-    var isOneRerackEnabled = false
-    var isTwoReracksEnabled = false
     var isTurnIndicatorEnabled = false
     var currentTurnTeamID: UUID?
     

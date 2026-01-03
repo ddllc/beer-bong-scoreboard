@@ -253,7 +253,7 @@ struct GameView: View {
                                 appData.currentTurnTeamID = game.team1.id
                             }
                         }
-                        .overlay {
+                        .overlay(alignment: .topTrailing) {
                             if rerackAt6AvailableForLeft {
                                 Button("Rerack 6") {
                                     applyRerack6Left()
