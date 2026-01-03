@@ -38,20 +38,57 @@ struct GameView: View {
     @State private var isRightCup10SunkAnimationActive = false
 
     // MARK: Rerack States
+    @State private var isChoosingRerack10Left = true
+    @State private var isChoosingRerack10Right = true
     @State private var isChoosingRerack6Left = false
     @State private var isChoosingRerack6Right = false
     @State private var isChoosingRerack4Left = false
     @State private var isChoosingRerack4Right = false
+    @State private var isChoosingRerack3Left = false
+    @State private var isChoosingRerack3Right = false
     @State private var leftReracksUsed = 0
     @State private var rightReracksUsed = 0
 
+    private var leftActiveRemainingCount: Int {
+        if isChoosingRerack10Left { return leftRemaining10CupIDs.count }
+        else if isChoosingRerack6Left { return leftRemaining6CupIDs.count }
+        else if isChoosingRerack4Left { return leftRemaining4CupIDs.count }
+        else if isChoosingRerack3Left { return leftRemaining3CupIDs.count }
+        else { return leftRemaining10CupIDs.count }
+    }
+
+    private var rightActiveRemainingCount: Int {
+        if isChoosingRerack10Right { return rightRemaining10CupIDs.count }
+        else if isChoosingRerack6Right { return rightRemaining6CupIDs.count }
+        else if isChoosingRerack4Right { return rightRemaining4CupIDs.count }
+        else if isChoosingRerack3Right { return rightRemaining3CupIDs.count }
+        else { return rightRemaining10CupIDs.count }
+    }
+
     private var rerackAt6AvailableForLeft: Bool {
-        appData.isRerackEnabled && leftRemaining10CupIDs.count == 6
+        appData.isRerackEnabled && leftActiveRemainingCount == 6
+    }
+
+    private var rerackAt4AvailableForLeft: Bool {
+        appData.isRerackEnabled && leftActiveRemainingCount == 4
+    }
+
+    private var rerackAt3AvailableForLeft: Bool {
+        appData.isRerackEnabled && leftActiveRemainingCount == 3
     }
 
     private var rerackAt6AvailableForRight: Bool {
-        appData.isRerackEnabled && rightRemaining10CupIDs.count == 6
+        appData.isRerackEnabled && rightActiveRemainingCount == 6
     }
+
+    private var rerackAt4AvailableForRight: Bool {
+        appData.isRerackEnabled && rightActiveRemainingCount == 4
+    }
+
+    private var rerackAt3AvailableForRight: Bool {
+        appData.isRerackEnabled && rightActiveRemainingCount == 3
+    }
+
 
 
     // MARK: Team Scores
@@ -157,6 +194,48 @@ struct GameView: View {
             .sorted()
     }
 
+    // MARK: - 4 Remaining Cups
+    private let leftRerack4CupPositions: [Int] = [1, 2, 3, 4]
+
+    private var leftRemaining4CupIDs: [Int] {
+        leftRerack4CupPositions
+            .filter { id in
+                !left10CupBinding(id: id).wrappedValue
+            }
+            .sorted()
+    }
+
+    private let rightRerack4CupPositions: [Int] = [1, 2, 3, 4]
+
+    private var rightRemaining4CupIDs: [Int] {
+        rightRerack4CupPositions
+            .filter { id in
+                !right10CupBinding(id: id).wrappedValue
+            }
+            .sorted()
+    }
+
+    // MARK: - 3 Remaining Cups
+    private let leftRerack3CupPositions: [Int] = [1, 2, 3]
+
+    private var leftRemaining3CupIDs: [Int] {
+        leftRerack3CupPositions
+            .filter { id in
+                !left10CupBinding(id: id).wrappedValue
+            }
+            .sorted()
+    }
+
+    private let rightRerack3CupPositions: [Int] = [1, 2, 3]
+
+    private var rightRemaining3CupIDs: [Int] {
+        rightRerack3CupPositions
+            .filter { id in
+                !right10CupBinding(id: id).wrappedValue
+            }
+            .sorted()
+    }
+
 
     // MARK: - Game Duration
     private var durationText: String {
@@ -224,7 +303,28 @@ struct GameView: View {
                             if rerackAt6AvailableForLeft {
                                 Button("Rerack 6") {
                                     applyRerack6Left()
+                                    isChoosingRerack10Left = false
                                     isChoosingRerack6Left = true
+                                    isChoosingRerack4Left = false
+                                    isChoosingRerack3Left = false
+                                    leftReracksUsed += 1
+                                }
+                            } else if rerackAt4AvailableForLeft {
+                                Button("Rerack 4") {
+                                    applyRerack4Left()
+                                    isChoosingRerack10Left = false
+                                    isChoosingRerack6Left = false
+                                    isChoosingRerack4Left = true
+                                    isChoosingRerack3Left = false
+                                    leftReracksUsed += 1
+                                }
+                            } else if rerackAt3AvailableForLeft {
+                                Button("Rerack 3") {
+                                    applyRerack3Left()
+                                    isChoosingRerack10Left = false
+                                    isChoosingRerack6Left = false
+                                    isChoosingRerack4Left = false
+                                    isChoosingRerack3Left = true
                                     leftReracksUsed += 1
                                 }
                             }
@@ -330,7 +430,7 @@ struct GameView: View {
 
                         HStack {
                             // MARK: - LEFT 10 Cup Rack
-                            if !isChoosingRerack6Left {
+                            if isChoosingRerack10Left {
                                 HStack {
                                     VStack {
                                         SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup1SunkAnimationActive)
@@ -364,7 +464,7 @@ struct GameView: View {
                                     }
                                 }
 
-                            } else {
+                            } else if isChoosingRerack6Left {
                                 // MARK: - LEFT 6 Cup Rack
                                 HStack {
                                     VStack {
@@ -382,12 +482,41 @@ struct GameView: View {
                                         SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup6SunkAnimationActive)
                                     }
                                 }
+                            } else if isChoosingRerack4Left {
+                                // MARK: - LEFT 4 Cup Rack
+                                HStack {
+                                    VStack {
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup1SunkAnimationActive)
+                                    }
+
+                                    VStack {
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup2SunkAnimationActive)
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup3SunkAnimationActive)
+                                    }
+
+                                    VStack {
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup4SunkAnimationActive)
+                                    }
+                                }
+                            } else if isChoosingRerack3Left {
+                                HStack {
+                                    VStack {
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup1SunkAnimationActive)
+
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup2SunkAnimationActive)
+                                    }
+
+                                    VStack {
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup3SunkAnimationActive)
+                                    }
+                                }
+
                             }
 
                             Spacer()
 
                             // MARK: - Right 10 Cup Rack
-                            if !isChoosingRerack6Right {
+                            if isChoosingRerack10Right {
                                 HStack {
                                     VStack {
                                         SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup1SunkAnimationActive)
@@ -420,7 +549,7 @@ struct GameView: View {
                                     }
                                 }
 
-                            } else {
+                            } else if isChoosingRerack6Right {
                                 // MARK: - RIGHT 6 Cup Rack
                                 HStack {
                                     VStack {
@@ -547,6 +676,20 @@ struct GameView: View {
         // NOTE: survivors was unused; removed for now to avoid a warning.
         // Pick your 6-cup formation positions here.
         let rerackPositions: [Int] = [1, 2, 3, 4, 5, 6]
+        applyLeftRerack(positions: rerackPositions)
+    }
+
+    private func applyRerack4Left() {
+        // NOTE: survivors was unused; removed for now to avoid a warning.
+        // Pick your 6-cup formation positions here.
+        let rerackPositions: [Int] = [1, 2, 3, 4]
+        applyLeftRerack(positions: rerackPositions)
+    }
+
+    private func applyRerack3Left() {
+        // NOTE: survivors was unused; removed for now to avoid a warning.
+        // Pick your 6-cup formation positions here.
+        let rerackPositions: [Int] = [1, 2, 3]
         applyLeftRerack(positions: rerackPositions)
     }
 
