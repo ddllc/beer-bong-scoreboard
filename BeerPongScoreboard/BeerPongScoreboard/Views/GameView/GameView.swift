@@ -304,6 +304,15 @@ struct GameView: View {
                                 appData.currentTurnTeamID = game.team2.id
                             }
                         }
+                        .overlay {
+                            if rerackAt6AvailableForRight {
+                                Button("Rerack 6") {
+                                    applyRerack6Right()
+                                    isChoosingRerack6Right = true
+                                    rightReracksUsed += 1
+                                }
+                            }
+                        }
                     }
                     .padding(.vertical, 4)
 
@@ -378,29 +387,59 @@ struct GameView: View {
                             Spacer()
 
                             // MARK: - Right 10 Cup Rack
-                            HStack {
-                                VStack {
-                                    SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup1SunkAnimationActive)
+                            if !isChoosingRerack6Right {
+                                HStack {
+                                    VStack {
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup1SunkAnimationActive)
+                                    }
+
+                                    VStack {
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup2SunkAnimationActive)
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup3SunkAnimationActive)
+                                    }
+
+                                    VStack {
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup4SunkAnimationActive)
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup5SunkAnimationActive)
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup6SunkAnimationActive)
+                                    }
+
+                                    VStack {
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup7SunkAnimationActive)
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup8SunkAnimationActive)
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup9SunkAnimationActive)
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup10SunkAnimationActive)
+                                    }
+                                }
+                                .overlay(alignment: .topLeading) {
+                                    if rerackAt6AvailableForRight {
+                                        Image(systemName: "exclamationmark.triangle.fill")
+                                            .foregroundStyle(.yellow)
+                                            .padding(.top, 2)
+                                            .padding(.leading, 4)
+                                    }
                                 }
 
-                                VStack {
-                                    SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup2SunkAnimationActive)
-                                    SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup3SunkAnimationActive)
-                                }
+                            } else {
+                                // MARK: - RIGHT 6 Cup Rack
+                                HStack {
+                                    VStack {
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup1SunkAnimationActive)
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup2SunkAnimationActive)
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup3SunkAnimationActive)
+                                    }
 
-                                VStack {
-                                    SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup4SunkAnimationActive)
-                                    SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup5SunkAnimationActive)
-                                    SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup6SunkAnimationActive)
-                                }
+                                    VStack {
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup4SunkAnimationActive)
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup5SunkAnimationActive)
+                                    }
 
-                                VStack {
-                                    SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup7SunkAnimationActive)
-                                    SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup8SunkAnimationActive)
-                                    SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup9SunkAnimationActive)
-                                    SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup10SunkAnimationActive)
+                                    VStack {
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup6SunkAnimationActive)
+                                    }
                                 }
                             }
+
                         }
                         .padding(.vertical, 4)
                     }
@@ -510,4 +549,38 @@ struct GameView: View {
         let rerackPositions: [Int] = [1, 2, 3, 4, 5, 6]
         applyLeftRerack(positions: rerackPositions)
     }
+
+    private func applyRightRerack(positions: [Int]) {
+        isRightCup1SunkAnimationActive = true
+        isRightCup2SunkAnimationActive = true
+        isRightCup3SunkAnimationActive = true
+        isRightCup4SunkAnimationActive = true
+        isRightCup5SunkAnimationActive = true
+        isRightCup6SunkAnimationActive = true
+        isRightCup7SunkAnimationActive = true
+        isRightCup8SunkAnimationActive = true
+        isRightCup9SunkAnimationActive = true
+        isRightCup10SunkAnimationActive = true
+
+        for id in positions {
+            switch id {
+            case 1: isRightCup1SunkAnimationActive = false
+            case 2: isRightCup2SunkAnimationActive = false
+            case 3: isRightCup3SunkAnimationActive = false
+            case 4: isRightCup4SunkAnimationActive = false
+            case 5: isRightCup5SunkAnimationActive = false
+            case 6: isRightCup6SunkAnimationActive = false
+            case 7: isRightCup7SunkAnimationActive = false
+            case 8: isRightCup8SunkAnimationActive = false
+            case 9: isRightCup9SunkAnimationActive = false
+            default: isRightCup10SunkAnimationActive = false
+            }
+        }
+    }
+
+    private func applyRerack6Right() {
+        let rerackPositions: [Int] = [1, 2, 3, 4, 5, 6]
+        applyRightRerack(positions: rerackPositions)
+    }
+
 }
