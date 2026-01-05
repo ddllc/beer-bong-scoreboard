@@ -194,13 +194,13 @@ struct GameView: View {
     }
 
     // MARK: Rerack availability (now uses active remaining count)
-    private var rerackAt6AvailableForLeft: Bool { appData.isRerackEnabled && leftActiveRemainingCount == 6 }
-    private var rerackAt4AvailableForLeft: Bool { appData.isRerackEnabled && leftActiveRemainingCount == 4 }
-    private var rerackAt3AvailableForLeft: Bool { appData.isRerackEnabled && leftActiveRemainingCount == 3 }
+    private var rerackAt6AvailableForLeft: Bool { appData.isRerackEnabled && leftActiveRemainingCount == 6 && !isChoosingRerack6Left }
+    private var rerackAt4AvailableForLeft: Bool { appData.isRerackEnabled && leftActiveRemainingCount == 4 && !isChoosingRerack4Left }
+    private var rerackAt3AvailableForLeft: Bool { appData.isRerackEnabled && leftActiveRemainingCount == 3 && !isChoosingRerack3Left }
 
-    private var rerackAt6AvailableForRight: Bool { appData.isRerackEnabled && rightActiveRemainingCount == 6 }
-    private var rerackAt4AvailableForRight: Bool { appData.isRerackEnabled && rightActiveRemainingCount == 4 }
-    private var rerackAt3AvailableForRight: Bool { appData.isRerackEnabled && rightActiveRemainingCount == 3 }
+    private var rerackAt6AvailableForRight: Bool { appData.isRerackEnabled && rightActiveRemainingCount == 6 && !isChoosingRerack6Right }
+    private var rerackAt4AvailableForRight: Bool { appData.isRerackEnabled && rightActiveRemainingCount == 4 && !isChoosingRerack4Left }
+    private var rerackAt3AvailableForRight: Bool { appData.isRerackEnabled && rightActiveRemainingCount == 3 && !isChoosingRerack3Right }
 
     // MARK: Init
     init(game: GameModel) {
