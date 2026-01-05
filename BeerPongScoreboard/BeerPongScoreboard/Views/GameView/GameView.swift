@@ -253,36 +253,6 @@ struct GameView: View {
                                 appData.currentTurnTeamID = game.team1.id
                             }
                         }
-                        .overlay(alignment: .topTrailing) {
-                            if rerackAt6AvailableForLeft {
-                                Button("Rerack 6") {
-                                    applyRerack6Left()
-                                    isChoosingRerack10Left = false
-                                    isChoosingRerack6Left = true
-                                    isChoosingRerack4Left = false
-                                    isChoosingRerack3Left = false
-                                    leftReracksUsed += 1
-                                }
-                            } else if rerackAt4AvailableForLeft {
-                                Button("Rerack 4") {
-                                    applyRerack4Left()
-                                    isChoosingRerack10Left = false
-                                    isChoosingRerack6Left = false
-                                    isChoosingRerack4Left = true
-                                    isChoosingRerack3Left = false
-                                    leftReracksUsed += 1
-                                }
-                            } else if rerackAt3AvailableForLeft {
-                                Button("Rerack 3") {
-                                    applyRerack3Left()
-                                    isChoosingRerack10Left = false
-                                    isChoosingRerack6Left = false
-                                    isChoosingRerack4Left = false
-                                    isChoosingRerack3Left = true
-                                    leftReracksUsed += 1
-                                }
-                            }
-                        }
 
                         Spacer()
 
@@ -554,7 +524,95 @@ struct GameView: View {
                         .padding(.vertical, 4)
                     }
                     .frame(maxWidth: .infinity)
-                    .frame(height: cupSize * 4 + 40)           
+                    .frame(height: cupSize * 4 + 40)
+                    .overlay(alignment: .top) {
+                        VStack {
+                            if rerackAt6AvailableForLeft {
+                                Button("Rerack 6") {
+                                    applyRerack6Left()
+                                    isChoosingRerack10Left = false
+                                    isChoosingRerack6Left = true
+                                    isChoosingRerack4Left = false
+                                    isChoosingRerack3Left = false
+                                    leftReracksUsed += 1
+                                }
+                                .buttonStyle(.glass)
+                                .buttonSizing(.fitted)
+                                .buttonBorderShape(.roundedRectangle(radius: 8))
+                            } else if rerackAt4AvailableForLeft {
+                                Button("Rerack 4") {
+                                    applyRerack4Left()
+                                    isChoosingRerack10Left = false
+                                    isChoosingRerack6Left = false
+                                    isChoosingRerack4Left = true
+                                    isChoosingRerack3Left = false
+                                    leftReracksUsed += 1
+                                }
+                                .buttonStyle(.glass)
+                                .buttonSizing(.fitted)
+                                .buttonBorderShape(.roundedRectangle(radius: 8))
+                            } else if rerackAt3AvailableForLeft {
+                                Button("Rerack 3") {
+                                    applyRerack3Left()
+                                    isChoosingRerack10Left = false
+                                    isChoosingRerack6Left = false
+                                    isChoosingRerack4Left = false
+                                    isChoosingRerack3Left = true
+                                    leftReracksUsed += 1
+                                }
+                                .buttonStyle(.glass)
+                                .buttonSizing(.fitted)
+                                .buttonBorderShape(.roundedRectangle(radius: 8))
+                            }
+                        }
+                        .padding(.trailing, 125)
+                        .padding(.top)
+                    }
+                    .overlay(alignment: .top) {
+                        VStack {
+                            if rerackAt6AvailableForRight {
+                                Button("Rerack 6") {
+                                    applyRerack6Right()
+                                    isChoosingRerack10Right = false
+                                    isChoosingRerack6Right = true
+                                    isChoosingRerack4Right = false
+                                    isChoosingRerack3Right = false
+                                    rightReracksUsed += 1
+                                }
+                                .buttonStyle(.glass)
+                                .buttonSizing(.fitted)
+                                .buttonBorderShape(.roundedRectangle(radius: 8))
+
+                            } else if rerackAt4AvailableForRight {
+                                Button("Rerack 4") {
+                                    applyRerack4Right()
+                                    isChoosingRerack10Right = false
+                                    isChoosingRerack6Right = false
+                                    isChoosingRerack4Right = true
+                                    isChoosingRerack3Right = false
+                                    rightReracksUsed += 1
+                                }
+                                .buttonStyle(.glass)
+                                .buttonSizing(.fitted)
+                                .buttonBorderShape(.roundedRectangle(radius: 8))
+
+                            } else if rerackAt3AvailableForRight {
+                                Button("Rerack 3") {
+                                    applyRerack3Right()
+                                    isChoosingRerack10Right = false
+                                    isChoosingRerack6Right = false
+                                    isChoosingRerack4Right = false
+                                    isChoosingRerack3Right = true
+                                    rightReracksUsed += 1
+                                }
+                                .buttonStyle(.glass)
+                                .buttonSizing(.fitted)
+                                .buttonBorderShape(.roundedRectangle(radius: 8))
+                            }
+                        }
+                        .padding(.leading, 125)
+                        .padding(.top)
+                    }
                 }
                 .onChange(of: leftSideScore) { _, newValue in
                     game = game.update(team1CupsSunk: newValue)
@@ -566,14 +624,6 @@ struct GameView: View {
 
             // MARK: - Menu Modal
             VStack {
-                Button("RERACK") {
-                    dismiss()
-                }
-                .buttonStyle(.glassProminent)
-                .buttonSizing(.flexible)
-                .buttonBorderShape(.roundedRectangle(radius: 8))
-                .frame(width: 200)
-
                 Button("Pause Game") {
                     dismiss()
                 }

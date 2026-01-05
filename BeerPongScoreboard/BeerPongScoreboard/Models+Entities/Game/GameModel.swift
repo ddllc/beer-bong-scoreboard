@@ -10,6 +10,13 @@ struct GameModel: Identifiable {
     let team2CupsSunk: Int
     let startingTeamID: UUID
     let winnerTeamID: UUID?
+
+    var durationMinuteSecondString: String {
+        let timeInterval: TimeInterval = self.endedAt!.timeIntervalSince(self.startedAt)
+        let minutes = Int(timeInterval) / 60
+        let seconds = Int(timeInterval).remainderReportingOverflow(dividingBy: 60).partialValue
+        return String(format: "%02d:%02d", minutes, seconds)
+    }
 }
 
 extension GameModel {
