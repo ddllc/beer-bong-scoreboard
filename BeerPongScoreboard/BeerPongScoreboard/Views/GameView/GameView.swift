@@ -647,17 +647,37 @@ struct GameView: View {
         }
         .navigationBarBackButtonHidden(true)
         .onChange(of: game.team1CupsSunk) { _, newValue in
-            if newValue == 10 {
-                game = game.update(endedAt: Date(), winnerTeamID: game.team1.id)
-                isWinnerSheetPresented = true
-            }
+            guard newValue == 10, game.winnerTeamID == nil else { return }
+
+            let updatedTeam1 = game.team1.update(wins: game.team1.wins + 1)
+            let updatedTeam2 = game.team2.update(losses: game.team2.losses + 1)
+
+            game = game.update(
+                endedAt: Date(),
+                team1: updatedTeam1,
+                team2: updatedTeam2,
+                winnerTeamID: game.team1.id
+            )
+
+            isWinnerSheetPresented = true
         }
+
         .onChange(of: game.team2CupsSunk) { _, newValue in
-            if newValue == 10 {
-                game = game.update(endedAt: Date(), winnerTeamID: game.team2.id)
-                isWinnerSheetPresented = true
-            }
+            guard newValue == 10, game.winnerTeamID == nil else { return }
+
+            let updatedTeam2 = game.team2.update(wins: game.team2.wins + 1)
+            let updatedTeam1 = game.team1.update(losses: game.team1.losses + 1)
+
+            game = game.update(
+                endedAt: Date(),
+                team1: updatedTeam1,
+                team2: updatedTeam2,
+                winnerTeamID: game.team2.id
+            )
+
+            isWinnerSheetPresented = true
         }
+
         .sheet(isPresented: $isWinnerSheetPresented) {
             WinnerSheetView(game: game)
         }
@@ -751,3 +771,4 @@ struct GameView: View {
         applyRightRerack(positions: rerackPositions)
     }
 }
+
