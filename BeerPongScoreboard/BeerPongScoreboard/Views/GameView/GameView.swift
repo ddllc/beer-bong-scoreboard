@@ -202,6 +202,55 @@ struct GameView: View {
     private var rerackAt4AvailableForRight: Bool { appData.isRerackEnabled && rightActiveRemainingCount == 4 && !isChoosingRerack4Left }
     private var rerackAt3AvailableForRight: Bool { appData.isRerackEnabled && rightActiveRemainingCount == 3 && !isChoosingRerack3Right }
 
+    // MARK: - Reset Helpers
+    private func resetLeftSide(clearReracksUsed: Bool = true) {
+        // Reset cup states
+        isLeftCup1SunkAnimationActive = false
+        isLeftCup2SunkAnimationActive = false
+        isLeftCup3SunkAnimationActive = false
+        isLeftCup4SunkAnimationActive = false
+        isLeftCup5SunkAnimationActive = false
+        isLeftCup6SunkAnimationActive = false
+        isLeftCup7SunkAnimationActive = false
+        isLeftCup8SunkAnimationActive = false
+        isLeftCup9SunkAnimationActive = false
+        isLeftCup10SunkAnimationActive = false
+
+        // Reset rack mode to 10 cups
+        isChoosingRerack10Left = true
+        isChoosingRerack6Left = false
+        isChoosingRerack4Left = false
+        isChoosingRerack3Left = false
+
+        if clearReracksUsed {
+            leftReracksUsed = 0
+        }
+    }
+
+    private func resetRightSide(clearReracksUsed: Bool = true) {
+        // Reset cup states
+        isRightCup1SunkAnimationActive = false
+        isRightCup2SunkAnimationActive = false
+        isRightCup3SunkAnimationActive = false
+        isRightCup4SunkAnimationActive = false
+        isRightCup5SunkAnimationActive = false
+        isRightCup6SunkAnimationActive = false
+        isRightCup7SunkAnimationActive = false
+        isRightCup8SunkAnimationActive = false
+        isRightCup9SunkAnimationActive = false
+        isRightCup10SunkAnimationActive = false
+
+        // Reset rack mode to 10 cups
+        isChoosingRerack10Right = true
+        isChoosingRerack6Right = false
+        isChoosingRerack4Right = false
+        isChoosingRerack3Right = false
+
+        if clearReracksUsed {
+            rightReracksUsed = 0
+        }
+    }
+
     // MARK: Init
     init(game: GameModel) {
         _game = State(initialValue: game)
@@ -623,27 +672,68 @@ struct GameView: View {
             }
 
             // MARK: - Menu Modal
-            VStack {
-                Button("Pause Game") {
-                    dismiss()
-                }
-                .buttonStyle(.glassProminent)
-                .buttonSizing(.flexible)
-                .buttonBorderShape(.roundedRectangle(radius: 8))
-                .frame(width: 200)
+            // MARK: - Menu Modal
+            if isActionsModalPresented {
+                ZStack {
+                    // ✅ Tap anywhere outside the buttons to close
+                    Color.black.opacity(0.35)
+                        .ignoresSafeArea()
+                        .onTapGesture {
+                            withAnimation {
+                                isActionsModalPresented = false
+                            }
+                        }
 
-                Button("Cancel Game", role: .cancel) {
-                    dismiss()
+                    // ✅ The modal content (taps here should NOT close the menu)
+                    VStack(spacing: 16) {
+                        Button("Pause Game") {
+                            dismiss()
+                        }
+                        .buttonStyle(.glassProminent)
+                        .buttonSizing(.flexible)
+                        .buttonBorderShape(.roundedRectangle(radius: 8))
+                        .frame(width: 200)
+
+                        Button("Cancel Game", role: .cancel) {
+                            dismiss()
+                        }
+                        .buttonStyle(.glassProminent)
+                        .buttonSizing(.flexible)
+                        .buttonBorderShape(.roundedRectangle(radius: 8))
+                        .frame(width: 200)
+
+                        HStack {
+                            Button("Reset Left") {
+                                withAnimation { resetLeftSide() }
+                            }
+                            .buttonStyle(.glass)
+                            .buttonBorderShape(.roundedRectangle(radius: 8))
+
+                            Button("Reset Right") {
+                                withAnimation { resetRightSide() }
+                            }
+                            .buttonStyle(.glass)
+                            .buttonBorderShape(.roundedRectangle(radius: 8))
+                        }
+                        .padding(.top, 4)
+
+                        Button("Close Menu") {
+                            withAnimation {
+                                isActionsModalPresented = false
+                            }
+                        }
+                        .buttonStyle(.glass)
+                        .buttonBorderShape(.roundedRectangle(radius: 8))
+                    }
+                    .padding()
+                    .background(.thinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .contentShape(Rectangle())
+                    .onTapGesture { } // absorbs taps so they don't hit the background tap
                 }
-                .buttonStyle(.glassProminent)
-                .buttonSizing(.flexible)
-                .buttonBorderShape(.roundedRectangle(radius: 8))
-                .frame(width: 200)
+                .transition(.opacity)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .ignoresSafeArea()
-            .background(.secondary)
-            .opacity(isActionsModalPresented ? 1 : 0)
+
         }
         .navigationBarBackButtonHidden(true)
         .onChange(of: game.team1CupsSunk) { _, newValue in
