@@ -13,6 +13,34 @@ struct GameView: View {
     @State private var isWinnerSheetPresented = false
     @State private var isActionsModalPresented = false
 
+    // MARK: - Pause Duration State
+    @State private var isGamePaused = false
+    @State private var accumulatedPausedSeconds: TimeInterval = 0
+    @State private var pausedAt: Date? = nil
+
+    private var effectiveStartDateForTimer: Date {
+        game.startedAt.addingTimeInterval(accumulatedPausedSeconds)
+    }
+
+    private var timerEndDateForDisplay: Date {
+        if isGamePaused, let pausedAt { return pausedAt }
+        return Date()
+    }
+
+    private func togglePause() {
+        if isGamePaused {
+            if let pausedAt {
+                accumulatedPausedSeconds += Date().timeIntervalSince(pausedAt)
+            }
+            self.pausedAt = nil
+            isGamePaused = false
+        } else {
+            pausedAt = Date()
+            isGamePaused = true
+        }
+    }
+
+
     // MARK: - Left Cup Animations
     @State private var isLeftCup1SunkAnimationActive = false
     @State private var isLeftCup2SunkAnimationActive = false
@@ -317,8 +345,8 @@ struct GameView: View {
                             HStack(spacing: 6) {
                                 Text("Duration")
 
-                                TimelineView(.periodic(from: game.startedAt, by: 1)) { context in
-                                    Text(timerInterval: game.startedAt ... context.date, countsDown: false)
+                                TimelineView(.periodic(from: Date(), by: 1)) { _ in
+                                    Text(timerInterval: effectiveStartDateForTimer ... timerEndDateForDisplay, countsDown: false)
                                         .italic()
                                         .monospacedDigit()
                                         .font(.callout)
@@ -672,7 +700,6 @@ struct GameView: View {
             }
 
             // MARK: - Menu Modal
-            // MARK: - Menu Modal
             if isActionsModalPresented {
                 ZStack {
                     // ✅ Tap anywhere outside the buttons to close
@@ -686,13 +713,14 @@ struct GameView: View {
 
                     // ✅ The modal content (taps here should NOT close the menu)
                     VStack(spacing: 16) {
-                        Button("Pause Game") {
-                            dismiss()
+                        Button(isGamePaused ? "Resume Game" : "Pause Game") {
+                            togglePause()
                         }
                         .buttonStyle(.glassProminent)
                         .buttonSizing(.flexible)
                         .buttonBorderShape(.roundedRectangle(radius: 8))
                         .frame(width: 200)
+
 
                         Button("Cancel Game", role: .cancel) {
                             dismiss()
