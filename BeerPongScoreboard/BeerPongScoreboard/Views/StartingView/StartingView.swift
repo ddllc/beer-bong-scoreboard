@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct StartingView: View {
+    @Binding var navigationPath: NavigationPath
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Query(sort: \TeamEntity.name) private var teams: [TeamEntity]
     @State private var isShowRulesSheetPresented = false
@@ -127,17 +128,23 @@ struct StartingView: View {
                     // MARK: - Start Button
                     HStack {
                         if let game = currentGame {
-                            NavigationLink {
-                                GameView(game: game)
-                            } label: {
-                                Text("Start Game")
-                                    .font(.title2)
-                                    .bold()
-                            }
-                            .frame(maxWidth: 300)
-                            .buttonStyle(.glassProminent)
-                            .buttonSizing(.flexible)
-                            .buttonBorderShape(.roundedRectangle(radius: 8))
+//                            NavigationLink {
+//                                GameView(game: game)
+//                            } label: {
+//                                Text("Start Game")
+//                                    .font(.title2)
+//                                    .bold()
+//                            }
+//                            .frame(maxWidth: 300)
+//                            .buttonStyle(.glassProminent)
+//                            .buttonSizing(.flexible)
+//                            .buttonBorderShape(.roundedRectangle(radius: 8))
+
+                            NavigationLink("Star Game", value: game)
+                                .frame(maxWidth: 300)
+                                .buttonStyle(.glassProminent)
+                                .buttonSizing(.flexible)
+                                .buttonBorderShape(.roundedRectangle(radius: 8))
                         } else {
                             Button {
                                 // no-op
@@ -160,6 +167,9 @@ struct StartingView: View {
         .onChange(of: dynamicTypeSize) { _, newSize in
             print("Dynamic type size changed to: \(newSize)")
         }
+     .navigationDestination(for: GameModel.self) { game in
+         GameView(navigationPath: $navigationPath, game: game)
+     }
         .navigationTitle("Beer Pong Scoreboard")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $isShowRulesSheetPresented) {
@@ -182,12 +192,5 @@ struct StartingView: View {
                 }
             }
         }
-    }
-}
-
-#Preview {
-    NavigationStack {
-        StartingView()
-            .modelContainer(for: [TeamEntity.self, PlayerEntity.self], inMemory: true)
     }
 }

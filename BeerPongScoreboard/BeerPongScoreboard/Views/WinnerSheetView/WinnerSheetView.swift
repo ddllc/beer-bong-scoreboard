@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct WinnerSheetView: View {
+    @Binding var navigationPath: NavigationPath
     @Environment(AppData.self) private var appData
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
@@ -143,6 +144,7 @@ struct WinnerSheetView: View {
 
             // 4) Close sheet
             dismiss()
+            navigationPath = NavigationPath()
 
         } catch {
             // If you want, add an alert. For now, at least log.

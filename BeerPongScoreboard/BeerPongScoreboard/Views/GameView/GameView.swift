@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct GameView: View {
+    @Binding var navigationPath: NavigationPath
     // MARK: - Environment Objects
     @Environment(AppData.self) private var appData
     @Environment(\.dismiss) private var dismiss
@@ -344,7 +345,8 @@ struct GameView: View {
     }
 
     // MARK: Init
-    init(game: GameModel) {
+    init(navigationPath: Binding<NavigationPath>, game: GameModel) {
+        self._navigationPath = navigationPath
         _game = State(initialValue: game)
     }
 
@@ -852,7 +854,7 @@ struct GameView: View {
         }
 
         .sheet(isPresented: $isWinnerSheetPresented) {
-            WinnerSheetView(game: game)
+            WinnerSheetView(navigationPath: $navigationPath, game: game)
         }
     }
 

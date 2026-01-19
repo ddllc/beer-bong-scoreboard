@@ -1,6 +1,6 @@
 import Foundation
 
-struct GameModel: Identifiable {
+struct GameModel: Identifiable, Hashable {
     let id: UUID
     let startedAt: Date
     let endedAt: Date?
