@@ -40,6 +40,40 @@ struct GameView: View {
         }
     }
 
+    // MARK: - Winner Confirmation Alert
+    private enum FinalCupSide {
+        case left
+        case right
+    }
+
+    private struct PendingFinalCup: Identifiable {
+        let id = UUID()
+        let side: FinalCupSide
+        let cupID: Int
+    }
+
+    @State private var isDeclareWinnerAlertPresented = false
+    @State private var pendingFinalCup: PendingFinalCup? = nil
+
+    private func confirmDeclareWinner() {
+        guard let pendingFinalCup else { return }
+
+        // Actually sink the final cup now (this will flow into your existing onChange winner logic)
+        switch pendingFinalCup.side {
+        case .left:
+            left10CupBinding(id: pendingFinalCup.cupID).wrappedValue = true
+        case .right:
+            right10CupBinding(id: pendingFinalCup.cupID).wrappedValue = true
+        }
+
+        self.pendingFinalCup = nil
+        isDeclareWinnerAlertPresented = false
+    }
+
+    private func cancelDeclareWinner() {
+        pendingFinalCup = nil
+        isDeclareWinnerAlertPresented = false
+    }
 
     // MARK: - Left Cup Animations
     @State private var isLeftCup1SunkAnimationActive = false
@@ -159,6 +193,44 @@ struct GameView: View {
         }
     }
 
+    // MARK: - Cup bindings that intercept the final cup
+    private func leftCupBindingWithWinnerCheck(id: Int) -> Binding<Bool> {
+        let base = left10CupBinding(id: id)
+        return Binding(
+            get: { base.wrappedValue },
+            set: { newValue in
+                // Only intercept "false -> true" (a newly sunk cup)
+                if newValue == true, base.wrappedValue == false {
+                    let willBe = leftSideScore + 1
+                    if willBe == 10, game.winnerTeamID == nil {
+                        pendingFinalCup = PendingFinalCup(side: .left, cupID: id)
+                        isDeclareWinnerAlertPresented = true
+                        return // do NOT sink it yet
+                    }
+                }
+                base.wrappedValue = newValue
+            }
+        )
+    }
+
+    private func rightCupBindingWithWinnerCheck(id: Int) -> Binding<Bool> {
+        let base = right10CupBinding(id: id)
+        return Binding(
+            get: { base.wrappedValue },
+            set: { newValue in
+                if newValue == true, base.wrappedValue == false {
+                    let willBe = rightSideScore + 1
+                    if willBe == 10, game.winnerTeamID == nil {
+                        pendingFinalCup = PendingFinalCup(side: .right, cupID: id)
+                        isDeclareWinnerAlertPresented = true
+                        return
+                    }
+                }
+                base.wrappedValue = newValue
+            }
+        )
+    }
+
     // MARK: - 6 Remaining Cups
     private let leftRerack6CupPositions: [Int] = [1, 2, 3, 4, 5, 6]
     private var leftRemaining6CupIDs: [Int] {
@@ -232,7 +304,6 @@ struct GameView: View {
 
     // MARK: - Reset Helpers
     private func resetLeftSide(clearReracksUsed: Bool = true) {
-        // Reset cup states
         isLeftCup1SunkAnimationActive = false
         isLeftCup2SunkAnimationActive = false
         isLeftCup3SunkAnimationActive = false
@@ -244,19 +315,15 @@ struct GameView: View {
         isLeftCup9SunkAnimationActive = false
         isLeftCup10SunkAnimationActive = false
 
-        // Reset rack mode to 10 cups
         isChoosingRerack10Left = true
         isChoosingRerack6Left = false
         isChoosingRerack4Left = false
         isChoosingRerack3Left = false
 
-        if clearReracksUsed {
-            leftReracksUsed = 0
-        }
+        if clearReracksUsed { leftReracksUsed = 0 }
     }
 
     private func resetRightSide(clearReracksUsed: Bool = true) {
-        // Reset cup states
         isRightCup1SunkAnimationActive = false
         isRightCup2SunkAnimationActive = false
         isRightCup3SunkAnimationActive = false
@@ -268,15 +335,12 @@ struct GameView: View {
         isRightCup9SunkAnimationActive = false
         isRightCup10SunkAnimationActive = false
 
-        // Reset rack mode to 10 cups
         isChoosingRerack10Right = true
         isChoosingRerack6Right = false
         isChoosingRerack4Right = false
         isChoosingRerack3Right = false
 
-        if clearReracksUsed {
-            rightReracksUsed = 0
-        }
+        if clearReracksUsed { rightReracksUsed = 0 }
     }
 
     // MARK: Init
@@ -454,71 +518,68 @@ struct GameView: View {
                             if isChoosingRerack10Left {
                                 HStack {
                                     VStack {
-                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup1SunkAnimationActive)
-                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup2SunkAnimationActive)
-                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup3SunkAnimationActive)
-                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup4SunkAnimationActive)
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: leftCupBindingWithWinnerCheck(id: 1))
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: leftCupBindingWithWinnerCheck(id: 2))
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: leftCupBindingWithWinnerCheck(id: 3))
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: leftCupBindingWithWinnerCheck(id: 4))
                                     }
 
                                     VStack {
-                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup5SunkAnimationActive)
-                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup6SunkAnimationActive)
-                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup7SunkAnimationActive)
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: leftCupBindingWithWinnerCheck(id: 5))
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: leftCupBindingWithWinnerCheck(id: 6))
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: leftCupBindingWithWinnerCheck(id: 7))
                                     }
 
                                     VStack {
-                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup8SunkAnimationActive)
-                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup9SunkAnimationActive)
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: leftCupBindingWithWinnerCheck(id: 8))
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: leftCupBindingWithWinnerCheck(id: 9))
                                     }
 
                                     VStack {
-                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup10SunkAnimationActive)
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: leftCupBindingWithWinnerCheck(id: 10))
                                     }
                                 }
-                                // MARK: - LEFT 6 CUP RACK
                             } else if isChoosingRerack6Left {
                                 HStack {
                                     VStack {
-                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup1SunkAnimationActive)
-                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup2SunkAnimationActive)
-                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup3SunkAnimationActive)
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: leftCupBindingWithWinnerCheck(id: 1))
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: leftCupBindingWithWinnerCheck(id: 2))
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: leftCupBindingWithWinnerCheck(id: 3))
                                     }
 
                                     VStack {
-                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup4SunkAnimationActive)
-                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup5SunkAnimationActive)
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: leftCupBindingWithWinnerCheck(id: 4))
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: leftCupBindingWithWinnerCheck(id: 5))
                                     }
 
                                     VStack {
-                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup6SunkAnimationActive)
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: leftCupBindingWithWinnerCheck(id: 6))
                                     }
                                 }
-                                // MARK: - LEFT 4 CUP RACK
                             } else if isChoosingRerack4Left {
                                 HStack {
                                     VStack {
-                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup1SunkAnimationActive)
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: leftCupBindingWithWinnerCheck(id: 1))
                                     }
 
                                     VStack {
-                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup2SunkAnimationActive)
-                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup3SunkAnimationActive)
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: leftCupBindingWithWinnerCheck(id: 2))
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: leftCupBindingWithWinnerCheck(id: 3))
                                     }
 
                                     VStack {
-                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup4SunkAnimationActive)
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: leftCupBindingWithWinnerCheck(id: 4))
                                     }
                                 }
-                                // MARK: - LEFT 3 CUP RACK
                             } else if isChoosingRerack3Left {
                                 HStack {
                                     VStack {
-                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup1SunkAnimationActive)
-                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup2SunkAnimationActive)
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: leftCupBindingWithWinnerCheck(id: 1))
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: leftCupBindingWithWinnerCheck(id: 2))
                                     }
 
                                     VStack {
-                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: $isLeftCup3SunkAnimationActive)
+                                        SoloCupView(style: .blueWhiteRim, cupSize: cupSize, fallDirection: .left, isSunk: leftCupBindingWithWinnerCheck(id: 3))
                                     }
                                 }
                             }
@@ -529,71 +590,68 @@ struct GameView: View {
                             if isChoosingRerack10Right {
                                 HStack {
                                     VStack {
-                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup1SunkAnimationActive)
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: rightCupBindingWithWinnerCheck(id: 1))
                                     }
 
                                     VStack {
-                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup2SunkAnimationActive)
-                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup3SunkAnimationActive)
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: rightCupBindingWithWinnerCheck(id: 2))
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: rightCupBindingWithWinnerCheck(id: 3))
                                     }
 
                                     VStack {
-                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup4SunkAnimationActive)
-                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup5SunkAnimationActive)
-                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup6SunkAnimationActive)
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: rightCupBindingWithWinnerCheck(id: 4))
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: rightCupBindingWithWinnerCheck(id: 5))
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: rightCupBindingWithWinnerCheck(id: 6))
                                     }
 
                                     VStack {
-                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup7SunkAnimationActive)
-                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup8SunkAnimationActive)
-                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup9SunkAnimationActive)
-                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup10SunkAnimationActive)
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: rightCupBindingWithWinnerCheck(id: 7))
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: rightCupBindingWithWinnerCheck(id: 8))
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: rightCupBindingWithWinnerCheck(id: 9))
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: rightCupBindingWithWinnerCheck(id: 10))
                                     }
                                 }
-                                // MARK: - RIGHT 6 CUP RACK
                             } else if isChoosingRerack6Right {
                                 HStack {
                                     VStack {
-                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup1SunkAnimationActive)
-                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup2SunkAnimationActive)
-                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup3SunkAnimationActive)
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: rightCupBindingWithWinnerCheck(id: 1))
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: rightCupBindingWithWinnerCheck(id: 2))
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: rightCupBindingWithWinnerCheck(id: 3))
                                     }
 
                                     VStack {
-                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup4SunkAnimationActive)
-                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup5SunkAnimationActive)
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: rightCupBindingWithWinnerCheck(id: 4))
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: rightCupBindingWithWinnerCheck(id: 5))
                                     }
 
                                     VStack {
-                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup6SunkAnimationActive)
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: rightCupBindingWithWinnerCheck(id: 6))
                                     }
                                 }
-                                // MARK: - RIGHT 4 CUP RACK
                             } else if isChoosingRerack4Right {
                                 HStack {
                                     VStack {
-                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup1SunkAnimationActive)
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: rightCupBindingWithWinnerCheck(id: 1))
                                     }
 
                                     VStack {
-                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup2SunkAnimationActive)
-                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup3SunkAnimationActive)
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: rightCupBindingWithWinnerCheck(id: 2))
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: rightCupBindingWithWinnerCheck(id: 3))
                                     }
 
                                     VStack {
-                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup4SunkAnimationActive)
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: rightCupBindingWithWinnerCheck(id: 4))
                                     }
                                 }
-                                // MARK: - RIGHT 3 CUP RACK
                             } else if isChoosingRerack3Right {
                                 HStack {
                                     VStack {
-                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup1SunkAnimationActive)
-                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup2SunkAnimationActive)
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: rightCupBindingWithWinnerCheck(id: 1))
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: rightCupBindingWithWinnerCheck(id: 2))
                                     }
 
                                     VStack {
-                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: $isRightCup3SunkAnimationActive)
+                                        SoloCupView(style: .redWhiteRim, cupSize: cupSize, fallDirection: .right, isSunk: rightCupBindingWithWinnerCheck(id: 3))
                                     }
                                 }
                             }
@@ -702,16 +760,12 @@ struct GameView: View {
             // MARK: - Menu Modal
             if isActionsModalPresented {
                 ZStack {
-                    // ✅ Tap anywhere outside the buttons to close
                     Color.black.opacity(0.35)
                         .ignoresSafeArea()
                         .onTapGesture {
-                            withAnimation {
-                                isActionsModalPresented = false
-                            }
+                            withAnimation { isActionsModalPresented = false }
                         }
 
-                    // ✅ The modal content (taps here should NOT close the menu)
                     VStack(spacing: 16) {
                         Button(isGamePaused ? "Resume Game" : "Pause Game") {
                             togglePause()
@@ -720,7 +774,6 @@ struct GameView: View {
                         .buttonSizing(.flexible)
                         .buttonBorderShape(.roundedRectangle(radius: 8))
                         .frame(width: 200)
-
 
                         Button("Cancel Game", role: .cancel) {
                             dismiss()
@@ -731,24 +784,18 @@ struct GameView: View {
                         .frame(width: 200)
 
                         HStack {
-                            Button("Reset Left") {
-                                withAnimation { resetLeftSide() }
-                            }
-                            .buttonStyle(.glass)
-                            .buttonBorderShape(.roundedRectangle(radius: 8))
+                            Button("Reset Left") { withAnimation { resetLeftSide() } }
+                                .buttonStyle(.glass)
+                                .buttonBorderShape(.roundedRectangle(radius: 8))
 
-                            Button("Reset Right") {
-                                withAnimation { resetRightSide() }
-                            }
-                            .buttonStyle(.glass)
-                            .buttonBorderShape(.roundedRectangle(radius: 8))
+                            Button("Reset Right") { withAnimation { resetRightSide() } }
+                                .buttonStyle(.glass)
+                                .buttonBorderShape(.roundedRectangle(radius: 8))
                         }
                         .padding(.top, 4)
 
                         Button("Close Menu") {
-                            withAnimation {
-                                isActionsModalPresented = false
-                            }
+                            withAnimation { isActionsModalPresented = false }
                         }
                         .buttonStyle(.glass)
                         .buttonBorderShape(.roundedRectangle(radius: 8))
@@ -757,13 +804,21 @@ struct GameView: View {
                     .background(.thinMaterial)
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                     .contentShape(Rectangle())
-                    .onTapGesture { } // absorbs taps so they don't hit the background tap
+                    .onTapGesture { }
                 }
                 .transition(.opacity)
             }
-
         }
         .navigationBarBackButtonHidden(true)
+
+        // ✅ Winner confirmation alert (fires BEFORE the last cup actually sinks)
+        .alert("Declare Winner?", isPresented: $isDeclareWinnerAlertPresented) {
+            Button("Cancel", role: .cancel) { cancelDeclareWinner() }
+            Button("OK") { confirmDeclareWinner() }
+        } message: {
+            Text("Are you sure you would like to declare a winner?")
+        }
+
         .onChange(of: game.team1CupsSunk) { _, newValue in
             guard newValue == 10, game.winnerTeamID == nil else { return }
 
@@ -889,4 +944,3 @@ struct GameView: View {
         applyRightRerack(positions: rerackPositions)
     }
 }
-

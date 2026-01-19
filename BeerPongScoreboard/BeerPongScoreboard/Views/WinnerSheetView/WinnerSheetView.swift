@@ -1,8 +1,11 @@
 import SwiftUI
+import SwiftData
 
 struct WinnerSheetView: View {
     @Environment(AppData.self) private var appData
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+
     let game: GameModel
 
     private var isTeamOneWinner: Bool { game.winnerTeamID == game.team1.id }
@@ -27,6 +30,7 @@ struct WinnerSheetView: View {
                     Spacer()
                     trophyView
                     Spacer()
+
                     VStack(spacing: 20) {
                         VStack(spacing: 8) {
                             Text("\(isTeamOneWinner ? game.team1.name : game.team2.name) WINS!")
@@ -41,6 +45,7 @@ struct WinnerSheetView: View {
                         Text("Team Stats")
                             .font(.title)
                             .bold()
+
                         HStack(spacing: 32) {
                             VStack {
                                 Text(game.team1.name)
@@ -49,6 +54,7 @@ struct WinnerSheetView: View {
                                 Text("Total Wins: \(game.team1.wins)")
                                 Text("Total Losses: \(game.team1.losses)")
                             }
+
                             VStack {
                                 Text(game.team2.name)
                                     .font(.title3)
@@ -58,14 +64,15 @@ struct WinnerSheetView: View {
                             }
                         }
                     }
+
                     Spacer()
                 }
                 .padding()
 
-
                 Spacer()
-                Button(role: .confirm) {
 
+                Button(role: .confirm) {
+                    endGameAndPersist()
                 } label: {
                     Text("End Game")
                         .font(.title)
@@ -74,10 +81,125 @@ struct WinnerSheetView: View {
                 .buttonStyle(.glassProminent)
                 .buttonBorderShape(.roundedRectangle(radius: 8))
                 .buttonSizing(.flexible)
-
             }
         }
     }
+
+    // MARK: - Persistence
+
+    private func endGameAndPersist() {
+        // If WinnerSheetView is showing, we *should* already know the winner.
+        guard let winnerID = game.winnerTeamID else {
+            // If you want: trigger an alert here.
+            return
+        }
+
+        let endedAtForSave = game.endedAt ?? Date()
+
+        do {
+            // 1) Fetch or create GameEntity (upsert by id)
+            let existingGame = try fetchGameEntity(id: game.id)
+
+            let team1Entity = try fetchTeamEntity(id: game.team1.id)
+            let team2Entity = try fetchTeamEntity(id: game.team2.id)
+
+            if let existingGame {
+                // Update existing
+                existingGame.startedAt = game.startedAt
+                existingGame.endedAt = endedAtForSave
+                existingGame.team1 = team1Entity
+                existingGame.team2 = team2Entity
+                existingGame.team1CupsSunk = game.team1CupsSunk
+                existingGame.team2CupsSunk = game.team2CupsSunk
+                existingGame.startingTeamID = game.startingTeamID
+                existingGame.winnerTeamID = winnerID
+            } else {
+                // Insert new
+                let newGame = GameEntity(
+                    id: game.id,
+                    startedAt: game.startedAt,
+                    endedAt: endedAtForSave,
+                    team1: team1Entity,
+                    team2: team2Entity,
+                    team1CupsSunk: game.team1CupsSunk,
+                    team2CupsSunk: game.team2CupsSunk,
+                    startingTeamID: game.startingTeamID,
+                    winnerTeamID: winnerID
+                )
+                modelContext.insert(newGame)
+            }
+
+            // 2) Update team cumulative stats
+            applyTeamStats(
+                team1: team1Entity,
+                team2: team2Entity,
+                winnerTeamID: winnerID,
+                team1CupsSunk: game.team1CupsSunk,
+                team2CupsSunk: game.team2CupsSunk
+            )
+
+            // 3) Save once
+            try modelContext.save()
+
+            // 4) Close sheet
+            dismiss()
+
+        } catch {
+            // If you want, add an alert. For now, at least log.
+            print("❌ Failed to end game and persist: \(error)")
+        }
+    }
+
+    private func fetchGameEntity(id: UUID) throws -> GameEntity? {
+        let descriptor = FetchDescriptor<GameEntity>(
+            predicate: #Predicate { $0.id == id }
+        )
+        return try modelContext.fetch(descriptor).first
+    }
+
+    private func fetchTeamEntity(id: UUID) throws -> TeamEntity {
+        let descriptor = FetchDescriptor<TeamEntity>(
+            predicate: #Predicate { $0.id == id }
+        )
+
+        if let team = try modelContext.fetch(descriptor).first {
+            return team
+        }
+
+        // If this ever happens, it means you're playing a game with a TeamModel
+        // that was never persisted as a TeamEntity.
+        throw NSError(
+            domain: "WinnerSheetView",
+            code: 404,
+            userInfo: [NSLocalizedDescriptionKey: "TeamEntity not found for id \(id)"]
+        )
+    }
+
+    private func applyTeamStats(
+        team1: TeamEntity,
+        team2: TeamEntity,
+        winnerTeamID: UUID,
+        team1CupsSunk: Int,
+        team2CupsSunk: Int
+    ) {
+        // cups sunk / allowed totals
+        team1.totalCupsSunk += team1CupsSunk
+        team1.totalCupsAllowed += team2CupsSunk
+
+        team2.totalCupsSunk += team2CupsSunk
+        team2.totalCupsAllowed += team1CupsSunk
+
+        // wins / losses
+        if winnerTeamID == team1.id {
+            team1.wins += 1
+            team2.losses += 1
+        } else if winnerTeamID == team2.id {
+            team2.wins += 1
+            team1.losses += 1
+        }
+    }
+
+    // MARK: - UI
 
     private var trophyView: some View {
         ZStack(alignment: .top) {
@@ -134,67 +256,3 @@ struct WinnerSheetView: View {
         }
     }
 }
-
-
-
-
-
-            //                VStack(alignment: .leading, spacing: 6) {
-            //
-            //                    Text("Game Stats")
-            //                        .font(.headline)
-            //
-            //                    Text("Game ID: \(game.id.uuidString)")
-            //                    Text("Started At: \(game.startedAt.formatted())")
-            //                    Text("Starting Team ID: \(game.startingTeamID.uuidString)")
-            //
-            //                    Text("Ended At: \(game.endedAt?.formatted() ?? "In Progress")")
-            //                    Text("Winner Team ID: \(game.winnerTeamID?.uuidString ?? "None")")
-            //
-            //                    Text("Score: \(game.team1CupsSunk) - \(game.team2CupsSunk)")
-            //
-            //                    Divider()
-            //
-            //                    Text("Team 1")
-            //                        .font(.subheadline)
-            //                        .bold()
-            //
-            //                    Text("ID: \(game.team1.id.uuidString)")
-            //                    Text("Name: \(game.team1.name)")
-            //                    Text("Created: \(game.team1.dateCreated.formatted())")
-            //                    Text("Wins: \(game.team1.wins)")
-            //                    Text("Losses: \(game.team1.losses)")
-            //                    Text("Total Cups Sunk: \(game.team1.totalCupsSunk)")
-            //                    Text("Total Cups Allowed: \(game.team1.totalCupsAllowed)")
-            //                    Text("Players: \(game.team1.players.map { $0.name }.joined(separator: ", "))")
-            //                    Text("Has Photo: \(game.team1.photoData != nil ? "Yes" : "No")")
-            //
-            //                    Divider()
-            //
-            //                    Text("Team 2")
-            //                        .font(.subheadline)
-            //                        .bold()
-            //
-            //                    Text("ID: \(game.team2.id.uuidString)")
-            //                    Text("Name: \(game.team2.name)")
-            //                    Text("Created: \(game.team2.dateCreated.formatted())")
-            //                    Text("Wins: \(game.team2.wins)")
-            //                    Text("Losses: \(game.team2.losses)")
-            //                    Text("Total Cups Sunk: \(game.team2.totalCupsSunk)")
-            //                    Text("Total Cups Allowed: \(game.team2.totalCupsAllowed)")
-            //                    Text("Players: \(game.team2.players.map { $0.name }.joined(separator: ", "))")
-            //                    Text("Has Photo: \(game.team2.photoData != nil ? "Yes" : "No")")
-            //                }
-
-
-//
-
-//        }
-//        .padding()
-//        .toolbar {
-//            Button("Go Back", role: .cancel) {
-//                dismiss()
-//            }
-//        }
-//    }
-//}
